@@ -1,23 +1,29 @@
+## Build & tooling
 bin/
 obj/
+.vs/
+*.suo
+*.user
+*.wsuo
+*.v2
+*.futdcache.v2
+slnx.sqlite
+
+## Node-like
 node_modules/
-*.zip
-bin/
-obj/
-node_modules/
+
+## Archives & temp
 *.zip
 *.rar
 *.7z
-bin/
-obj/
-node_modules/
-*.zip
-bin/
-obj/
-node_modules/
-*.zip
-*.rar
-bin/
-obj/
-node_modules/
-*.zip
+tmp_*
+temp_*.txt
+*backup*
+backups/
+
+## Local libraries (to be removed from VCS)
+Librerias/MySql.Data.dll
+
+## OS noise
+Thumbs.db
+.DS_Store

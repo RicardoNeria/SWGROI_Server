@@ -112,7 +112,7 @@ temp_sesion.txt filter=lfs diff=lfs merge=lfs -text
 tmp_login_js.txt filter=lfs diff=lfs merge=lfs -text
 wwwroot/Imagenes/CENTRALDEALARMAS.jpg filter=lfs diff=lfs merge=lfs -text
 wwwroot/Imagenes/CENTRALDEALARMAS1.png filter=lfs diff=lfs merge=lfs -text
-wwwroot/Imagenes/CENTRALDEALARMAS6 filter=lfs diff=lfs merge=lfs -text
+wwwroot/Imagenes/CENTRALDEALARMAS6.png filter=lfs diff=lfs merge=lfs -text
 wwwroot/Imagenes/RECAPTCHA.png filter=lfs diff=lfs merge=lfs -text
 wwwroot/Imagenes/central_alarmas.png filter=lfs diff=lfs merge=lfs -text
 wwwroot/Scripts/admin.js filter=lfs diff=lfs merge=lfs -text
@@ -169,3 +169,4 @@ wwwroot/ventas_reporte.html filter=lfs diff=lfs merge=lfs -text
 wwwroot/veravisos.html filter=lfs diff=lfs merge=lfs -text
 *.pdf filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
+

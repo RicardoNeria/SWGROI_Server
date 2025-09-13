@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestión Documental</title>
+  <link rel="stylesheet" href="/Styles/estilo_general.css" />
+  <link rel="stylesheet" href="/Styles/modulo_layout.css" />
+  <link rel="stylesheet" href="/Styles/documentos_estilo.css" />
+  <script src="/Scripts/seguridad.js" defer></script>
+</head>
+<body class="dashboard">
+  <aside class="sidebar-dark">
+    <h1 class="logo">SWGROI</h1>
+    <nav>
+      <a href="/menu.html">Menú principal</a>
+      <a href="/documentos.html" class="active">Documentos</a>
+      <a href="/logout">Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <header class="topbar">
+    <button class="toggle-sidebar" aria-label="Abrir/Cerrar menú" onclick="document.body.classList.toggle('sidebar-collapsed')">☰</button>
+    <div class="breadcrumbs"><a href="/menu.html">Inicio</a><span>/</span><strong>Documentos</strong></div>
+  </header>
+
+  <main class="main-content">
+    <div class="doc-container">
+      <h2 class="titulo-dashboard">Gestión Documental</h2>
+      <section class="doc-actions">
+        <input id="filtro" type="search" placeholder="Buscar por nombre..." />
+        <select id="categoria">
+          <option value="">Todas las categorías</option>
+          <option>Operativo</option>
+          <option>Ventas</option>
+          <option>Soporte</option>
+        </select>
+        <button id="btn-buscar">Buscar</button>
+        <label class="upload">
+          <input id="file" type="file" />
+          <span>Seleccionar archivo</span>
+        </label>
+        <input id="etiquetas" type="text" placeholder="etiquetas (coma)" />
+        <input id="nota" type="text" placeholder="nota de versión" />
+        <button id="btn-subir">Subir</button>
+        <div id="progreso" class="doc-progress" hidden></div>
+      </section>
+
+      <section>
+        <table class="doc-table" id="tabla">
+          <thead>
+            <tr>
+              <th>ID</th><th>Nombre</th><th>Categoría</th><th>Tamaño</th><th>Versión</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div id="paginacion" class="doc-paginacion"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/Scripts/documentos.js" defer></script>
+</body>
+</html>
+
