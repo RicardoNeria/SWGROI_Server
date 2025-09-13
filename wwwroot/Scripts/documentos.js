@@ -49,16 +49,16 @@
         <td><button data-id="${d.id}" class="dl">Descargar</button></td>`;
         t.appendChild(tr);
       });
-      document.querySelectorAll('button.dl').forEach(b=> b.addEventListener('click',()=> api.descargar(b.dataset.id)) );
+      document.querySelectorAll('button.descargar').forEach(b=> b.addEventListener('click',()=> api.descargar(b.dataset.id)) );
     }catch(e){ t.innerHTML = '<tr><td colspan="6">Error cargando</td></tr>'; }
   }
 
   $('#btn-buscar').addEventListener('click', ()=> render(1));
   $('#btn-subir').addEventListener('click', async ()=>{
-    try{ const r = await api.subir(); if(!r.ok) throw new Error(r.code||'Error al subir'); $('#progreso').textContent = 'Completado'; setTimeout(()=> $('#progreso').hidden = true, 1500); render(1); }
-    catch(e){ alert(e.message||e); }
+    try{ const r = await api.subir(); if(!r.ok) throw new Error(r.code||'Error al subir'); $('#progreso').textContent = 'Completado'; setTimeout(()=> $('#progreso').hidden = true, 1500); toastSuccess && toastSuccess("Documento subido"); render(1); }
+    catch(e){ (function(m){ try{ toastError(m); }catch(e){ alert(m); } })(e.message||e); }
   });
 
-  render(1);
+  toastSuccess && toastSuccess("Documento subido"); render(1);
 })();
 

@@ -27,27 +27,29 @@
   <main class="main-content">
     <div class="doc-container">
       <h2 class="titulo-dashboard">Gestión Documental</h2>
-      <section class="doc-actions">
-        <input id="filtro" type="search" placeholder="Buscar por nombre..." />
-        <select id="categoria">
+      <section class="doc-actions form-compact" aria-labelledby="filtros-docs">
+        <h3 id="filtros-docs" class="visually-hidden">Filtros y carga de documentos</h3>
+        <input id="filtro" type="search" placeholder="Buscar por nombre..." aria-label="Buscar documento" />
+        <select id="categoria" aria-label="Categoría">
           <option value="">Todas las categorías</option>
           <option>Operativo</option>
           <option>Ventas</option>
           <option>Soporte</option>
         </select>
-        <button id="btn-buscar">Buscar</button>
+        <button id="btn-buscar" class="btn azul">Buscar</button>
         <label class="upload">
-          <input id="file" type="file" />
+          <input id="file" type="file" accept="application/pdf,image/png,image/jpeg,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
           <span>Seleccionar archivo</span>
         </label>
         <input id="etiquetas" type="text" placeholder="etiquetas (coma)" />
         <input id="nota" type="text" placeholder="nota de versión" />
-        <button id="btn-subir">Subir</button>
+        <button id="btn-subir" class="btn primario">Subir</button>
         <div id="progreso" class="doc-progress" hidden></div>
       </section>
 
-      <section>
-        <table class="doc-table" id="tabla">
+      <section aria-labelledby="lista-docs">
+        <h3 id="lista-docs" class="visualmente-oculto"></h3>
+        <table class="doc-table table" id="tabla">
           <thead>
             <tr>
               <th>ID</th><th>Nombre</th><th>Categoría</th><th>Tamaño</th><th>Versión</th><th>Acciones</th>
@@ -63,4 +65,3 @@
   <script src="/Scripts/documentos.js" defer></script>
 </body>
 </html>
-
