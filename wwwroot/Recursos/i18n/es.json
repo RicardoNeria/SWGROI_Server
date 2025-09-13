@@ -1,0 +1,22 @@
+{
+  "app.title": "SWGROI",
+  "login.title": "Inicio de sesión",
+  "login.user": "Usuario",
+  "login.password": "Contraseña",
+  "login.signin": "Iniciar sesión",
+  "error.required": "Campo obligatorio",
+  "error.minlength": "Mínimo {min} caracteres",
+  "error.maxlength": "Máximo {max} caracteres",
+  "error.number": "Ingrese un número válido",
+  "error.date.future": "La fecha no puede ser futura",
+  "tickets.title": "Gestión de Tickets",
+  "tickets.register": "Registrar Ticket",
+  "tickets.update": "Actualizar Ticket",
+  "tickets.clear": "Limpiar Campos",
+  "common.confirm": "¿Deseas continuar?",
+  "common.accept": "Aceptar",
+  "common.cancel": "Cancelar",
+  "toast.success": "Operación exitosa",
+  "toast.error": "Ocurrió un error"
+}
+
