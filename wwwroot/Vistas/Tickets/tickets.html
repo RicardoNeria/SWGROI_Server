@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Tickets - SWGROI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/Styles/estilo_general.css">
+    <link rel="stylesheet" href="/Styles/modulo_layout.css">
+    <link rel="stylesheet" href="/Styles/Modulos/Tickets/tickets_estilo.css">
+    <script src="/Scripts/seguridad.js" defer></script>
+    <script src="/Scripts/i18n.js" defer></script>
+    </head>
+<body class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar-dark">
+        <h1 class="logo">SWGROI</h1>
+        <nav>
+            <a href="menu.html">Menú principal</a>
+            <a href="tickets.html" class="active">Gestión de Tickets</a>
+            <a href="/logout">Cerrar sesión</a>
+        </nav>
+    </aside>
+
+    <header class="topbar">
+        <button class="toggle-sidebar" aria-label="Abrir/Cerrar menú" onclick="(function(b){b.classList.toggle('sidebar-collapsed'); b.classList.toggle('sidebar-open');})(document.body)">☰</button>
+        <div class="breadcrumbs"><a href="/menu.html">Inicio</a><span>/</span><strong>Tickets</strong></div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        <div class="admin-container">
+            <h2 class="titulo-dashboard">Seguimiento de Tickets</h2>
+
+            <!-- LEYENDA -->
+            <div id="leyenda" class="leyenda" style="display:none;"></div>
+
+            <!-- FORMULARIO -->
+            <form id="formularioTicket" class="formulario-ticket">
+                <div class="buscador-container">
+                    <input type="text" id="buscadorFolio" placeholder="Buscar ticket por folio...">
+                    <button type="button" id="btnBuscar" class="btn azul">Buscar</button>
+                </div>
+
+                <div class="formulario-ticket-grid">
+                    <!-- Columna izquierda -->
+                    <div class="columna-form">
+                        <label for="folio">Folio del Ticket:</label>
+                        <input type="text" id="folio" name="folio" required pattern="^[A-Z0-9\-]{6,20}$" minlength="6" maxlength="20" title="6–20 caracteres alfanuméricos en mayúsculas">
+
+                        <label for="descripcion">Descripción:</label>
+                        <textarea id="descripcion" name="descripcion" required minlength="10" maxlength="500"></textarea>
+
+                        <label for="estado">Estado Inicial:</label>
+                        <select id="estado" name="estado" required>
+                            <option value="Almacén">Almacén</option>
+                            <option value="Capturado">Capturado</option>
+                            <option value="Programado/Asignado">Programado/Asignado</option>
+                            <option value="Abierto">Abierto</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Cerrado">Cerrado</option>
+                        </select>
+                    </div>
+
+                    <!-- Columna derecha -->
+                    <div class="columna-form">
+                        <label for="estadoSeguimiento">Estado actual del seguimiento:</label>
+                        <input type="text" id="estadoSeguimiento" readonly class="readonly">
+
+                        <label for="comentarioTecnico">Respuesta Técnica Mesa de control:</label>
+                        <textarea id="comentarioTecnico" readonly rows="4">(No hay comentarios técnicos aún)</textarea>
+
+                        <label for="responsable">Responsable:</label>
+                        <input type="text" id="responsable" name="responsable" readonly>
+
+                        <div class="botones-tickets">
+                            <button type="submit" class="btn verde" data-loading>Registrar Ticket</button>
+                            <button type="button" id="actualizarBtn" class="btn naranja" data-loading>Actualizar Ticket</button>
+                            <button type="button" id="limpiarBtn" class="btn gris">Limpiar Campos</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- KPIs de estado -->
+            <div id="kpisTickets" class="resumen" style="display:none; margin-top:14px;">
+                <span id="kpiAbiertos">Abiertos: 0</span>
+                <span id="kpiProceso">En Proceso: 0</span>
+                <span id="kpiCerrados">Cerrados: 0</span>
+                <span class="res-divisor" style="margin-left:auto"></span>
+            </div>
+
+            <!-- Tabla CRUD de tickets -->
+            <div class="table-wrap" style="margin-top:12px;">
+                <div class="barra-filtros" style="justify-content: space-between;">
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input type="text" id="filtroTicket" placeholder="Filtrar por folio o responsable…" />
+                        <select id="filtroEstadoTicket">
+                            <option value="">Todos</option>
+                            <option>Almacén</option>
+                            <option>Capturado</option>
+                            <option>Programado/Asignado</option>
+                            <option>Abierto</option>
+                            <option>En Proceso</option>
+                            <option>Cerrado</option>
+                        </select>
+                        <button id="btnBuscarTicket" type="button" class="btn azul">Buscar</button>
+                        <button id="btnLimpiarTabla" type="button" class="btn gris">Limpiar</button>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button id="btnExportCsvTickets" type="button" class="btn primario">Exportar CSV</button>
+                        <button id="btnImprimirTickets" type="button" class="btn azul">Imprimir / PDF</button>
+                    </div>
+                </div>
+
+                <div class="table-wrap table-wrap--viewport">
+                    <table class="tabla-crud" id="tablaTickets">
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Responsable</th>
+                                <th>Comentario</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="paginacion">
+                    <span id="lblPaginacionTickets"></span>
+                    <div class="paginacion-controles">
+                        <button id="btnPrevTickets" class="btn" type="button">Prev</button>
+                        <button id="btnNextTickets" class="btn" type="button">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL DE CONFIRMACIÓN -->
+            <div id="modalConfirmacion" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalConfirmacionTitulo">
+                <div class="modal-contenido">
+                    <span class="cerrar" onclick="cerrarModalConfirmacion()" aria-label="Cerrar">&times;</span>
+                    <h3 id="modalConfirmacionTitulo">¿Confirmar acción?</h3>
+                    <p id="modalConfirmacionMensaje">¿Estás seguro de que deseas continuar?</p>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button id="btnConfirmarAccion" class="btn rojo" style="margin-right: 10px;">Confirmar</button>
+                        <button onclick="cerrarModalConfirmacion()" class="btn gris">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="/Scripts/ui.js"></script>
+    <script src="/Scripts/Modulos/Tickets/tickets.js"></script>
+    <script src="/Scripts/seguridad.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestión de Avisos - SWGROI</title>
+    <link rel="stylesheet" href="/Styles/estilo_general.css"><link rel="stylesheet" href="/Styles/modulo_layout.css">
+    <link rel="stylesheet" href="/Styles/Modulos/Avisos/avisos_estilo.css">
+    <script src="/Scripts/seguridad.js" defer></script>
+    </head>
+<body class="dashboard">
+    <aside class="sidebar-dark">
+        <h1 class="logo">SWGROI</h1>
+        <nav>
+            <a href="menu.html">Menú principal</a>
+            <a href="avisos.html" class="active">Avisos</a>
+            <a href="/logout">Cerrar sesión</a>
+        </nav>
+    </aside>
+
+    <header class="topbar">
+        <button class="toggle-sidebar" aria-label="Abrir/Cerrar menú" onclick="(function(b){b.classList.toggle('sidebar-collapsed'); b.classList.toggle('sidebar-open');})(document.body)">☰</button>
+        <div class="breadcrumbs"><a href="/menu.html">Inicio</a><span>/</span><strong>Avisos</strong></div>
+        <div class="topbar-right"><span class="user-chip" id="chipUsuario">👤 Usuario</span></div>
+    </header>
+
+    <div class="main-content">
+        <div class="admin-container">
+            <div id="leyenda" class="leyenda" style="display:none"></div>
+            <h2 class="titulo-dashboard">Publicar nuevo aviso</h2>
+            <form id="formAviso" class="formulario-aviso">
+                <input type="hidden" id="avisoId" />
+                <div class="campo">
+                    <label for="asunto">Asunto:</label>
+                    <input type="text" id="asunto" name="asunto" placeholder="Asunto del aviso" required maxlength="100" minlength="3">
+                </div>
+
+                <div class="campo">
+                    <label for="mensaje">Mensaje:</label>
+                    <textarea id="mensaje" name="mensaje" rows="5" placeholder="Contenido del aviso" required maxlength="2000" minlength="5"></textarea>
+                </div>
+
+                <div class="acciones-botones-ticket">
+                    <button type="submit" id="btnGuardar" class="btn primario">Guardar</button>
+                    <button type="button" id="btnCancelarEdicion" class="btn amarillo" style="display:none">Cancelar edición</button>
+                    <button type="button" id="btnLimpiar" class="btn rojo">Limpiar</button>
+                </div>
+            </form>
+
+            <p id="mensajeAviso" class="mensaje-exito"></p>
+
+            <h2 class="titulo-dashboard">Historial de Avisos</h2>
+
+            <div class="barra-filtros">
+                <input type="date" id="filtroDesde" placeholder="Desde">
+                <input type="date" id="filtroHasta" placeholder="Hasta">
+                <input type="text" id="filtroAsunto" placeholder="Filtrar por asunto">
+                <select id="selSort">
+                    <option value="Fecha">Fecha</option>
+                    <option value="Asunto">Asunto</option>
+                    <option value="Id">ID</option>
+                </select>
+                <select id="selDir">
+                    <option value="DESC">Desc</option>
+                    <option value="ASC">Asc</option>
+                </select>
+                <select id="selPageSize">
+                    <option>10</option>
+                    <option>20</option>
+                    <option>50</option>
+                </select>
+                <button id="btnBuscar" class="btn azul">Buscar</button>
+                <button type="button" id="btnLimpiarFiltros" class="btn amarillo">Limpiar</button>
+                <button type="button" id="btnExportar" class="btn primario"><span class="icon-wrap"></span>CSV</button>
+            </div>
+
+            <div class="table-wrap table-wrap--viewport">
+                <table class="tabla-crud">
+                    <colgroup>
+                        <col style="width:160px">
+                        <col style="width:220px">
+                        <col>
+                        <col style="width:240px">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Asunto</th>
+                            <th>Mensaje</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaAvisos">
+                        <!-- Avisos cargados dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="paginacion">
+                <span id="lblPaginacion"></span>
+                <div class="paginacion-controles">
+                    <button id="btnPrev" class="btn" type="button">Prev</button>
+                    <button id="btnNext" class="btn" type="button">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header" id="modalTitle">Editar Aviso
+                <button id="btnModalClose" class="icon-btn close" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modalAvisoId" />
+                <div class="campo">
+                    <label for="modalAsunto">Asunto</label>
+                    <input type="text" id="modalAsunto" maxlength="100" minlength="3" />
+                </div>
+                <div class="campo" style="margin-top:10px;">
+                    <label for="modalMensaje">Mensaje</label>
+                    <textarea id="modalMensaje" rows="5" maxlength="2000" minlength="5"></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="btnModalCancelar" class="btn">Cancelar</button>
+                <button id="btnModalGuardar" class="btn primario">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/Scripts/Modulos/Avisos/avisos.js"></script>
+</body>
+</html>

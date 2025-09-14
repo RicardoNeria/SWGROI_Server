@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultar Avisos</title>
+    
+    <link rel="stylesheet" href="/Styles/estilo_general.css">
+    <link rel="stylesheet" href="/Styles/modulo_layout.css">
+    <link rel="stylesheet" href="/Styles/Modulos/Avisos/avisos_estilo.css">
+    <script src="/Scripts/seguridad.js" defer></script>
+    <script src="/Scripts/i18n.js" defer></script>
+</head>
+<body class="dashboard">
+    <aside class="sidebar-dark">
+        <h1 class="logo">SWGROI</h1>
+        <nav>
+            <a href="menu.html">Menú principal</a>
+            <a href="veravisos.html" class="active">Ver Avisos</a>
+            <a href="logout">Cerrar sesión</a>
+        </nav>
+    </aside><header class="topbar"><h2 class="topbar-title">Avisos</h2></header><header class="topbar">  <button class="toggle-sidebar" aria-label="Abrir/Cerrar menú" onclick="(function(b){b.classList.toggle('sidebar-collapsed'); b.classList.toggle('sidebar-open');})(document.body)">☰</button>  <div class="breadcrumbs"><a href="/menu.html">Inicio</a></div></header>
+
+    <div class="main-content">
+        <div class="admin-container">
+            <div id="leyenda" class="leyenda" style="display:none"></div>
+            <h2 class="titulo-dashboard">Historial de Avisos y Anuncios</h2>
+
+            <div class="barra-filtros">
+                <input type="date" id="filtroDesde" placeholder="Desde">
+                <input type="date" id="filtroHasta" placeholder="Hasta">
+                <input type="text" id="filtroAsunto" placeholder="Buscar por asunto">
+                <select id="selSort">
+                    <option value="Fecha">Fecha</option>
+                    <option value="Asunto">Asunto</option>
+                </select>
+                <select id="selDir">
+                    <option value="DESC">Desc</option>
+                    <option value="ASC">Asc</option>
+                </select>
+                <button id="btnBuscar" class="btn azul" type="button">Buscar</button>
+                <button id="btnLimpiar" class="btn" type="button">Limpiar</button>
+            </div>
+
+            <div id="tablaLoader" class="loader" style="display:none;margin-bottom:8px">Cargando…</div>
+
+            <div class="table-wrap table-wrap--viewport">
+                <table class="tabla-crud">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Asunto</th>
+                            <th>Mensaje</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaAvisos">
+                        <!-- Avisos cargados dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="paginacion">
+                <span id="lblPaginacion"></span>
+                <div class="paginacion-controles">
+                    <button id="btnPrev" class="btn" type="button">Prev</button>
+                    <button id="btnNext" class="btn" type="button">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Filtros + orden + paginación. Conserva el renderer simple si el backend devuelve array.
+    const VV = { page:1, pageSize:20, sort:'Fecha', dir:'DESC', desde:'', hasta:'', asunto:'' };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const d = id => document.getElementById(id);
+        const filtroDesde = d('filtroDesde');
+        const filtroHasta = d('filtroHasta');
+        const filtroAsunto = d('filtroAsunto');
+        const selSort = d('selSort');
+        const selDir = d('selDir');
+        d('btnBuscar').addEventListener('click', () => {
+            const des = (filtroDesde.value||'').trim(); const has = (filtroHasta.value||'').trim();
+            if (des && has && new Date(des) > new Date(has)) return mostrar('El rango de fechas es inválido (Desde > Hasta).', 'warn');
+            VV.desde=des; VV.hasta=has; VV.asunto=(filtroAsunto.value||'').trim(); VV.sort=selSort.value; VV.dir=selDir.value; VV.page=1; cargar();
+        });
+        d('btnLimpiar').addEventListener('click', ()=>{ filtroDesde.value=''; filtroHasta.value=''; filtroAsunto.value=''; VV.page=1; VV.desde=''; VV.hasta=''; VV.asunto=''; cargar(); });
+        d('btnPrev').addEventListener('click', ()=>{ if (VV.page>1){ VV.page--; cargar(); }});
+        d('btnNext').addEventListener('click', ()=>{ VV.page++; cargar(); });
+        cargar();
+    });
+
+    function cargar(){
+        const qs = new URLSearchParams();
+        if (VV.desde) qs.set('desde', VV.desde);
+        if (VV.hasta) qs.set('hasta', VV.hasta);
+        if (VV.asunto) qs.set('asunto', VV.asunto);
+        qs.set('page', VV.page); qs.set('pageSize', VV.pageSize); qs.set('sort', VV.sort); qs.set('dir', VV.dir);
+        const loader = document.getElementById('tablaLoader'); if (loader) loader.style.display='block';
+        fetch('/avisos?' + qs.toString())
+            .then(r=>r.text())
+            .then(txt=>{
+                let data=null; try{ data=JSON.parse(txt);}catch{}
+                if (!data) throw new Error('Respuesta inválida del servidor');
+                const items = Array.isArray(data) ? data : (data.items||[]);
+                render(items);
+                const total = Array.isArray(data) ? items.length : (data.total||items.length);
+                actualizarPaginacion(total, Array.isArray(data)?1:(data.page||VV.page), Array.isArray(data)?items.length:(data.pageSize||VV.pageSize));
+            })
+            .catch(err=> mostrar(err.message||'Error al cargar avisos.','error'))
+            .finally(()=>{ const loader = document.getElementById('tablaLoader'); if (loader) loader.style.display='none'; });
+    }
+    function render(lista){
+        const tbody = document.getElementById('tablaAvisos'); tbody.innerHTML='';
+        if (!lista || lista.length===0){ const tr=document.createElement('tr'); const td=document.createElement('td'); td.colSpan=3; td.textContent='No hay avisos disponibles.'; tr.appendChild(td); tbody.appendChild(tr); return; }
+        lista.forEach(a=>{ const tr=document.createElement('tr'); const tdF=document.createElement('td'); tdF.textContent=a.Fecha||''; const tdA=document.createElement('td'); tdA.textContent=a.Asunto||''; const tdM=document.createElement('td'); tdM.textContent=a.Mensaje||''; tdM.title=a.Mensaje||''; tr.appendChild(tdF); tr.appendChild(tdA); tr.appendChild(tdM); tbody.appendChild(tr); });
+    }
+    function actualizarPaginacion(total, page, pageSize){ const maxPage=Math.max(1,Math.ceil(total/pageSize)); VV.page=page; VV.pageSize=pageSize; const lbl=document.getElementById('lblPaginacion'); if(lbl) lbl.textContent=`Página ${page} de ${maxPage} · ${total} avisos`; document.getElementById('btnPrev').disabled=page<=1; document.getElementById('btnNext').disabled=page>=maxPage; }
+    function mostrar(msg,tipo){ const b=document.getElementById('leyenda'); if(!b) return; b.className='leyenda'; if(tipo==='error') b.classList.add('leyenda--error'); else if(tipo==='warn') b.classList.add('leyenda--warn'); else if(tipo==='info') b.classList.add('leyenda--info'); b.textContent=msg; b.style.display='block'; clearTimeout(b._t); b._t=setTimeout(()=>{b.style.display='none';},4000); }
+    </script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!-- menu.html con estilos separados y adaptado -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menú Principal - SWGROI</title>
+    <link rel="stylesheet" href="/Styles/estilo_general.css">
+    <link rel="stylesheet" href="/Styles/modulo_layout.css">
+    <link rel="stylesheet" href="/Styles/Modulos/Menu/menu_estilo.css">
+    <script src="/Scripts/seguridad.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+<body>
+    <div class="dashboard-container">
+        <!-- MENÚ LATERAL COLAPSABLE -->
+        <aside class="sidebar-dark">
+            <h2 class="logo">SWGROI</h2>
+            <div class="logo">
+                <img src="/Imagenes/CENTRALDEALARMAS1.png" alt="Logo Central de Alarmas" class="logo-img-cuadro">
+            </div>
+
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="#">🏠 Menú Principal</a></li>
+
+                    <!-- Administración -->
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSidebarSubmenu(event)">🛡️ Administración ▼</a>
+                        <ul class="submenu">
+                            <li><a href="/admin.html">Usuarios y roles</a></li>
+                            <li><a href="/reportes.html">Reportes</a></li>
+                            <li><a href="/asignaciones.html">Asignar técnicos</a></li>
+                            <li><a href="/cotizaciones.html">Cotizaciones</a></li>
+                            <li><a href="/metricas.html">Métricas</a></li>
+                            <li><a href="/avisos.html">Avisos</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Tickets -->
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSidebarSubmenu(event)">📋 Tickets ▼</a>
+                        <ul class="submenu">
+                            <li><a href="/tickets.html">Buscar tickets</a></li>
+                            <li><a href="/cotizaciones.html">Estado cotización</a></li>
+                            <li><a href="/veravisos.html">Ver Avisos y comunicados</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Técnicos -->
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSidebarSubmenu(event)">🔧 Mesa de Control ▼</a>
+                        <ul class="submenu">
+                            <li><a href="/tecnicos.html">Actualizar estado</a></li>
+                            <li><a href="/tecnicos.html">Retroalimentación</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Retroalimentación -->
+                    <li><a href="/retroalimentacion.html">💬 Retroalimentación</a></li>
+
+                    <!-- Avisos -->
+                    <li><a href="/veravisos.html">📢 Avisos</a></li>
+
+                    <!-- Documentos -->
+                    <li><a href="/documentos.html">📂 Documentos</a></li>
+
+                    <!-- Ventas -->
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSidebarSubmenu(event)">💲 Ventas ▼</a>
+                        <ul class="submenu">
+                            <li><a href="/ventas.html">Buscar cotizaciones</a></li>
+                            <li><a href="/ventas.html">Reportes</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Cierre de sesión -->
+                    <li><a href="/logout" id="cerrarSesion" class="cerrar-sesion">🚪 Cerrar sesión</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        
+
+        <!-- Panel principal -->
+        <main class="main-panel">
+            <header class="panel-header">
+                <div class="logo-central-panel">
+                    <img src="/Imagenes/CENTRALDEALARMAS6.png" alt="Central de Alarmas" class="logo-panel-img">
+                </div>
+                <h1>Menú Principal - Sistema SWGROI</h1>
+                <div id="leyenda" class="leyenda" style="display: none;"></div>
+            </header>
+
+            <section class="bienvenida-dinamica">
+                <h2 id="saludo"></h2>
+                <p id="fecha-hora"></p>
+            </section>
+
+            <section class="modulos-tarjetas-dashboard">
+
+                <!-- Administración -->
+                <div class="tarjeta-dashboard">
+                    <div class="tarjeta-header" onclick="toggleDashboard(this)">
+                        🛡️ <strong>Gestion Administrativa</strong>
+                    </div>
+                    <ul class="tarjeta-submenu">
+                        <li><a href="/admin.html">Usuarios y roles</a></li>
+                        <li><a href="/reportes.html">Reportes</a></li>
+                        <li><a href="/asignaciones.html">Asignar técnicos</a></li>
+                        <li><a href="/cotizaciones.html">Cotizaciones</a></li>
+                        <li><a href="/metricas.html">Métricas</a></li>
+                        <li><a href="/avisos.html">Avisos y comunicados</a></li>
+                    </ul>
+                </div>
+
+                <!-- Gestión de Tickets -->
+                <div class="tarjeta-dashboard">
+                    <div class="tarjeta-header" onclick="toggleDashboard(this)">
+                        📋 <strong>Gestión de Tickets CCC</strong>
+                    </div>
+                    <ul class="tarjeta-submenu">
+                        <li><a href="/tickets.html">Buscar tickets</a></li>
+                        <li><a href="/tickets.html">Estado en tiempo real</a></li>
+                        <li><a href="/tickets.html">Actualizar estado</a></li>
+                        <li><a href="/cotizaciones.html">Enviar cotización</a></li>
+                        <li><a href="/cotizaciones.html">Estado de cotizaciones</a></li>
+                        <li><a href="/veravisos.html">Ver avisos y comunicados</a></li>
+                    </ul>
+                </div>
+
+                <!-- Servicios Técnicos -->
+                <div class="tarjeta-dashboard">
+                    <div class="tarjeta-header" onclick="toggleDashboard(this)">
+                        🔧 <strong>Gestion de Mesa de Control</strong>
+                    </div>
+                    <ul class="tarjeta-submenu">
+                        <li><a href="/tecnicos.html">Historial de tickets</a></li>
+                        <li><a href="/tecnicos.html">Actualizar estado</a></li>
+                        <li><a href="/tecnicos.html">Retroalimentación técnica</a></li>
+                        <li><a href="/cotizaciones.html">Estado de cotizaciones</a></li>
+                        <li><a href="/veravisos.html">Ver avisos y comunicados</a></li>
+                    </ul>
+                </div>
+
+                <!-- Retroalimentación -->
+                <div class="tarjeta-dashboard">
+                    <div class="tarjeta-header" onclick="toggleDashboard(this)">
+                        💬 <strong>Retroalimentación CCC</strong>
+                    </div>
+                    <ul class="tarjeta-submenu">
+                        <li><a href="/retroalimentacion.html">Enviar formularios</a></li>
+                        <li><a href="/retroalimentacion.html">Validar respuestas</a></li>
+                        <li><a href="/retroalimentacion.html">Historial de respuestas</a></li>
+                    </ul>
+                </div>
+
+                <!-- Avisos -->
+                <div class="tarjeta-dashboard">
+                    <div class="tarjeta-header" onclick="toggleDashboard(this)">
+                        📢 <strong>Avisos y comunicados</strong>
+                    </div>
+                    <ul class="tarjeta-submenu">
+                        <li><a href="/avisos.html">Publicar avisos y comunicados</a></li>
+                        <li><a href="/veravisos.html">Ver avisos y comunicados</a></li>
+                    </ul>
+                </div>
+
+                <!-- Documentos -->
+                <div class="tarjeta-dashboard">
+                    <div class="tarjeta-header" onclick="toggleDashboard(this)">
+                        📂 <strong>Documentos Internos</strong>
+                    </div>
+                    <ul class="tarjeta-submenu">
+                        <li><a href="/documentos.html">Subir y organizar</a></li>
+                        <li><a href="/documentos.html">Buscar y descargar</a></li>
+                        <li><a href="/documentos.html">Control de versiones</a></li>
+                    </ul>
+                </div>
+
+                <!-- Ventas -->
+                <div class="tarjeta-dashboard">
+                    <div class="tarjeta-header" onclick="toggleDashboard(this)">
+                        💲 <strong>Ventas y Cotizaciones</strong>
+                    </div>
+                    <ul class="tarjeta-submenu">
+                        <li><a href="/ventas.html">Buscar cotizaciones</a></li>
+                        <li><a href="/ventas.html">Actualizar estado</a></li>
+                        <li><a href="/ventas.html">Reportes de ventas</a></li>
+                        <li><a href="/ventas.html">Enviar a Administración</a></li>
+                    </ul>
+                </div>
+
+            </section>
+
+            <script src="/Scripts/Modulos/Menu/menu.js"></script>
+            <script>
+                function toggleSidebarSubmenu(e) {
+                    e.preventDefault();
+                    const submenu = e.target.nextElementSibling;
+                    if (submenu && submenu.classList.contains("submenu")) {
+                        submenu.style.display = submenu.style.display === "block" ? "none" : "block";
+                    }
+                }
+
+                function toggleDashboard(element) {
+                    const card = element.closest('.tarjeta-dashboard');
+                    if (!card) return;
+                    // Cierra las demás tarjetas
+                    document.querySelectorAll('.tarjeta-dashboard.is-open').forEach(el => {
+                        if (el !== card) el.classList.remove('is-open');
+                    });
+                    card.classList.toggle('is-open');
+                }
+            </script>
+
+            <script>
+                // Suponiendo que el nombre viene inyectado por el backend o guardado en localStorage
+                function obtenerCookie(nombre) {
+                    const valor = `; ${document.cookie}`;
+                    const partes = valor.split(`; ${nombre}=`);
+                    if (partes.length === 2) {
+                        const raw = partes.pop().split(';').shift();
+                        try { return decodeURIComponent(raw); } catch { return raw; }
+                    }
+                    return null;
+                }
+
+                const nombreUsuario = obtenerCookie("nombre") || "Usuario";
+
+                function actualizarSaludo() {
+                    const saludo = document.getElementById("saludo");
+                    const fechaHora = document.getElementById("fecha-hora");
+
+                    const ahora = new Date();
+                    const hora = ahora.getHours();
+                    let textoSaludo = "Bienvenido/a";
+
+                    if (hora < 12) textoSaludo = "Buenos días";
+                    else if (hora < 18) textoSaludo = "Buenas tardes";
+                    else textoSaludo = "Buenas noches";
+
+                    const opcionesFecha = {
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                    };
+                    const formatoHora = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+
+                    saludo.textContent = `${textoSaludo}, ${nombreUsuario}.`;
+                    fechaHora.textContent = `Hoy es ${ahora.toLocaleDateString('es-MX', opcionesFecha)}, ${formatoHora} hrs.`;
+                }
+
+                actualizarSaludo();
+                setInterval(actualizarSaludo, 60000); // Actualiza cada minuto
+            </script>
+
+
+
+            <script>
+                function obtenerCookie(nombre) {
+                    const valor = `; ${document.cookie}`;
+                    const partes = valor.split(`; ${nombre}=`);
+                    if (partes.length === 2) {
+                        const raw = partes.pop().split(';').shift();
+                        try { return decodeURIComponent(raw); } catch { return raw; }
+                    }
+                    return null;
+                }
+
+                function ocultarModulosSegunRol() {
+                    const rol = obtenerCookie("rol");
+
+                    if (rol !== "Administrador") {
+                        // Ocultar todas las tarjetas de "Gestión Administrativa"
+                        document.querySelectorAll(".tarjeta-dashboard .tarjeta-header strong").forEach(el => {
+                            if (el.textContent.includes("Gestion Administrativa")) {
+                                el.closest(".tarjeta-dashboard").style.display = "none";
+                            }
+                        });
+
+                        // Ocultar todos los accesos laterales de "Administración"
+                        document.querySelectorAll(".nav-menu .has-submenu a").forEach(el => {
+                            if (el.textContent.includes("Administración")) {
+                                el.parentElement.style.display = "none";
+                            }
+                        });
+
+                        // Mostrar mensaje si viene desde acceso denegado
+                        const url = new URL(window.location.href);
+                        const msg = url.searchParams.get("msg");
+                        if (msg === "acceso-denegado") {
+                            const leyenda = document.getElementById("leyenda");
+                            leyenda.innerText = "Acceso denegado: solo el administrador puede entrar a esta sección.";
+                            leyenda.style.color = "red";
+                            leyenda.style.display = "block";
+                            setTimeout(() => { leyenda.style.display = "none"; }, 3000);
+                        }
+                    }
+                }
+
+                document.addEventListener("DOMContentLoaded", ocultarModulosSegunRol);
+            </script>
+
+
+            <section class="indicadores-dashboard">
+                <div class="indicador">
+                    <h3>📋 Tickets registrados</h3>
+                    <p id="contadorTickets">0</p>
+                </div>
+                <div class="indicador">
+                    <h3>📢 Avisos y comunicados publicados</h3>
+                    <p id="contadorAvisos">0</p>
+                </div>
+            </section>
+
+
+            <script>
+                fetch('/menu/indicadores')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('contadorTickets').textContent = data.tickets;
+                        document.getElementById('contadorAvisos').textContent = data.avisos;
+                    })
+                    .catch(err => console.error('Error al cargar indicadores:', err));
+            </script>
+
+
+</body>
+</html>

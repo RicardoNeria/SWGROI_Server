@@ -1,0 +1,220 @@
+﻿/* ===================== ESTILOS PARA TICKETS ===================== */
+
+body.dashboard {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f5f7;
+}
+
+.sidebar-dark {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    background-color: #2c3e50;
+    padding: 20px;
+    box-sizing: border-box;
+    color: white;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+    .sidebar-dark .logo {
+        font-size: 20px;
+        margin-bottom: 30px;
+    }
+
+    .sidebar-dark nav a {
+        color: white;
+        text-decoration: none;
+        margin: 10px 0;
+        display: block;
+        font-weight: 500;
+        padding: 8px;
+        border-radius: 4px;
+    }
+
+        .sidebar-dark nav a.active,
+        .sidebar-dark nav a:hover {
+            background-color: #34495e;
+        }
+
+.main-content {
+    margin-left: 250px;
+    min-height: 100vh;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.titulo-dashboard {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.admin-container {
+    max-width: 95vw;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.leyenda {
+    display: none;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.formulario-ticket {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.buscador-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+    .buscador-container input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .buscador-container .btn {
+        padding: 10px 20px;
+        font-size: 14px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+.formulario-ticket-grid {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.columna-form {
+    flex: 1 1 45%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+    .columna-form input,
+    .columna-form select,
+    .columna-form textarea {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+        width: 100%;
+        resize: vertical;
+    }
+
+.botones-tickets {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+/* Tabla tickets visible y acciones fijas a la derecha */
+.table-wrap--viewport{ max-height: calc(100vh - 260px); overflow:auto; padding-right:12px }
+#tablaTickets{ table-layout: fixed; width: 100%; border-collapse: collapse; }
+#tablaTickets th, #tablaTickets td{ white-space: nowrap; overflow:hidden; text-overflow: ellipsis }
+#tablaTickets thead th:last-child{ position: sticky; right: 0; background:#2c3e50; color:#fff; z-index:2 }
+#tablaTickets tbody td:last-child{ position: sticky; right: 0; background:#fff; z-index:1; box-shadow: -6px 0 6px -6px rgba(0,0,0,.15) }
+
+.btn {
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+    .btn.azul {
+        background-color: #2980b9;
+        color: white;
+    }
+
+    .btn.naranja {
+        background-color: goldenrod;
+        color: white;
+    }
+
+    .btn.gris {
+        background-color: #7f8c8d;
+        color: white;
+    }
+
+    .btn.rojo {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-contenido {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    position: relative;
+    text-align: center;
+}
+
+    .modal-contenido h3 {
+        margin-top: 0;
+        font-size: 20px;
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+.cerrar {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+}
+
+    .cerrar:hover {
+        color: #333;
+    }

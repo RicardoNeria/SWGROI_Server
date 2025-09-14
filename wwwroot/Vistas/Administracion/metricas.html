@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Métricas de Desempeño</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/Styles/estilo_general.css"><link rel="stylesheet" href="/Styles/modulo_layout.css">
+    <link rel="stylesheet" href="/Styles/reportes_estilo.css">
+    <script src="/Scripts/seguridad.js" defer></script>
+</head>
+<body class="dashboard">
+    <aside class="sidebar-dark">
+        <h1 class="logo">SWGROI</h1>
+        <nav>
+            <a href="/menu.html">Menú principal</a>
+            <a href="/metricas.html" class="active">Métricas</a>
+            <a href="/logout">Cerrar sesión</a>
+        </nav>
+    </aside>
+
+    <header class="topbar">
+        <button class="toggle-sidebar" aria-label="Abrir/Cerrar menú" onclick="document.body.classList.toggle('sidebar-collapsed')">☰</button>
+        <div class="breadcrumbs"><a href="/menu.html">Inicio</a><span>/</span><strong>Métricas</strong></div>
+    </header>
+
+    <main class="main-content">
+    <div class="admin-container">
+        <h2 class="titulo-dashboard">Métricas de Desempeño y Resolución</h2>
+
+        <div class="contenedor-metricas">
+        <h2>Tiempos Promedio de Resolución por Estado</h2>
+        <table id="tablaTiempos">
+            <thead>
+                <tr>
+                    <th>Estado</th>
+                    <th>Promedio de Tiempo (horas)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <h2>Tickets Atendidos por Técnico</h2>
+        <table id="tablaTecnicos">
+            <thead>
+                <tr>
+                    <th>Técnico</th>
+                    <th>Total de Tickets Cerrados</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+    </div>
+    </main>
+
+    <script src="/Scripts/metricas.js"></script>
+</body>
+</html>

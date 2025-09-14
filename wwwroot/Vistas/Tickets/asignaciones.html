@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Asignación de Técnicos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/Styles/estilo_general.css"><link rel="stylesheet" href="/Styles/modulo_layout.css">
+    <link rel="stylesheet" href="/Styles/asignaciones_estilo.css">
+    <script src="/Scripts/seguridad.js" defer></script>
+</head>
+<body class="dashboard">
+    <aside class="sidebar-dark">
+        <h1 class="logo">SWGROI</h1>
+        <nav>
+            <a href="/menu.html">Menú principal</a>
+            <a href="/asignaciones.html" class="active">Asignaciones</a>
+            <a href="/logout">Cerrar sesión</a>
+        </nav>
+    </aside>
+
+    <header class="topbar">
+        <button class="toggle-sidebar" aria-label="Abrir/Cerrar menú" onclick="document.body.classList.toggle('sidebar-collapsed')">☰</button>
+        <div class="breadcrumbs"><a href="/menu.html">Inicio</a><span>/</span><strong>Asignaciones</strong></div>
+    </header>
+
+    <main class="main-content">
+    <div class="admin-container">
+        <h2 class="titulo-dashboard">Asignación de Técnicos y Fechas de Servicio</h2>
+
+        <div class="contenedor-asignacion">
+            <form id="formAsignacion" class="formulario-asignacion">
+                <select id="ticketSeleccionado" required>
+                    <option value="">Seleccionar ticket</option>
+                </select>
+
+            <select id="tecnicoAsignado" required>
+                <option value="">Seleccionar técnico</option>
+            </select>
+
+            <input type="date" id="fechaServicio" required>
+            <input type="time" id="horaServicio" required>
+
+            <button type="submit">Asignar Servicio</button>
+        </form>
+
+        <div id="mensajeAsignacion"></div>
+    </div>
+
+    </div>
+    </main>
+
+    <script src="/Scripts/asignaciones.js"></script>
+</body>
+</html>

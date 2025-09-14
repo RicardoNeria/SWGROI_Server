@@ -1,0 +1,13 @@
+/* Estilos mínimos para Retroalimentación CCC (se apoya en modulo_layout.css) */
+.retro-result { margin-top:12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 13px; white-space: pre-wrap; background:#f8fafc; border:1px dashed #cbd5e1; padding:12px; border-radius:10px; }
+.retro-result strong{ color:#111827 }
+.enc-card { max-width: 760px; margin: 24px auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px; box-shadow: var(--shadow); }
+.enc-card h2{ margin:0 0 6px; font-size:20px; color:#1f2937 }
+.enc-card p#leyenda{ margin: 4px 0 12px; color:#475467 }
+.enc-pregunta { margin:12px 0; }
+.enc-opciones { display:flex; gap:10px; flex-wrap:wrap; }
+.enc-opciones input{ display:none }
+.enc-opciones label { border:1px solid #cbd5e1; padding:6px 10px; border-radius: 16px; cursor:pointer; user-select:none; }
+.enc-opciones input:checked + label{ background:#e0e7ff; border-color:#94a3b8 }
+.enc-cta { margin-top: 16px; display: flex; gap:8px; align-items:center; }
+.retro-leyenda{ font-size:13px; color:#344054 }

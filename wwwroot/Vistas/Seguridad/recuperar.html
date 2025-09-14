@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Recuperar Contraseña - SWGROI</title>
+    <link rel="stylesheet" href="/Styles/estilo_general.css"><link rel="stylesheet" href="/Styles/Modulos/Seguridad/recuperar_estilo.css">
+    <script src="/Scripts/seguridad.js" defer></script>
+        <script src="/Scripts/i18n.js" defer></script></head>
+<body>
+    <div class="contenedor-recuperar">
+        <div class="logo">
+            <img src="/Imagenes/CENTRALDEALARMAS1.png" alt="Logo CAMSA">
+        </div>
+        <h2 class="titulo">Restablecer Contraseña</h2>
+
+        <div id="leyenda" class="leyenda"></div>
+
+        <form id="formRecuperar" class="formulario">
+            <label for="usuario">Nombre de Usuario:</label>
+            <input type="text" name="usuario" id="usuario" required>
+
+            <label for="nuevaContrasena">Nueva Contraseña:</label>
+            <input type="password" name="nuevaContrasena" id="nuevaContrasena" required>
+
+            <button type="submit">Restablecer</button>
+        </form>
+
+        <div class="volver">
+            <a href="/login.html">← Regresar al inicio de sesión</a>
+        </div>
+    </div>
+
+    <script src="/Scripts/Modulos/Seguridad/recuperar.js"></script>
+</body>
+</html>

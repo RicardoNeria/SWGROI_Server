@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Usuarios y Roles - SWGROI</title>
+    <link rel="stylesheet" href="/Styles/estilo_general.css"><link rel="stylesheet" href="/Styles/modulo_layout.css">
+    <link rel="stylesheet" href="/Styles/Modulos/Administracion/admin_estilo.css">
+    <script src="/Scripts/seguridad.js" defer></script>
+    <script src="/Scripts/ui.js" defer></script>
+    <script src="/Scripts/i18n.js" defer></script>
+
+</head>
+<body class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar-dark">
+        <h1 class="logo">SWGROI</h1>
+        <nav>
+            <a href="menu.html">Menú principal</a>
+            <a href="admin.html" class="active">Administración</a>
+            <a href="/logout">Cerrar sesión</a>
+        </nav>
+    </aside>
+
+    <header class="topbar"><h2 class="topbar-title">Administración de Usuarios</h2></header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        <div class="admin-container">
+            <h2 class="titulo-dashboard">Administración de Usuarios</h2>
+
+            <!-- KPIs rápidos del módulo -->
+            <section class="kpis">
+                <div class="kpi">
+                    <div class="kpi-title">Usuarios</div>
+                    <div id="kpiUsuarios" class="kpi-value">0</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-title">Roles</div>
+                    <div id="kpiRoles" class="kpi-value">0</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-title">Última acción</div>
+                    <div id="kpiUltima" class="kpi-value">—</div>
+                </div>
+            </section>
+
+            <div class="barra-superior-crud">
+                <div class="acciones-filtros">
+                    <form id="formFiltro" onsubmit="return false;" class="filtro-buscador">
+                        <input type="text" id="buscador" placeholder="Buscar nombre o usuario...">
+                        <button type="button" class="btn buscar" onclick="aplicarFiltros()">Buscar</button>
+                        <button type="button" class="btn limpiar" onclick="limpiarFiltros()">Limpiar</button>
+                    </form>
+                    <select id="filtroRol" onchange="aplicarFiltros()">
+                        <option value="">-- Todos los Roles --</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="CCC">CCC</option>
+                        <option value="Mesa de Control">Mesa de Control</option>
+                        <option value="Operaciones">Operaciones</option>
+                    </select>
+                </div>
+                <div class="acciones-botones">
+                    <button class="btn azul" onclick="abrirModalUsuario()">Agregar</button>
+                    <button class="btn gris" id="btnExportar">Exportar</button>
+                </div>
+            </div>
+
+            <div id="leyenda" class="leyenda"></div>
+
+            <section class="card">
+                <div class="table-wrap table-wrap--viewport">
+                <table class="tabla-crud">
+                    <thead>
+                        <tr>
+                            <th>Acción</th>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaUsuarios">
+                        <!-- Contenido dinámico -->
+                    </tbody>
+                </table>
+                </div>
+                <div class="paginacion">
+                    <span>Páginas</span>
+                    <span class="paginacion-total">Resultados 0 a 0 de 0</span>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL FORMULARIO USUARIO -->
+    <div id="modalFormulario" class="modal-overlay fade" role="dialog" aria-labelledby="tituloFormulario" aria-modal="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="tituloFormulario">Agregar Usuario</h3>
+                <button class="cerrar" onclick="cerrarModalUsuario()" title="Cerrar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formCrearUsuario">
+                    <div class="grupo-form">
+                        <label for="nombre">Nombre Completo:</label>
+                        <input type="text" id="nombre" name="NombreCompleto" required>
+                        <small class="error-msg" id="errNombre" style="display:none;color:#D92D20">El nombre es obligatorio</small>
+                        <label for="usuario">Usuario:</label>
+                        <input type="text" id="usuario" name="Usuario" required>
+                        <small class="error-msg" id="errUsuario" style="display:none;color:#D92D20">El usuario es obligatorio</small>
+                        <label for="contrasena">Contraseña:</label>
+                        <input type="password" id="contrasena" name="Contrasena" minlength="8" required placeholder="Mínimo 8 caracteres">
+                        <small class="error-msg" id="errPass" style="display:none;color:#D92D20">Debe incluir mayúscula, minúscula, número y símbolo</small>
+                        <label for="rol">Rol:</label>
+                        <select id="rol" name="Rol" required></select>
+                        <small class="error-msg" id="errRol" style="display:none;color:#D92D20">Selecciona un rol</small>
+                    </div>
+                    <div id="alertaModal" class="alert" style="display:none; margin:8px 0; font-size:13px;"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn gris" id="btnCancelarModal" onclick="cerrarModalUsuario()">Cancelar</button>
+                        <button type="submit" class="btn primario" id="guardarBtn">Guardar</button>
+                        <button type="button" class="btn amarillo hidden" id="actualizarBtn">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- MODAL VER DETALLE USUARIO -->
+    <div id="modalUsuario" class="modal" role="dialog" aria-labelledby="detalleUsuario" aria-modal="true">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h3 id="detalleUsuario">Detalle del Usuario</h3>
+                <button class="cerrar" onclick="cerrarModal()" title="Cerrar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>ID:</strong> <span id="verId"></span></p>
+                <p><strong>Nombre Completo:</strong> <span id="verNombre"></span></p>
+                <p><strong>Usuario:</strong> <span id="verUsuario"></span></p>
+                <p><strong>Rol:</strong> <span id="verRol"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      // Pinta el chip con el nombre/rol y demo KPIs (puedes reemplazar con datos reales)
+      (function(){
+        function getCookie(name){ const m=document.cookie.match(new RegExp('(?:^|; )'+name.replace(/([.$?*|{}()\[\]\\\/\+^])/g,'\\$1')+'=([^;]*)')); return m?decodeURIComponent(m[1]):null; }
+        const usuario = getCookie('nombre') || getCookie('usuario') || 'Usuario';
+        const rol = getCookie('rol') || '';
+        const chip = document.getElementById('chipUsuario');
+        if(chip){ chip.textContent = (rol? (rol+': '):'') + usuario; }
+
+        // Si ya hay datos cargados, estos setters no afectarán; se pueden reemplazar en la carga real
+        try{
+          const filas = document.getElementById('tablaUsuarios')?.rows?.length || 0;
+          document.getElementById('kpiUsuarios').textContent = filas;
+          // Conteo de roles aproximado a partir de select
+          const roles = Array.from(document.querySelectorAll('#tablaUsuarios tr td:nth-child(5)')).map(td=>td.textContent.trim()).filter(Boolean);
+          document.getElementById('kpiRoles').textContent = new Set(roles).size || 4;
+          document.getElementById('kpiUltima').textContent = new Date().toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit'})
+        }catch{}
+      })();
+    </script>
+    <!-- JS -->
+    <script src="/Scripts/ui.js"></script>
+    <script src="/Scripts/Modulos/Administracion/admin.js"></script>
+    
+    <script>
+        function getCookie(nombre) {
+            const valor = `; ${document.cookie}`;
+            const partes = valor.split(`; ${nombre}=`);
+            if (partes.length === 2) {
+                const raw = partes.pop().split(';').shift();
+                try { return decodeURIComponent(raw); } catch { return raw; }
+            }
+            return "";
+        }
+        const rol = getCookie("rol");
+        if (rol !== "Administrador") {
+            window.location.href = "/menu.html?msg=acceso-denegado";
+        }
+    </script>
+</body>
+</html>

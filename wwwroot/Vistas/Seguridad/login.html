@@ -1,0 +1,40 @@
+<!-- login.html con estilos separados y adaptado -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión - SWGROI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/Styles/estilo_general.css"><link rel="stylesheet" href="/Styles/Modulos/Seguridad/login_estilo.css">
+    </head>
+<body class="body-login">
+    <div class="contenedor-login">
+        <div class="login-card">
+            <img src="/Imagenes/CENTRALDEALARMAS.jpg" alt="Logo Central de Alarmas" class="logo-login">
+            <h2>Inicio de Sesión</h2>
+
+            <form id="formLogin" class="form-login">
+                <label for="usuario">Usuario:</label>
+                <input type="text" id="usuario" required minlength="3" maxlength="100">
+
+                <label for="contrasena">Contraseña:</label>
+                <input type="password" id="contrasena" required minlength="6" maxlength="100">
+
+                <div class="captcha-container">
+                    <span id="captchaPregunta"></span>
+                    <img src="/Imagenes/RECAPTCHA.png" alt="Captcha Icono">
+                </div>
+                <input type="text" id="respuestaCaptcha" placeholder="Tu respuesta" required>
+
+                <button type="submit">Iniciar Sesión</button>
+            </form>
+
+            <a href="/recuperar.html" class="link-recuperar">¿Olvidaste tu contraseña?</a>
+            <div id="mensajeLogin" aria-live="polite"></div>
+        </div>
+    </div>
+
+    <script src="/Scripts/ui.js"></script>
+    <script src="/Scripts/Modulos/Seguridad/login.js"></script>
+</body>
+</html>

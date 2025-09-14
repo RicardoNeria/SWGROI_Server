@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Reporte de Ventas y Comisiones</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="/Scripts/seguridad.js" defer></script>
+    <style>
+        :root {
+            --ink: #0f172a;
+            --muted: #6b7280;
+            --line: #e5e7eb;
+            --bg: #f8fafc;
+            --chip: #f3f4f6;
+            --brand: #2563eb;
+            --ok: #16a34a
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html, body {
+            height: 100%
+        }
+
+        body {
+            font-family: Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+            margin: 0;
+            background: #fff;
+            color: var(--ink)
+        }
+
+        .wrap {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 18px 20px 28px
+        }
+
+        /* Encabezado centrado y logo más grande */
+        .header {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .header-left {
+            grid-column: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .top-meta {
+            grid-column: 3;
+            justify-self: end;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .logo {
+            height: 56px
+        }
+
+        @media print {
+            .logo {
+                height: 32px
+            }
+        }
+
+        .pill {
+            background: #f3f4f6;
+            border: 1px solid var(--line);
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            color: #111827
+        }
+
+        .acciones {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0 14px
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            box-shadow: 0 1px 0 rgba(0,0,0,.05)
+        }
+
+            .btn.gray {
+                background: #f3f4f6;
+                color: #111827
+            }
+
+            .btn.dark {
+                background: #111827;
+                color: #fff
+            }
+
+            .btn.blue {
+                background: #1d4ed8;
+                color: #fff
+            }
+
+            .btn.toggle.active {
+                box-shadow: inset 0 0 0 2px #1d4ed8;
+                background: #eef2ff
+            }
+
+        .table-wrap {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: auto;
+            background: #fff
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 980px;
+            table-layout: auto
+        }
+
+        thead th {
+            background: #0f172a;
+            color: #fff;
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 13px;
+            position: sticky;
+            top: 0
+        }
+
+        tbody td, tfoot td {
+            border-top: 1px solid #eee;
+            padding: 10px 12px;
+            vertical-align: top;
+            font-size: 13px
+        }
+
+        .num {
+            text-align: right;
+            white-space: nowrap
+        }
+
+        .nowrap {
+            white-space: nowrap
+        }
+
+        .row-cancelado {
+            opacity: .7
+        }
+
+            .row-cancelado td {
+                text-decoration: line-through
+            }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700
+        }
+
+        .badge-cancel {
+            background: #fee2e2;
+            color: #991b1b
+        }
+
+        tfoot td {
+            font-weight: 800;
+            background: #f8fafc
+        }
+
+        /* Resumen debajo de la tabla */
+        .resumenBar {
+            display: none;
+            margin-top: 10px;
+            border: 1px solid var(--line);
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 8px;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .chip {
+            background: var(--chip);
+            border: 1px solid var(--line);
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 12px
+        }
+
+            .chip.brand {
+                background: #eef2ff;
+                color: #1e3a8a;
+                border-color: #c7d2fe
+            }
+
+        .divider {
+            width: 1px;
+            height: 22px;
+            background: var(--line);
+            margin: 0 8px
+        }
+
+        /* PRINT */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 10mm
+            }
+
+            .acciones, .modal-overlay {
+                display: none !important
+            }
+
+            thead th {
+                position: static !important
+            }
+
+            .wrap {
+                max-width: none;
+                padding: 0 6mm
+            }
+
+            .table-wrap {
+                overflow: visible;
+                border: none
+            }
+
+            th, td {
+                padding: 6px 8px;
+                font-size: 10.5px
+            }
+
+            .title {
+                font-size: 18px
+            }
+
+            .resumenBar {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-top: 8px
+            }
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 9999
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,.25);
+            overflow: hidden
+        }
+
+            .modal header {
+                padding: 12px 16px;
+                background: #0f172a;
+                color: #fff;
+                font-weight: 800
+            }
+
+            .modal .body {
+                padding: 16px;
+                color: #111827;
+                line-height: 1.45
+            }
+
+            .modal .foot {
+                padding: 12px 16px;
+                display: flex;
+                gap: 8px;
+                justify-content: flex-end;
+                background: #f9fafb
+            }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="header">
+            <div class="header-left">
+                <img class="logo" src="/Imagenes/central_alarmas.png" alt="Central de Alarmas">
+                <h1 class="title">Reporte de Ventas y Comisiones</h1>
+            </div>
+            <div class="top-meta">
+                <span>Generado:</span><span id="fechaCorte" class="pill">—</span>
+                <span>Usuario:</span><span id="usuarioCorte" class="pill">—</span>
+            </div>
+        </div>
+
+        <div class="acciones">
+            <button id="btnRep" class="btn gray toggle">📄 Reporte</button>
+            <button id="btnRepFull" class="btn gray toggle">📋 Reporte completo</button>
+            <button id="btnPrint" class="btn dark">🖨 Imprimir / Exportar PDF</button>
+            <button id="btnCsv" class="btn gray">⬇ Exportar CSV</button>
+            <button id="btnXls" class="btn gray">⬇ Exportar Excel</button>
+            <button id="btnSend" class="btn blue">📤 Enviar a Administración</button>
+        </div>
+
+        <div class="table-wrap">
+            <table id="tablaReporte">
+                <thead><tr id="theadRow"></tr></thead>
+                <tbody id="tbodyRows"></tbody>
+                <tfoot>
+                    <tr id="tfootRow">
+                        <td class="nowrap" colspan="2"><strong>Totales</strong></td>
+                        <td id="tMonto" class="num">$ 0.00</td>
+                        <td id="tIva" class="num">$ 0.00</td>
+                        <td id="tComIva" class="num">$ 0.00</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Resumen debajo de la tabla -->
+        <div id="resumenBar" class="resumenBar">
+            <span class="chip" id="rReg">Registros: 0</span>
+            <span class="chip" id="rMonto">Σ Monto: $ 0.00</span>
+            <span class="chip" id="rIva">Σ c/IVA: $ 0.00</span>
+            <span class="chip" id="rIvaCom">Σ c/IVA+Com.: $ 0.00</span>
+            <span class="chip brand" id="rComSI">Σ Comisión s/IVA: $ 0.00</span>
+            <span class="divider"></span>
+            <span id="rDivisor" class="chip">÷ 1</span>
+            <span id="rPorPersona" class="chip">= $ 0.00 por cada uno</span>
+        </div>
+    </div>
+
+    <!-- Modal enviar -->
+    <div id="modalConfirm" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+        <div class="modal">
+            <header id="mTitle">Confirmar envío</header>
+            <div class="body">
+                <p><strong>Se enviará este reporte a Administración</strong> y se abrirá el submódulo <em>Cotizaciones</em> con los filtros correspondientes (OVSR3 y Folios del reporte). Los <u>estados no se modificarán</u>.</p>
+                <p style="margin-top:10px">¿Deseas continuar?</p>
+            </div>
+            <div class="foot">
+                <button class="btn gray" type="button" onclick="cerrarModal()">Cancelar</button>
+                <button id="btnConfirmEnviar" class="btn blue" type="button">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Utilidades
+        const fmtN = n => Number(n || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        const ISOd = v => { if (!v) return ''; try { const d = new Date(v); if (!isNaN(d)) return d.toISOString().slice(0, 10); } catch { } return String(v).slice(0, 10); };
+        const getUser = () => { const c = document.cookie.split('; ').find(x => x.startsWith('usuario=')); return c ? decodeURIComponent(c.split('=')[1]) : '—'; };
+
+        // Parámetros
+        const QP = new URLSearchParams(location.search);
+        let MODE_FULL = QP.get('full') === '1';
+        const AUTOPRINT = QP.get('autoprint') === '1';
+
+        // MISMO divisor que en Ventas con fallback al formulario abierto (misma ORIGEN)
+        function resolveDivisor() {
+            const fromQS = Number(QP.get('div'));
+            if (Number.isFinite(fromQS) && fromQS > 0) return Math.floor(fromQS);
+            try {
+                const v = Number(window.opener?.document?.getElementById('divisorCom')?.value);
+                if (Number.isFinite(v) && v > 0) return Math.floor(v);
+            } catch { }
+            return 1;
+        }
+        const DIV = resolveDivisor();
+
+        // muestra el divisor de inmediato (antes de que carguen los datos)
+        document.addEventListener('DOMContentLoaded', () => {
+            const chip = document.getElementById('rDivisor');
+            if (chip) chip.textContent = '÷ ' + DIV;
+        });
+
+
+        // Columnas
+        const COLS_BASE = [
+            { k: 'OVSR3', th: 'OVSR3', td: v => esc(v.OVSR3) },
+            { k: 'Folio', th: 'Folio', td: v => esc(v.Folio) },
+            { k: 'Monto', th: 'Monto', td: v => '$ ' + fmtN(v.Monto), cls: 'num' },
+            { k: 'IVA', th: 'Total c/IVA', td: v => '$ ' + fmtN((v.Monto || 0) * 1.16), cls: 'num' },
+            { k: 'COMIVA', th: 'Total c/Comisión (c/IVA)', td: v => '$ ' + fmtN((v.Monto || 0) * 1.16 * 1.03), cls: 'num' },
+            { k: 'FechaAtencion', th: 'Fecha Atención', td: v => esc(ISOd(v.FechaAtencion)) },
+            { k: 'Cuenta', th: 'Cuenta', td: v => esc(v.Cuenta || '') },
+            { k: 'RazonSocial', th: 'Razón Social', td: v => esc(v.RazonSocial || '') },
+            { k: 'AgenteResponsable', th: 'Agente', td: v => esc(v.AgenteResponsable || '') },
+            { k: 'Estado', th: 'Estado', td: v => esc(v.Estado || '') + ((v.StatusPago || '').toLowerCase() === 'cancelado' ? ' <span class="badge badge-cancel">CANCELADO</span>' : '') },
+            { k: 'Descripcion', th: 'Descripción', td: v => esc(v.Descripcion || '') }
+        ];
+        const COLS_EXTRA = [
+            { k: 'ComentariosCotizacion', th: 'Comentarios', td: v => esc(v.ComentariosCotizacion || '') },
+            { k: 'StatusPago', th: 'StatusPago', td: v => esc(v.StatusPago || '') },
+            { k: 'FechaCancelacion', th: 'Fecha Cancel.', td: v => esc(ISOd(v.FechaCancelacion)) },
+            { k: 'MotivoCancelacion', th: 'Motivo Cancel.', td: v => esc(v.MotivoCancelacion || '') },
+            { k: 'UsuarioCancelacion', th: 'Usuario Cancel.', td: v => esc(v.UsuarioCancelacion || '') }
+        ];
+        const getCols = () => MODE_FULL ? COLS_BASE.concat(COLS_EXTRA) : COLS_BASE;
+
+        let LIST_CACHE = [];
+
+        // Encabezado
+        function renderHead() {
+            const cols = getCols();
+            const tr = document.getElementById('theadRow');
+            tr.innerHTML = '';
+            cols.forEach(c => {
+                const th = document.createElement('th');
+                th.textContent = c.th;
+                if (c.th.startsWith('Total')) th.classList.add('nowrap');
+                tr.appendChild(th);
+            });
+            // "Totales" justo antes de Monto
+            const iMonto = Math.max(0, cols.findIndex(c => c.k === 'Monto'));
+            document.getElementById('tfootRow').children[0].colSpan = Math.max(1, iMonto);
+        }
+
+        // Tabla + resumen
+        function renderTable(list) {
+            const cols = getCols();
+            const tb = document.getElementById('tbodyRows');
+            tb.innerHTML = '';
+
+            let sumMonto = 0, sumIva = 0, sumComIva = 0;
+
+            list.forEach(v => {
+                const tr = document.createElement('tr');
+                if ((v.StatusPago || '').toLowerCase() === 'cancelado') tr.className = 'row-cancelado';
+
+                cols.forEach(c => {
+                    const td = document.createElement('td');
+                    td.innerHTML = c.td(v) || '';
+                    if (c.cls) td.classList.add(c.cls);
+                    tr.appendChild(td);
+                });
+
+                const iva = (v.Monto || 0) * 1.16;
+                sumMonto += (v.Monto || 0);
+                sumIva += iva;
+                sumComIva += iva * 1.03;
+
+                tb.appendChild(tr);
+            });
+
+            // Totales alineados a sus columnas
+            document.getElementById('tMonto').textContent = '$ ' + fmtN(sumMonto);
+            document.getElementById('tIva').textContent = '$ ' + fmtN(sumIva);
+            document.getElementById('tComIva').textContent = '$ ' + fmtN(sumComIva);
+
+            // Resumen inferior
+            document.getElementById('rReg').textContent = 'Registros: ' + (list.length || 0);
+            document.getElementById('rMonto').textContent = 'Σ Monto: $ ' + fmtN(sumMonto);
+            document.getElementById('rIva').textContent = 'Σ c/IVA: $ ' + fmtN(sumIva);
+            document.getElementById('rIvaCom').textContent = 'Σ c/IVA+Com.: $ ' + fmtN(sumIva * 1.03);
+            const comSI = sumIva * 0.03;
+            document.getElementById('rComSI').textContent = 'Σ Comisión s/IVA: $ ' + fmtN(comSI);
+            document.getElementById('rDivisor').textContent = '÷ ' + DIV;                    // mismo divisor que llega de Ventas
+            document.getElementById('rPorPersona').textContent = '= $ ' + fmtN(comSI / DIV) + ' por cada uno';
+            document.getElementById('resumenBar').style.display = 'flex';
+        }
+
+        // Cargar datos
+        function loadData() {
+            document.getElementById('usuarioCorte').textContent = getUser();
+            document.getElementById('fechaCorte').textContent = new Date().toLocaleString('es-MX');
+
+            const qp = new URLSearchParams({ page: '1', pageSize: '10000' });
+            fetch('/ventas/listar?' + qp.toString())
+                .then(r => r.json())
+                .then(resp => {
+                    LIST_CACHE = Array.isArray(resp.items) ? resp.items : (Array.isArray(resp) ? resp : []);
+                    setMode(MODE_FULL);
+                    if (AUTOPRINT) setTimeout(() => window.print(), 250);
+                })
+                .catch(() => { LIST_CACHE = []; renderHead(); renderTable([]); });
+        }
+
+        // Cambiar modo sin recargar
+        function setMode(full) {
+            MODE_FULL = !!full;
+            document.getElementById('btnRep').classList.toggle('active', !MODE_FULL);
+            document.getElementById('btnRepFull').classList.toggle('active', MODE_FULL);
+            renderHead();
+            renderTable(LIST_CACHE);
+        }
+
+        // Botones
+        document.getElementById('btnRep').onclick = () => setMode(false);
+        document.getElementById('btnRepFull').onclick = () => setMode(true);
+        document.getElementById('btnPrint').onclick = () => window.print();
+        document.getElementById('btnCsv').onclick = () => {
+            const url = new URL('/ventas/exportar-excel', location.origin);
+            if (MODE_FULL) url.searchParams.set('full','1');
+            window.open(url.toString(), '_blank');
+        };
+        document.getElementById('btnXls').onclick = () => {
+            const url = new URL('/ventas/exportar-excel', location.origin);
+            if (MODE_FULL) url.searchParams.set('full','1');
+            url.searchParams.set('format','xls');
+            window.open(url.toString(), '_blank');
+        };
+
+        // Modal Enviar
+        function abrirModalEnviar() {
+            const m = document.getElementById('modalConfirm');
+            const btn = document.getElementById('btnConfirmEnviar');
+            const fresh = btn.cloneNode(true);
+            btn.parentNode.replaceChild(fresh, btn);
+            fresh.addEventListener('click', confirmarEnvio);
+            m.style.display = 'flex';
+        }
+        function cerrarModal() { document.getElementById('modalConfirm').style.display = 'none'; }
+        function confirmarEnvio() {
+            fetch('/ventas/enviar-reporte', { method: 'POST' }).catch(() => { }).finally(() => { cerrarModal(); window.focus(); });
+        }
+        document.getElementById('btnSend').onclick = abrirModalEnviar;
+
+        // Init
+        loadData();
+    </script>
+</body>
+</html>

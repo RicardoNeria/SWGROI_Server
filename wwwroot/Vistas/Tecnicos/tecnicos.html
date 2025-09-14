@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Seguimiento Técnico - Tickets</title>
+    <link rel="stylesheet" href="/Styles/estilo_general.css">
+    <link rel="stylesheet" href="/Styles/modulo_layout.css">
+    <link rel="stylesheet" href="/Styles/Modulos/Tecnicos/tecnicos_estilo.css">
+    <script src="/Scripts/seguridad.js" defer></script>
+    <script src="/Scripts/i18n.js" defer></script>
+    </head>
+<body class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar-dark">
+        <h1 class="logo">SWGROI</h1>
+        <nav>
+            <a href="menu.html">Menú principal</a>
+            <a href="tecnicos.html" class="active">Tickets</a>
+            <a href="/logout">Cerrar sesión</a>
+        </nav>
+    </aside>
+
+    <header class="topbar">
+        <button class="toggle-sidebar" aria-label="Abrir/Cerrar menú" onclick="(function(b){b.classList.toggle('sidebar-collapsed'); b.classList.toggle('sidebar-open');})(document.body)">☰</button>
+        <div class="breadcrumbs"><a href="/menu.html">Inicio</a><span>/</span><strong>Técnicos</strong></div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        <div class="admin-container">
+            <h2 class="titulo-dashboard">Actualización de Estado de Tickets</h2>
+
+            <!-- LEYENDA -->
+            <div id="leyenda" class="leyenda" style="display:none;"></div>
+
+            <div class="seguimiento-grid">
+                <!-- FORMULARIO DE SEGUIMIENTO -->
+                <section class="panel-seguimiento">
+                    <form id="formSeguimiento">
+                        <div class="campo">
+                            <p><strong>Folio:</strong> <span id="folioVisual">-</span></p>
+                            <textarea id="comentarioTecnico" name="comentarioTecnico" rows="4" required></textarea>
+                        </div>
+
+                        <div class="campo">
+                            <label for="nuevoEstado">Nuevo Estado:</label>
+                            <select id="nuevoEstado" name="nuevoEstado" required>
+                                <option value="">-- Selecciona estado --</option>
+                                <option value="Almacén">Almacén</option>
+                                <option value="Capturado">Capturado</option>
+                                <option value="Programado/Asignado">Programado/Asignado</option>
+                                <option value="Abierto">Abierto</option>
+                                <option value="En Proceso">En Proceso</option>
+                                <option value="Cerrado">Cerrado</option>
+                            </select>
+                        </div>
+
+                        <div class="acciones-botones-ticket">
+                            <button type="submit" class="btn verde">Actualizar Estado</button>
+                            <button type="button" class="btn amarillo" id="btnActualizarTabla">Actualizar Tickets</button>
+                            <button type="button" class="btn rojo" id="btnLimpiar">Limpiar</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- TABLA DE TICKETS Y FILTROS -->
+                <section class="tabla-seguimiento">
+                    <h3>Tickets Registrados</h3>
+
+                    <div class="barra-filtros">
+                        <input type="text" id="buscadorFolio" placeholder="Buscar por folio...">
+                        <select id="buscadorEstado">
+                            <option value="">-- Estado --</option>
+                            <option value="Almacén">Almacén</option>
+                            <option value="Capturado">Capturado</option>
+                            <option value="Programado/Asignado">Programado/Asignado</option>
+                            <option value="Abierto">Abierto</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Cerrado">Cerrado</option>
+                        </select>
+                        <input type="text" id="buscadorResponsable" placeholder="Responsable...">
+                        <button class="btn azul" id="btnBuscarTickets">Buscar</button>
+                    </div>
+
+                    <table id="tablaTickets" class="tabla-crud">
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Responsable</th>
+                                <th>Comentario Técnico</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="/Scripts/Modulos/Tecnicos/tecnicos.js"></script>
+    <script src="/Scripts/seguridad.js"></script>
+
+</body>
+</html>

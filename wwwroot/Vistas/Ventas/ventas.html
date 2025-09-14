@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ventas (Cotizaciones Aceptadas) - SWGROI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/Styles/estilo_general.css" />
+    <link rel="stylesheet" href="/Styles/modulo_layout.css" />
+    <link rel="stylesheet" href="/Styles/Modulos/Ventas/ventas_estilo.css" />
+    <script src="/Scripts/seguridad.js" defer></script>
+    <script src="/Scripts/i18n.js" defer></script>
+</head>
+<body class="dashboard">
+    <aside class="sidebar-dark" id="sidebar">
+        <h1 class="logo">SWGROI</h1>
+        <nav>
+            <a href="menu.html">Menú principal</a>
+            <a href="tickets.html">Gestión de Tickets</a>
+            <a href="ventas.html" class="active">Ventas (Cotizaciones)</a>
+            <a href="/logout">Cerrar sesión</a>
+        </nav>
+    </aside>
+
+    <header class="topbar">
+        <button id="btnToggleSidebar" class="icon-btn" aria-label="Abrir menú" onclick="(function(b){b.classList.toggle('sidebar-collapsed'); b.classList.toggle('sidebar-open');})(document.body)">☰</button>
+        <h2 class="topbar-title">Ventas · Cotizaciones Aceptadas</h2>
+    </header>
+
+    <main class="main-content">
+        <div class="admin-container">
+            <h2 class="titulo-dashboard hide-on-mobile">Ventas · Cotizaciones Aceptadas</h2>
+            <div id="leyenda" class="leyenda" style="display:none"></div>
+
+            <section class="tabla-seguimiento">
+                <div class="barra-filtros">
+                    <input type="text" id="filtroFolio" placeholder="Buscar por folio…" />
+                    <select id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="ENVIADO">ENVIADO</option>
+                        <option value="DECLINADA">DECLINADA</option>
+                        <option value="ALMACEN">ALMACEN</option>
+                        <option value="OPERACIONES">OPERACIONES</option>
+                        <option value="COBRANZA">COBRANZA</option>
+                        <option value="FACTURACION">FACTURACION</option>
+                        <option value="FINALIZADO">FINALIZADO</option>
+                    </select>
+                    <input type="text" id="filtroOvsr3" placeholder="Buscar por OVSR3…" />
+                    <input type="number" id="filtroTotalComisionMin" step="0.01" placeholder="Total c/Comisión mín." />
+                    <input type="number" id="filtroTotalComisionMax" step="0.01" placeholder="Total c/Comisión máx." />
+                    <button id="btnBuscar" class="btn azul" type="button">Buscar</button>
+                    <button id="btnCargarVentas" class="btn verde" type="button">Actualizar</button>
+                    <button id="btnLimpiar" class="btn amarillo" type="button">Limpiar</button>
+                    <!-- Reportes (se construye la URL con el divisor actual) -->
+                    <a id="lnkReportes" class="btn azul" href="/ventas/reporte?format=html" target="_blank">Reportes</a>
+                    <button id="btnExportar" class="btn azul" type="button">CSV resumido</button>
+                    <button id="btnExportarFull" class="btn azul" type="button">CSV completo</button>
+
+                    <button id="btnAbrirModalVenta" class="btn primario" type="button">+ Nueva venta</button>
+                </div>
+
+                <!-- Métrica de Estados -->
+                <section id="metricasEstados" style="margin:10px 0 12px; display:none;">
+                    <div class="resumen">
+                        <span style="font-weight:700;">Métrica de Estados</span>
+                        <span>
+                            Estado:
+                            <select id="metEstado">
+                                <option value="">Todos</option>
+                                <option>ENVIADO</option>
+                                <option>DECLINADA</option>
+                                <option>ALMACEN</option>
+                                <option>OPERACIONES</option>
+                                <option>COBRANZA</option>
+                                <option>FACTURACION</option>
+                                <option>FINALIZADO</option>
+                            </select>
+                        </span>
+                        <span>
+                            Mes:
+                            <select id="metMes">
+                                <option value="">Todos</option>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                        </span>
+                        <span id="metSuma" class="chip brand">Σ Monto s/IVA: $ 0.00</span>
+                    </div>
+                    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px; padding:12px; margin-top:8px;">
+                        <canvas id="metChart" height="120" aria-label="Gráfica de métricas" role="img"></canvas>
+                    </div>
+                </section>
+
+                <div class="table-wrap table-wrap--viewport">
+                    <table class="tabla-crud" id="tablaVentas">
+                        <thead>
+                            <tr>
+                                <th data-sort="OVSR3">OVSR3</th>
+                                <th data-sort="Folio">Folio</th>
+                                <th data-sort="Monto">Monto</th>
+                                <th>Total c/IVA</th>
+                                <th>Total c/Comisión (c/IVA)</th>
+                                <th data-sort="FechaAtencion">Fecha Atención</th>
+                                <th data-sort="Cuenta">Cuenta</th>
+                                <th data-sort="RazonSocial">Razón Social</th>
+                                <th>Agente</th>
+                                <th data-sort="Estado">Estado</th>
+                                <th>Descripción</th>
+                                <th>Comentarios</th>
+                                <th>StatusPago</th>
+                                <th>Fecha Cancel.</th>
+                                <th>Motivo Cancel.</th>
+                                <th>Usuario Cancel.</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div id="tablaLoader" class="loader" style="display:none">Cargando…</div>
+
+                <div class="paginacion">
+                    <span id="lblPaginacion"></span>
+                    <div class="paginacion-controles">
+                        <button id="btnPrev" class="btn" type="button">Prev</button>
+                        <button id="btnNext" class="btn" type="button">Next</button>
+                    </div>
+                </div>
+
+                <!-- Resumen de totales -->
+                <div id="resumenTotales" class="resumen" style="display:none">
+                    <span id="resTotalReg">Registros: 0</span>
+                    <span id="resMonto">Σ Monto: $ 0.00</span>
+                    <span id="resTotalIva">Σ c/IVA: $ 0.00</span>
+                    <span id="resTotalIvaCom">Σ c/IVA+Com.: $ 0.00</span>
+                    <span id="resComSinIva">Σ Comisión s/IVA: $ 0.00</span>
+                    <div class="res-divisor">
+                        <label for="divisorCom">÷</label>
+                        <input id="divisorCom" type="number" min="1" step="1" value="1" />
+                        <span id="resComPorPersona">= $ 0.00 por cada uno</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- FAB móvil -->
+    <button id="fabNuevaVenta" class="fab" title="Nueva venta" aria-label="Nueva venta">＋</button>
+
+    <!-- Modal: Registro/Consulta de venta -->
+    <div id="modalVenta" class="modal-overlay" style="display:none;">
+        <div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="mv-title">
+            <div class="modal-header">
+                <h3 id="mv-title">Registrar / Consultar venta</h3>
+                <button class="modal-close" id="mv-close" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="modal-body modal-body--scroll">
+                <div id="mv-msg" class="leyenda" style="display:none"></div>
+
+                <div class="form-grid">
+                    <div class="campo">
+                        <label for="folioTicket">Folio del Ticket</label>
+                        <div class="inline">
+                            <input type="text" id="folioTicket" placeholder="Ej. TCK-2025-00001" />
+                            <button id="btnConsultar" class="btn azul" type="button">Consultar</button>
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label for="monto">Monto (sin IVA)</label>
+                        <input type="number" id="monto" step="0.01" min="0" max="9999999.99" placeholder="0.00" required />
+                    </div>
+
+                    <div class="campo">
+                        <label for="estadoCotizacion">Estado</label>
+                        <select id="estadoCotizacion">
+                            <option value="ENVIADO">ENVIADO</option>
+                            <option value="DECLINADA">DECLINADA</option>
+                            <option value="ALMACEN">ALMACEN</option>
+                            <option value="OPERACIONES">OPERACIONES</option>
+                            <option value="COBRANZA">COBRANZA</option>
+                            <option value="FACTURACION">FACTURACION</option>
+                            <option value="FINALIZADO">FINALIZADO</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label>OVSR3 (Orden de venta)</label>
+                        <div class="inline">
+                            <select id="ovsr3Pref">
+                                <option value="PRE-OV">PRE-OV</option>
+                                <option value="POST-OV">POST-OV</option>
+                            </select>
+                            <input type="text" id="ovsr3Num" placeholder="7899" minlength="1" maxlength="20" />
+                        </div>
+                        <input type="hidden" id="ovsr3" />
+                    </div>
+
+                    <div class="campo">
+                        <label for="cuenta">Cuenta</label>
+                        <input type="text" id="cuenta" placeholder="ID / Código de cliente" maxlength="100" />
+                    </div>
+
+                    <div class="campo">
+                        <label for="razonSocial">Razón Social</label>
+                        <input type="text" id="razonSocial" />
+                    </div>
+
+                    <div class="campo">
+                        <label for="domicilio">Domicilio</label>
+                        <input type="text" id="domicilio" />
+                    </div>
+
+                    <div class="campo">
+                        <label for="fechaAtencion">Fecha de atención</label>
+                        <input type="date" id="fechaAtencion" />
+                    </div>
+
+                    <div class="campo">
+                        <label for="agenteResponsable">Agente responsable</label>
+                        <input type="text" id="agenteResponsable" readonly />
+                    </div>
+
+                    <div class="campo">
+                        <label for="descripcion">Descripción del Ticket</label>
+                        <textarea id="descripcion" rows="2" placeholder="Se autollenará al consultar el folio" readonly></textarea>
+                    </div>
+
+                    <div class="campo">
+                        <label for="totalIva">Total con IVA (+16%)</label>
+                        <input type="number" id="totalIva" step="0.01" readonly />
+                    </div>
+
+                    <div class="campo">
+                        <label for="comision">Total con Comisión (sobre IVA +3%)</label>
+                        <input type="number" id="comision" step="0.01" readonly />
+                    </div>
+
+                    <div class="campo">
+                        <label for="comentariosCotizacion">Comentarios de la cotización</label>
+                        <textarea id="comentariosCotizacion" rows="2" placeholder="Notas internas / detalles adicionales..."></textarea>
+                    </div>
+
+                    <div class="campo">
+                        <label for="statusPago">Pago (StatusPago)</label>
+                        <select id="statusPago">
+                            <option>Pendiente</option>
+                            <option>Promesa de pago</option>
+                            <option>Pagado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnGuardar" class="btn verde" type="button">Registrar</button>
+                <button id="btnLimpiarForm" class="btn amarillo" type="button">Limpiar</button>
+                <button class="btn" id="mv-cancel" type="button">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal confirmación -->
+    <div id="modalConfirmacion" class="modal-overlay" style="display:none;">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mc-title">
+            <div class="modal-header">
+                <h3 id="modalConfirmacionTitulo">Confirmación</h3>
+                <button class="modal-close" onclick="cerrarModalConfirmacion()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalConfirmacionMensaje">¿Estás seguro?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="btnConfirmarAccion" class="btn verde" type="button">Confirmar</button>
+                <button class="btn rojo" type="button" onclick="cerrarModalConfirmacion()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de cancelación -->
+    <div id="modalCancelacion" class="modal-overlay" style="display:none;">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mcan-title">
+            <div class="modal-header">
+                <h3 id="mcan-title">Cancelar venta</h3>
+                <button class="modal-close" onclick="cerrarModalCancelacion()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>Ingresa el motivo de cancelación para <b id="mcan-ov"></b>:</p>
+                <textarea id="mcan-motivo" rows="3" placeholder="Motivo..." style="width:100%"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button id="mcan-confirm" class="btn rojo" type="button">Cancelar venta</button>
+                <button class="btn" type="button" onclick="cerrarModalCancelacion()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/Scripts/ui.js"></script>
+    <script src="/Scripts/Modulos/Ventas/ventas.js"></script>
+</body>
+</html>
