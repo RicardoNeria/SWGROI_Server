@@ -109,11 +109,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function cargarUsuarios() {
         fetch("/admin")
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
             .then(data => {
-                usuarios = data;
-                usuariosFiltrados = data;
+                usuarios = Array.isArray(data) ? data : [];
+                usuariosFiltrados = usuarios;
                 paginaActual = 1;
+                renderizarTabla();
+                renderizarPaginacion();
+            })
+            .catch(error => {
+                console.error('Error loading users:', error);
+                mostrarLeyenda("Error al cargar usuarios.", false);
+                usuarios = [];
+                usuariosFiltrados = [];
                 renderizarTabla();
                 renderizarPaginacion();
             });
@@ -190,10 +201,17 @@ document.addEventListener("DOMContentLoaded", function () {
     window.eliminarUsuario = id => {
         if (!confirm("¿Eliminar este usuario?")) return;
         fetch(`/admin?id=${id}`, { method: "DELETE" })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
             .then(data => {
-                mostrarLeyenda(data.exito ? "Usuario eliminado." : "Error al eliminar.", data.exito);
+                mostrarLeyenda(data.exito ? "Usuario eliminado." : (data.mensaje || "Error al eliminar."), data.exito);
                 if (data.exito) cargarUsuarios();
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+                mostrarLeyenda("Error de red al eliminar usuario.", false);
             });
     };
 
@@ -257,14 +275,11 @@ document.addEventListener("DOMContentLoaded", function () {
         a.click();
     });
 
+    // Cerrar modal al hacer clic en el overlay
     window.addEventListener("click", e => {
         if (e.target === modalFormulario) cerrarModalUsuario();
         if (e.target === modalUsuario) cerrarModal();
     });
-
-    // Cerrar al hacer clic en el overlay del modal (selector semántico)
-    const overlay = document.querySelector('#modalFormulario.modal-overlay');
-    if (overlay) overlay.addEventListener('click', function (e) { if (e.target === overlay) cerrarModalUsuario(); });
 
     cargarUsuarios();
 });
