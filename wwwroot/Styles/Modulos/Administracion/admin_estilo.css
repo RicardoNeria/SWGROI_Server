@@ -113,12 +113,25 @@ body.dashboard {
     }
 
 /* Botones alineados a avisos */
-.btn { padding: 6px 10px; font-size: 12px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; line-height: 1.2; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+.btn { 
+    padding: 10px 14px; 
+    font-size: 14px; 
+    font-weight: bold; 
+    border: none; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 6px; 
+    line-height: 1.2; 
+    box-shadow: 0 1px 2px rgba(0,0,0,.06); 
+}
 .btn.azul { background: #2980b9; color: #fff; }
 .btn.rojo { background: #e74c3c; color: #fff; }
 .btn.naranja { background: #f59e0b; color: #fff; }
 .btn.gris { background: #6b7280; color: #fff; }
 .btn.primario { background: #111827; color: #fff; }
+.btn.amarillo { background: #f1c40f; color: #333; }
 .btn:hover { filter: brightness(0.95); }
 
 .btn.buscar {
@@ -147,33 +160,6 @@ body.dashboard {
     justify-content: flex-end;
     flex: 1;
 }
-
-.btn {
-    padding: 10px 14px;
-    font-size: 14px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-    .btn.azul {
-        background-color: #2980b9;
-        color: white;
-    }
-
-    .btn.gris {
-        background-color: #7f8c8d;
-        color: white;
-    }
-
-    .btn.naranja {
-        background-color: goldenrod;
-        color: white;
-    }
 
 .tabla-crud {
     width: 100%;
@@ -228,24 +214,56 @@ body.dashboard {
 
 .leyenda {
     font-size: 16px;
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
+    padding: 12px 20px;
     border-radius: 8px;
     margin-bottom: 20px;
     text-align: center;
     font-weight: bold;
     display: none;
+    border: 1px solid transparent;
 }
 
-#modalFormulario.modal { position: fixed; inset:0; background: rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; padding:16px; z-index: 5000; min-height:100vh; }
+.leyenda.exito {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.leyenda.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+#modalFormulario.modal-overlay { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,.45); 
+    display: none; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 16px; 
+    z-index: 5000; 
+    min-height: 100vh; 
+}
+
+#modalUsuario.modal { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,.45); 
+    display: none; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 16px; 
+    z-index: 5000; 
+    min-height: 100vh; 
+}
 .modal-contenido{ background:#fff; border-radius:12px; max-width:560px; width:96vw; box-shadow:0 10px 30px rgba(0,0,0,.25); position:relative; padding:0; animation: fadeIn .3s ease; }
 .modal-dialog{ margin:auto; max-width:600px; width:90% }
 .modal-content{ background:#fff; border-radius:12px; max-height:90vh; overflow-y:auto; box-shadow:0 10px 30px rgba(0,0,0,.25) }
 .modal-header{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee }
 .modal-body{ padding:16px; max-height:70vh; overflow:auto }
 .modal-footer{ padding:12px 16px; display:flex; gap:8px; justify-content:flex-end; background:#f9fafb }
-
 
     .modal-contenido h3 {
         margin-top: 0;
@@ -254,11 +272,6 @@ body.dashboard {
         margin-bottom: 20px;
         text-align: center;
     }
-
-/* Estructura de modal coherente con estilo_general */
-.modal-header{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee }
-.modal-body{ padding:16px; max-height:70vh; overflow:auto }
-.modal-footer{ padding:12px 16px; display:flex; gap:8px; justify-content:flex-end; background:#f9fafb }
 
     .modal-contenido label {
         display: block;
@@ -280,17 +293,25 @@ body.dashboard {
 /* Footer de acciones del formulario (usa estilos globales de .modal-footer) */
 
 .cerrar {
-    position: absolute;
-    top: 14px;
-    right: 18px;
+    background: none;
+    border: none;
     font-size: 22px;
     font-weight: bold;
     color: #888;
     cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
 }
 
     .cerrar:hover {
         color: #333;
+        background-color: #f0f0f0;
+        border-radius: 4px;
     }
 
 @keyframes fadeIn {

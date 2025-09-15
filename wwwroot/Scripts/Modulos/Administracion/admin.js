@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
         guardarBtn.disabled = true;
 
         try {
-            const res = await fetch("/usuarios/agregar", {
+            const res = await fetch("/admin", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(datos)
