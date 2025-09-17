@@ -34,14 +34,11 @@ CHANGELOG.md filter=lfs diff=lfs merge=lfs -text
 ConexionBD.cs filter=lfs diff=lfs merge=lfs -text
 CotizacionesController.cs filter=lfs diff=lfs merge=lfs -text
 DbConfig.cs filter=lfs diff=lfs merge=lfs -text
-FolderProfile.pubxml filter=lfs diff=lfs merge=lfs -text
-FolderProfile.pubxml.user filter=lfs diff=lfs merge=lfs -text
-FolderProfile1.pubxml filter=lfs diff=lfs merge=lfs -text
-FolderProfile1.pubxml.user filter=lfs diff=lfs merge=lfs -text
 Infrastructure/AuditLogger.cs filter=lfs diff=lfs merge=lfs -text
 LICENSE filter=lfs diff=lfs merge=lfs -text
 LINEAMIENTOS_UIUX.md filter=lfs diff=lfs merge=lfs -text
-Librerias/MySql.Data.dll filter=lfs diff=lfs merge=lfs -text
+Properties/PublishProfiles/FolderProfile.pubxml filter=lfs diff=lfs merge=lfs -text
+Properties/PublishProfiles/FolderProfile.pubxml.user filter=lfs diff=lfs merge=lfs -text
 LoginController.cs filter=lfs diff=lfs merge=lfs -text
 LogoutController.cs filter=lfs diff=lfs merge=lfs -text
 MenuController.cs filter=lfs diff=lfs merge=lfs -text
@@ -107,9 +104,7 @@ ops/backup/db_backup.ps1 filter=lfs diff=lfs merge=lfs -text
 ops/backup/setup_task.bat filter=lfs diff=lfs merge=lfs -text
 ops/release/pack.ps1 filter=lfs diff=lfs merge=lfs -text
 republicacion-total-completo-con-backup.bat filter=lfs diff=lfs merge=lfs -text
-temp_login_head.txt filter=lfs diff=lfs merge=lfs -text
-temp_sesion.txt filter=lfs diff=lfs merge=lfs -text
-tmp_login_js.txt filter=lfs diff=lfs merge=lfs -text
+# temporal files removed from repo; no longer tracked
 wwwroot/Imagenes/CENTRALDEALARMAS.jpg filter=lfs diff=lfs merge=lfs -text
 wwwroot/Imagenes/CENTRALDEALARMAS1.png filter=lfs diff=lfs merge=lfs -text
 wwwroot/Imagenes/CENTRALDEALARMAS6 filter=lfs diff=lfs merge=lfs -text
