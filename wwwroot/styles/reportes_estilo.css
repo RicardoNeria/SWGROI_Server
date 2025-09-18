@@ -1,0 +1,133 @@
+/* reportes_estilo.css
+   Reglas específicas para el módulo de reportes. */
+
+.filtros-reporte {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  padding: var(--space-lg);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.contenedor-grafico {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.contenedor-grafico h3 {
+  margin-bottom: var(--space-lg);
+  text-align: center;
+  color: var(--color-heading);
+}
+
+.estadisticas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.tarjeta-estadistica {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjeta-estadistica .valor {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.tarjeta-estadistica .etiqueta {
+  color: var(--color-muted);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tarjeta-estadistica .tendencia {
+  margin-top: var(--space-xs);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.tendencia.positiva {
+  color: var(--color-success);
+}
+
+.tendencia.negativa {
+  color: var(--color-danger);
+}
+
+.tabla-reporte {
+  margin-top: var(--space-xl);
+}
+
+.tabla-reporte th {
+  background: var(--color-secondary-strong);
+  color: #fff;
+  font-weight: 600;
+}
+
+.acciones-reporte {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  justify-content: flex-end;
+}
+
+.periodo-selector {
+  display: inline-flex;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.periodo-selector button {
+  border: none;
+  background: transparent;
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.periodo-selector button.activo {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.periodo-selector button:hover:not(.activo) {
+  background: var(--color-surface-alt);
+}
+
+@media (max-width: 768px) {
+  .filtros-reporte {
+    grid-template-columns: 1fr;
+  }
+  
+  .estadisticas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .acciones-reporte {
+    flex-direction: column;
+  }
+  
+  .periodo-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

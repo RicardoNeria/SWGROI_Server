@@ -1,0 +1,66 @@
+/* avisos_estilo.css
+   Reglas específicas para el módulo de gestión de avisos. */
+
+.formulario-aviso {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.formulario-aviso textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+.acciones-botones-ticket {
+  justify-content: flex-start;
+  gap: var(--space-sm);
+}
+
+#mensajeAviso {
+  margin-top: var(--space-md);
+  font-weight: 600;
+  color: var(--color-success);
+}
+
+#mensajeAviso.error { color: var(--color-danger); }
+
+#tablaAvisos td:nth-child(3) {
+  white-space: normal;
+  word-break: break-word;
+}
+
+#tablaAvisos td.acciones {
+  width: 240px;
+}
+
+.acciones-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.acciones-group .btn {
+  min-width: 110px;
+}
+
+.modal .campo {
+  margin-bottom: var(--space-md);
+}
+
+#modalMensaje {
+  min-height: 160px;
+  resize: vertical;
+}
+
+@media (max-width: 640px) {
+  .formulario-aviso {
+    grid-template-columns: 1fr;
+  }
+  .acciones-group {
+    width: 100%;
+    justify-content: center;
+  }
+}

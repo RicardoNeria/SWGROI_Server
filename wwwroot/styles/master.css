@@ -131,6 +131,50 @@ h1, h2, h3, h4 { color: var(--color-heading); font-weight: 700; line-height: 1.2
   border-color: var(--color-border-strong);
 }
 
+/* Botones de acción específicos para módulos */
+.btn-accion {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.btn-accion + .btn-accion { margin-left: var(--space-xs); }
+
+.btn-ver { background: rgba(18, 183, 106, 0.16); color: var(--color-success); }
+.btn-editar { background: rgba(247, 144, 9, 0.16); color: var(--color-warning); }
+.btn-eliminar { background: rgba(217, 45, 32, 0.16); color: var(--color-danger); }
+
+.btn-accion:hover { opacity: 0.9; }
+
+/* Botones de paginación */
+.btn-pag {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  background: rgba(20, 88, 240, 0.12);
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.btn-pag.activo {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn-pag:hover {
+  background: var(--color-primary-strong);
+  color: #fff;
+}
+
 input, select, textarea {
   width: 100%;
   padding: var(--input-pad-y) var(--input-pad-x);
@@ -163,6 +207,153 @@ input:focus, select:focus, textarea:focus {
 
 .field-feedback { font-size: var(--font-size-sm); color: var(--color-muted); margin-top: var(--space-xs); }
 .field-feedback.error { color: var(--color-danger); }
+
+/* Estados y etiquetas comunes */
+.estado {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.estado.pendiente {
+  background: rgba(247, 144, 9, 0.16);
+  color: var(--color-warning);
+}
+
+.estado.proceso {
+  background: rgba(20, 88, 240, 0.16);
+  color: var(--color-primary);
+}
+
+.estado.resuelto,
+.estado.completada,
+.estado.activo,
+.estado.aprobada {
+  background: rgba(18, 183, 106, 0.16);
+  color: var(--color-success);
+}
+
+.estado.rechazada,
+.estado.cancelada,
+.estado.inactivo {
+  background: rgba(217, 45, 32, 0.16);
+  color: var(--color-danger);
+}
+
+.estado.nuevo,
+.estado.revisado {
+  background: rgba(247, 144, 9, 0.16);
+  color: var(--color-warning);
+}
+
+.estado.respondido {
+  background: rgba(20, 88, 240, 0.16);
+  color: var(--color-primary);
+}
+
+/* Prioridades */
+.prioridad {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.prioridad.alta {
+  background: rgba(217, 45, 32, 0.16);
+  color: var(--color-danger);
+}
+
+.prioridad.media {
+  background: rgba(247, 144, 9, 0.16);
+  color: var(--color-warning);
+}
+
+.prioridad.baja {
+  background: rgba(18, 183, 106, 0.16);
+  color: var(--color-success);
+}
+
+/* Chips y etiquetas */
+.chip {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  background: rgba(20, 88, 240, 0.16);
+  color: var(--color-primary);
+  margin-right: var(--space-xs);
+}
+
+/* Formularios estandarizados */
+.formulario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.formulario-grid textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.grupo-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+.grupo-botones {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+}
+
+/* Acciones para tablas */
+.acciones-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.acciones-group .btn {
+  min-width: 110px;
+}
+
+/* Paginación */
+.paginacion-total {
+  color: var(--color-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Filtros */
+.filtros-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  padding: var(--space-lg);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+/* Mensajes de estado */
+.mensaje {
+  margin-top: var(--space-md);
+  font-weight: 600;
+  color: var(--color-success);
+}
+
+.mensaje.error { 
+  color: var(--color-danger); 
+}
 
 .table-wrap {
   width: 100%;
@@ -310,4 +501,69 @@ input:focus, select:focus, textarea:focus {
   .container, .admin-container { padding: var(--space-lg); }
   .main-content { padding: var(--space-lg); }
   .btn { width: 100%; justify-content: center; }
+  .grupo-botones {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filtros-container {
+    grid-template-columns: 1fr;
+  }
+  .formulario-grid {
+    grid-template-columns: 1fr;
+  }
+  .acciones-group {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+/* Componentes adicionales para funcionalidad */
+.campo { margin-bottom: var(--space-md); }
+
+/* Estilos para iconos estandarizados */
+.icono {
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+.icono--lg { font-size: 1.5rem; }
+.icono--sm { font-size: 1rem; }
+
+/* Barras de progreso */
+.barra-progreso {
+  width: 100%;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.progreso {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 0.3s ease;
+}
+
+.progreso.baja { background: var(--color-success); }
+.progreso.media { background: var(--color-warning); }
+.progreso.alta { background: var(--color-danger); }
+
+/* Contador y estadísticas */
+.contador {
+  color: var(--color-muted);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-lg);
+  text-align: center;
+}
+
+.vacio {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--color-muted);
+}
+
+.vacio .icono {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+  opacity: 0.5;
 }
