@@ -1,0 +1,31 @@
+/* metricas_estilo.css */
+
+.contenedor-metricas {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.contenedor-metricas table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.contenedor-metricas th,
+.contenedor-metricas td {
+  padding: var(--space-sm) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.contenedor-metricas th {
+  background: var(--color-secondary-strong);
+  color: #fff;
+}
+
+.contenedor-metricas tbody tr:nth-child(even) {
+  background: var(--color-surface-alt);
+}
