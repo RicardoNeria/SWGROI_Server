@@ -22,6 +22,9 @@
 @import "./etiquetas.css";
 @import "./migas.css";
 
+/* UI: tarjeta reutilizable */
+@import "./card.css";
+
 /* Ventas / Reportes */
 @import "./indicadores.css";
 @import "./barra-herramientas.css";
