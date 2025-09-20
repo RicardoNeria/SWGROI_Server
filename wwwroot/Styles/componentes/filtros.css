@@ -1,3 +1,9 @@
 /* Barra de filtros reutilizable */
 .barra-filtros { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin:0.75rem 0; }
 .barra-filtros input, .barra-filtros select { min-width:120px; }
+
+/* BEM: ui-filtros */
+.ui-filtros { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin:0.75rem 0; }
+.ui-filtros__campo { position:relative; }
+.ui-filtros__select { min-width:120px; }
+.ui-filtros__accion { margin-left:0.25rem; }

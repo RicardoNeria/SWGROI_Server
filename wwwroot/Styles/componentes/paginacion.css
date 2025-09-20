@@ -1,3 +1,7 @@
 /* Controles de paginación */
 .paginacion { display:flex; justify-content:space-between; align-items:center; margin-top:1rem; }
 .paginacion-controles .btn { margin-left:0.25rem; }
+
+/* BEM: ui-paginacion */
+.ui-paginacion { display:flex; justify-content:space-between; align-items:center; margin-top:1rem; }
+.ui-paginacion__controles .btn { margin-left:0.25rem; }

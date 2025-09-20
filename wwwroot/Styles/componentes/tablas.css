@@ -2,3 +2,7 @@
 .tabla-crud { width:100%; border-collapse:collapse; }
 .tabla-crud th, .tabla-crud td { padding:0.5rem 0.75rem; border-bottom:1px solid #e5e7eb; text-align:left; }
 .table-wrap--viewport { overflow:auto; }
+
+/* BEM: ui-tabla */
+.ui-tabla { width:100%; border-collapse:collapse; }
+.ui-tabla__head th, .ui-tabla__body td { padding:0.5rem 0.75rem; border-bottom:1px solid #e5e7eb; text-align:left; }
