@@ -35,3 +35,49 @@
 @import "./autenticacion.css";
 @import "./captcha.css";
 @import "./enlaces.css";
+/* Reglas base no disruptivas para bloques ui- añadidos por la migración inicial */
+
+/* Layout principal */
+.ui-main {
+   padding: 18px;
+   background: var(--bg, #ffffff);
+}
+
+/* Tarjetas */
+.ui-card {
+   background: var(--card-bg, #ffffff);
+   border: 1px solid var(--card-border, #e5e7eb);
+   border-radius: 8px;
+   box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+   padding: 12px;
+}
+.ui-card--report { padding: 14px; }
+.ui-card--content { padding: 12px; }
+
+/* Formatos de tabla básicos (no intrusivos) */
+.ui-tabla { width: 100%; border-collapse: collapse; }
+.ui-tabla th, .ui-tabla td { padding: 8px 10px; border-bottom: 1px solid var(--table-border, #eaeef2); text-align: left; }
+.ui-tabla__head th { background: transparent; font-weight:700; }
+.ui-tabla__body tr:nth-child(even) { background: rgba(0,0,0,0.01); }
+.ui-tabla--striped .ui-tabla__body tr:nth-child(even){ background: rgba(0,0,0,0.02); }
+
+/* Filtros / formularios */
+.ui-filtros { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.ui-filtros__campo { min-width: 140px; }
+.ui-formulario { display:block; gap:10px; }
+.ui-formulario__campo { margin-bottom:8px; }
+.ui-formulario__acciones { margin-top:12px; display:flex; gap:8px; }
+
+/* Paginación */
+.ui-paginacion { display:flex; gap:12px; align-items:center; }
+.ui-paginacion__controles button { min-width:64px; }
+
+/* Autenticación */
+.ui-auth-page { display:flex; align-items:center; justify-content:center; min-height:70vh; }
+.ui-auth-card { max-width:420px; margin:0 auto; }
+.ui-auth-form { display:flex; flex-direction:column; gap:10px; }
+.ui-auth-form__submit { align-self:flex-start; }
+
+/* Helpers */
+.ui-desplazable { overflow:auto; }
+
