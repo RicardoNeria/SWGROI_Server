@@ -1,21 +1,31 @@
 :root{
-  /* Paleta base (ajustable en siguientes pasos) */
-  --ui-bg: #ffffff;
-  --ui-fg: #111827;
-  --ui-muted: #6b7280;
-  --ui-border: #e5e7eb;
-  --ui-primary: #2563eb;
-  --ui-primary-contrast: #ffffff;
-  --ui-success: #10b981;
-  --ui-warning: #f59e0b;
-  --ui-danger: #ef4444;
-  --ui-surface: #f9fafb;
-  --ui-elevate: rgba(0,0,0,.06);
-  --ui-radius: 8px;
-  --ui-radius-sm: 6px;
-  --ui-radius-xs: 4px;
-  --ui-gap: 12px;
-  --ui-gap-lg: 16px;
-  --ui-gap-xl: 24px;
-  --ui-font: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  /* Colores */
+  --ui-color-primario:#0B3B7A;
+  --ui-color-primario-hover:#082C5A;
+  --ui-color-fondo:#ffffff;
+  --ui-color-muted:#eef2f7;
+  --ui-color-texto:#0f172a;
+  --ui-color-texto-muted:#475569;
+  --ui-color-exito:#16a34a;
+  --ui-color-peligro:#dc2626;
+  --ui-borde:#cbd5e1;
+  --ui-borde-claro:#e2e8f0;
+
+  /* Tipografía */
+  --ui-font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --ui-fs-xs:12px; --ui-fs-sm:14px; --ui-fs-md:16px; --ui-fs-lg:18px; --ui-fs-xl:22px;
+
+  /* Espacios */
+  --ui-gap-2:4px; --ui-gap-3:6px; --ui-gap-4:8px; --ui-gap-6:12px;
+  --ui-gap-8:16px; --ui-gap-12:24px; --ui-gap-16:32px;
+
+  /* Radios y sombras */
+  --ui-radius-sm:6px; --ui-radius-md:10px;
+  --ui-sombra-sm:0 1px 2px rgba(0,0,0,.08);
+  --ui-sombra-md:0 4px 10px rgba(0,0,0,.10);
 }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#f5f7fa;color:var(--ui-color-texto);font-family:var(--ui-font)}
+a{color:var(--ui-color-primario);text-decoration:none}
+a:hover{color:var(--ui-color-primario-hover)}

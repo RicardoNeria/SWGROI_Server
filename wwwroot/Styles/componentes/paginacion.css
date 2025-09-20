@@ -1,7 +1,3 @@
-/* Paginación */
-.ui-pager{ display:flex; align-items:center; gap:8px; }
-.ui-pager .ui-btn{ padding:6px 10px; }
-.ui-pager__info{ color: var(--ui-muted); font-size: 14px; }
-/* Aliases */
-.ui-pagination{ display:flex; align-items:center; gap:8px; }
-.ui-pagination__controls{ display:flex; gap:8px; }
+.ui-pagination{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
+.ui-pagination__label{font-size:var(--ui-fs-sm);color:var(--ui-color-texto-muted)}
+.ui-pagination__controls{display:flex;gap:var(--ui-gap-6)}

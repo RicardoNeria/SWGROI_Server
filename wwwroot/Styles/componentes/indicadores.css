@@ -1,3 +1,12 @@
-/* Indicadores de ventas/reportes */
-.ui-indicadores{ display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: var(--ui-gap); }
-.ui-indicador{ background:#fff; border:1px solid var(--ui-border); border-radius: var(--ui-radius); padding: var(--ui-gap-lg); }
+.ui-badge{
+  display:inline-block;
+  padding:4px 8px;
+  font-size:var(--ui-fs-sm);
+  font-weight:600;
+  border-radius:var(--ui-radius-sm);
+  background:var(--ui-color-muted);
+  color:var(--ui-color-texto);
+}
+.ui-badge--success{background:#dcfce7;color:#166534}
+.ui-badge--danger{background:#fee2e2;color:#991b1b}
+.ui-badge--info{background:#dbeafe;color:#1e40af}

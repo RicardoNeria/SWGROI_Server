@@ -1,3 +1,13 @@
-/* Captcha / validaciones */
-.ui-captcha{ display:flex; gap: var(--ui-gap); align-items:center; }
-.ui-captcha img{ border:1px solid var(--ui-border); border-radius: var(--ui-radius-xs); }
+.ui-captcha{
+  margin:var(--ui-gap-12) 0;
+  font-size:var(--ui-fs-sm);
+  font-weight:600;
+  text-align:left;
+}
+.ui-captcha__input{
+  margin-top:var(--ui-gap-4);
+  padding:8px;
+  border:1px solid var(--ui-borde);
+  border-radius:var(--ui-radius-sm);
+  width:100%;
+}

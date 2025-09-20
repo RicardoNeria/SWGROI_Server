@@ -1,3 +1,17 @@
-/* Grillas y cajas para métricas */
-.ui-metrics{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: var(--ui-gap); }
-.ui-metric{ background:#fff; border:1px solid var(--ui-border); border-radius: var(--ui-radius); padding: var(--ui-gap-lg); }
+.ui-metrics{
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--ui-gap-8);
+  padding:var(--ui-gap-8);
+  background:#fff;
+  border-radius:var(--ui-radius-md);
+  box-shadow:var(--ui-sombra-sm);
+  margin-bottom:var(--ui-gap-12);
+}
+.ui-metrics__item{
+  padding:6px 12px;
+  background:var(--ui-color-muted);
+  border-radius:var(--ui-radius-sm);
+  font-size:var(--ui-fs-sm);
+  font-weight:600;
+}

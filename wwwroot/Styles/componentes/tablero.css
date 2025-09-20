@@ -1,4 +1,14 @@
-/* Tablero (dashboard) */
-.ui-kpi-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: var(--ui-gap); }
-.ui-kpi{ background:#fff; border:1px solid var(--ui-border); border-radius: var(--ui-radius); padding: var(--ui-gap-lg); }
-.ui-kpi strong{ display:block; font-size:24px; }
+.ui-dashboard{display:grid;gap:var(--ui-gap-12)}
+.ui-dashboard__cards{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:var(--ui-gap-12)
+}
+.ui-dashboard__card{
+  padding:var(--ui-gap-16);border-radius:var(--ui-radius-md);
+  background:#fff;box-shadow:var(--ui-sombra-sm);
+  font-weight:600;font-size:var(--ui-fs-md);text-align:center;
+  transition:transform .15s,box-shadow .15s;cursor:pointer
+}
+.ui-dashboard__card:hover{transform:translateY(-2px);box-shadow:var(--ui-sombra-md)}
+.ui-dashboard__card--kpi{text-align:center}
+.ui-dashboard__kpi-value{font-size:28px;font-weight:700;display:block;margin-top:var(--ui-gap-8)}

@@ -1,3 +1,8 @@
-/* Barra de herramientas de listas/tablas */
-.ui-toolbar-wrap{ display:flex; align-items:center; justify-content:space-between; margin-bottom: var(--ui-gap); }
-.ui-toolbar-actions{ display:flex; gap: var(--ui-gap); align-items:center; }
+.ui-toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--ui-gap-8);
+  margin-bottom:var(--ui-gap-12);
+  align-items:center;
+}
+.ui-toolbar__group{display:flex;gap:var(--ui-gap-6)}

@@ -1,4 +1,5 @@
-/* Cajas de filtro y barra de acciones */
-.ui-filters{ display:flex; flex-wrap:wrap; gap: var(--ui-gap); align-items:flex-end; }
-.ui-filters .ui-field{ margin:0; }
-.ui-toolbar{ display:flex; gap: var(--ui-gap); align-items:center; }
+.ui-filters{display:flex;flex-wrap:wrap;gap:var(--ui-gap-8);margin:var(--ui-gap-12) 0}
+.ui-filters__input,.ui-filters__select{
+  padding:8px 10px;border:1px solid var(--ui-borde);border-radius:var(--ui-radius-sm);font-size:var(--ui-fs-sm);
+}
+.ui-filters__select{background:#fff}

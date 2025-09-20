@@ -1,3 +1,8 @@
-/* Enlaces utilitarios */
-.ui-link{ color: var(--ui-primary); text-decoration:none; }
-.ui-link:hover{ text-decoration: underline; }
+.ui-link{
+  display:inline-block;
+  font-size:var(--ui-fs-sm);
+  color:var(--ui-color-primario);
+  text-decoration:none;
+  margin-top:var(--ui-gap-8);
+}
+.ui-link:hover{text-decoration:underline}

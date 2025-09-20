@@ -1,6 +1,6 @@
-/* Tipografía base */
-html, body{ color: var(--ui-fg); background: var(--ui-bg); font-family: var(--ui-font); }
-.ui-text-muted{ color: var(--ui-muted); }
-.ui-h1{ font-size: clamp(24px, 3.5vw, 32px); font-weight: 700; margin: 0 0 var(--ui-gap-lg); }
-.ui-h2{ font-size: clamp(18px, 2.5vw, 24px); font-weight: 600; margin: 0 0 var(--ui-gap); }
-.ui-h3{ font-size: clamp(15px, 2vw, 18px); font-weight: 600; margin: 0 0 var(--ui-gap); }
+.ui-text{color:var(--ui-color-texto);font-family:var(--ui-font)}
+.ui-title{font-size:var(--ui-fs-xl);font-weight:700;margin:0 0 var(--ui-gap-12)}
+.ui-subtitle{font-size:var(--ui-fs-lg);font-weight:600;color:var(--ui-color-texto-muted);margin:0 0 var(--ui-gap-8)}
+.ui-message{font-size:var(--ui-fs-sm);font-weight:600;color:var(--ui-color-exito);margin:var(--ui-gap-8) 0;display:none}
+.ui-message--error{color:var(--ui-color-peligro)}
+.ui-title-sm{font-size:var(--ui-fs-md);font-weight:700;margin:0}
