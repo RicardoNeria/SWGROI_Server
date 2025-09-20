@@ -1,0 +1,8 @@
+is_global = true
+build_property.RootNamespace = SWGROI_Server
+build_property.ProjectDir = C:\Users\andro\Documents\Visual Studio 2022\SWGROI_Server\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.CsWinRTUseWindowsUIXamlProjections = false
+build_property.EffectiveAnalysisLevelStyle = 
+build_property.EnableCodeStyleSeverity = 

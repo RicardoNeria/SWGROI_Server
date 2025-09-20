@@ -1,0 +1,4 @@
+/* Barra superior (topbar) */
+.topbar { margin-left:220px; padding:0.5rem 1rem; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(90deg,#ffffff,#f8fafc); box-shadow:0 1px 0 rgba(0,0,0,0.05); }
+.toggle-sidebar { background:transparent; border:none; font-size:1.25rem; }
+.breadcrumbs { font-size:0.95rem; }

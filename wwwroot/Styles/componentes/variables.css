@@ -1,0 +1,10 @@
+/* Variables globales de diseño (colores, espacios, etc.) */
+:root {
+    --color-primario: #0b5fff;
+    --color-secundario: #f5f7fa;
+    --color-exito: #2d9a4a;
+    --color-error: #e53935;
+    --texto-oscuro: #212121;
+    --texto-claro: #ffffff;
+    --radio-base: 6px;
+}

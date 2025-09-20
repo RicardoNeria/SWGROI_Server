@@ -1,0 +1,3 @@
+/* Barra de filtros reutilizable */
+.barra-filtros { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin:0.75rem 0; }
+.barra-filtros input, .barra-filtros select { min-width:120px; }

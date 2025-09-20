@@ -1,0 +1,6 @@
+/* Formularios y campos */
+.formulario-aviso .campo { margin-bottom:0.75rem; }
+label { display:block; margin-bottom:0.25rem; font-size:0.95rem; }
+input[type="text"], textarea, select { padding:0.5rem; border:1px solid #d1d5db; border-radius:4px; width:100%; box-sizing:border-box; }
+.field-with-feedback { position:relative; }
+.field-icon { position:absolute; right:8px; top:50%; transform:translateY(-50%); }

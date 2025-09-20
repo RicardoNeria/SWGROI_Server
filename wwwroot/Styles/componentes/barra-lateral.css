@@ -1,0 +1,5 @@
+/* Barra lateral (sidebar) */
+.sidebar-dark { background:#0f172a; color:white; padding:1rem; width:220px; position:fixed; height:100vh; }
+.sidebar-dark .logo { font-size:1.25rem; margin-bottom:1rem; }
+.sidebar-dark nav a { color:rgba(255,255,255,0.9); display:block; padding:0.4rem 0; text-decoration:none; }
+.sidebar-dark nav a.active { font-weight:600; }

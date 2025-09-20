@@ -1,0 +1,3 @@
+/* Controles de paginación */
+.paginacion { display:flex; justify-content:space-between; align-items:center; margin-top:1rem; }
+.paginacion-controles .btn { margin-left:0.25rem; }
