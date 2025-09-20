@@ -15,3 +15,8 @@
 
 /* Enlace de recuperar */
 .link-recuperar { display:block; text-align:center; margin-top:0.75rem; }
+
+/* Footer dentro de la tarjeta de login (Aviso de Privacidad · Términos de Uso) */
+.login-footer { text-align:center; margin-top:0.75rem; color: #374151; }
+.login-footer a { color: var(--color-primario); text-decoration: none; margin: 0 0.35rem; }
+.login-footer a:hover { text-decoration: underline; }
