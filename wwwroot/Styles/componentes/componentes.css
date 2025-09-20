@@ -1,0 +1,34 @@
+/* ================================
+   Estilos universales SWGROI
+   Metodología BEM con prefijo ui-
+   ================================ */
+
+/* Base */
+@import "./variables.css";
+@import "./tipografia.css";
+@import "./botones.css";
+@import "./formularios.css";
+@import "./filtros.css";
+@import "./tablas.css";
+@import "./paginacion.css";
+@import "./barra-lateral.css";
+@import "./barra-superior.css";
+@import "./ventanas-modales.css";
+@import "./disposicion.css";
+
+/* Dashboard / Menú principal */
+@import "./tablero.css";
+@import "./banner.css";
+@import "./etiquetas.css";
+@import "./migas.css";
+
+/* Ventas / Reportes */
+@import "./indicadores.css";
+@import "./barra-herramientas.css";
+@import "./metricas.css";
+@import "./desplazable.css";
+
+/* Autenticación */
+@import "./autenticacion.css";
+@import "./captcha.css";
+@import "./enlaces.css";

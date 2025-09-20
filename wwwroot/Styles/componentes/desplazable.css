@@ -1,0 +1,10 @@
+.ui-scrollable{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.ui-scrollable::-webkit-scrollbar{height:8px}
+.ui-scrollable::-webkit-scrollbar-thumb{
+  background:var(--ui-color-primario);
+  border-radius:4px;
+}
+.ui-scrollable::-webkit-scrollbar-track{background:#e5e7eb}

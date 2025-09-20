@@ -58,26 +58,49 @@ function setupModals() {
 
 // Abrir modal
 function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('is-visible');
-        document.body.style.overflow = 'hidden';
-    }
+    const modal = typeof modalId === 'string' ? document.getElementById(modalId) : modalId;
+    if (!modal) return;
+    // Compatibilidad: algunos estilos usan display:flex y otros clase is-visible
+    modal.style.display = 'flex';
+    modal.classList.add('is-visible');
+    document.body.style.overflow = 'hidden';
 }
 
 // Cerrar modal
 function closeModal(modal) {
-    if (typeof modal === 'string') {
-        modal = document.getElementById(modal);
-    }
-    if (modal) {
-        modal.classList.remove('is-visible');
-        document.body.style.overflow = '';
-        
-        // Limpiar formularios dentro del modal
-        const forms = modal.querySelectorAll('form');
-        forms.forEach(form => form.reset());
-    }
+    if (typeof modal === 'string') modal = document.getElementById(modal);
+    if (!modal) return;
+    modal.classList.remove('is-visible');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Resetear modal: limpia formularios y feedbacks dentro
+function resetModal(modal) {
+    if (typeof modal === 'string') modal = document.getElementById(modal);
+    if (!modal) return;
+    const forms = modal.querySelectorAll('form');
+    forms.forEach(form => {
+        try { form.reset(); } catch {}
+        const feedbacks = form.querySelectorAll('.field-feedback');
+        feedbacks.forEach(fb => { fb.textContent = ''; fb.classList.remove('error'); });
+        form.querySelectorAll('input,select,textarea').forEach(inp => inp.classList.remove('error','is-invalid','is-valid'));
+    });
+}
+
+// Mostrar mensaje en un contenedor de leyenda/banner por id
+function mostrarMensaje(idLeyenda, texto, exito = true, duration = 3000) {
+    const leyenda = typeof idLeyenda === 'string' ? document.getElementById(idLeyenda) : idLeyenda;
+    if (!leyenda) { try { showToast(texto, exito ? 'success' : 'error', duration); } catch {} return; }
+    leyenda.textContent = texto;
+    leyenda.style.display = 'block';
+    leyenda.style.backgroundColor = exito ? '#28a745' : '#e74c3c';
+    leyenda.style.color = '#fff';
+    leyenda.style.padding = '10px 20px';
+    leyenda.style.borderRadius = '8px';
+    leyenda.style.marginBottom = '20px';
+    try { showToast(texto, exito ? 'success' : 'error', Math.min(duration, 4000)); } catch {}
+    setTimeout(() => { leyenda.style.display = 'none'; }, duration);
 }
 
 // Configuración de validación de formularios
@@ -275,6 +298,8 @@ function formatDate(dateString) {
 // Exportar funciones globales
 window.openModal = openModal;
 window.closeModal = closeModal;
+window.resetModal = resetModal;
+window.mostrarMensaje = mostrarMensaje;
 window.showToast = showToast;
 window.limpiarFormulario = limpiarFormulario;
 window.confirmarAccion = confirmarAccion;

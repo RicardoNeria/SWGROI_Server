@@ -1,0 +1,3 @@
+.ui-pagination{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
+.ui-pagination__label{font-size:var(--ui-fs-sm);color:var(--ui-color-texto-muted)}
+.ui-pagination__controls{display:flex;gap:var(--ui-gap-6)}

@@ -1,0 +1,12 @@
+.ui-badge{
+  display:inline-block;
+  padding:4px 8px;
+  font-size:var(--ui-fs-sm);
+  font-weight:600;
+  border-radius:var(--ui-radius-sm);
+  background:var(--ui-color-muted);
+  color:var(--ui-color-texto);
+}
+.ui-badge--success{background:#dcfce7;color:#166534}
+.ui-badge--danger{background:#fee2e2;color:#991b1b}
+.ui-badge--info{background:#dbeafe;color:#1e40af}

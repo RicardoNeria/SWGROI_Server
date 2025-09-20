@@ -1,0 +1,5 @@
+.ui-layout__main{padding:var(--ui-gap-12)}
+.ui-card{background:#fff;border-radius:var(--ui-radius-md);box-shadow:var(--ui-sombra-sm)}
+.ui-card__body{padding:var(--ui-gap-12)}
+.ui-card__footer{padding:var(--ui-gap-12);border-top:1px solid var(--ui-borde-claro)}
+.ui-scrollable{overflow-x:auto;-webkit-overflow-scrolling:touch}

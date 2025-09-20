@@ -1,0 +1,15 @@
+.ui-button{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 16px;border-radius:var(--ui-radius-sm);
+  font-weight:600;font-size:var(--ui-fs-sm);
+  cursor:pointer;border:1px solid transparent;background:#fff;color:var(--ui-color-texto);
+  transition:background .2s,border-color .2s,transform .05s;
+}
+.ui-button:active{transform:translateY(1px)}
+.ui-button--primary{background:var(--ui-color-primario);color:#fff}
+.ui-button--primary:hover{background:var(--ui-color-primario-hover)}
+.ui-button--secondary{border-color:var(--ui-color-primario);color:var(--ui-color-primario);background:#fff}
+.ui-button--secondary:hover{background:var(--ui-color-muted)}
+.ui-button--danger{background:var(--ui-color-peligro);color:#fff}
+.ui-button--active{box-shadow:0 0 0 2px rgba(11,59,122,.18) inset}
+button[disabled],.ui-button[disabled]{opacity:.55;cursor:not-allowed}

@@ -1,0 +1,4 @@
+.ui-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;box-shadow:var(--ui-sombra-sm);border-radius:var(--ui-radius-md);margin-bottom:var(--ui-gap-12)}
+.ui-topbar__toggle{font-size:20px;background:none;border:none;cursor:pointer}
+.ui-breadcrumbs{font-size:var(--ui-fs-sm);color:var(--ui-color-texto-muted);display:flex;gap:6px;align-items:center}
+.ui-topbar__user,.ui-chip{font-weight:600}
