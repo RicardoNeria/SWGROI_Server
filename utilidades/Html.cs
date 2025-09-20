@@ -22,5 +22,14 @@ namespace SWGROI_Server.Utils
             else sb.Append("<td class='").Append(cssClass).Append("'>").Append(rawHtml ?? string.Empty).Append("</td>");
             return sb;
         }
+
+        public static StringBuilder AppendHeader(this StringBuilder sb, string text, string cssClass = null)
+        {
+            if (sb == null) sb = new StringBuilder();
+            var t = text == null ? string.Empty : WebUtility.HtmlEncode(text);
+            if (string.IsNullOrEmpty(cssClass)) sb.Append("<th>").Append(t).Append("</th>");
+            else sb.Append("<th class='").Append(cssClass).Append("'>").Append(t).Append("</th>");
+            return sb;
+        }
     }
 }
