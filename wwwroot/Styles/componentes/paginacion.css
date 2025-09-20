@@ -2,3 +2,6 @@
 .ui-pager{ display:flex; align-items:center; gap:8px; }
 .ui-pager .ui-btn{ padding:6px 10px; }
 .ui-pager__info{ color: var(--ui-muted); font-size: 14px; }
+/* Aliases */
+.ui-pagination{ display:flex; align-items:center; gap:8px; }
+.ui-pagination__controls{ display:flex; gap:8px; }
