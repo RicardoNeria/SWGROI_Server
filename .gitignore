@@ -1,3 +1,59 @@
+# Build artifacts
+bin/
+obj/
+objetos/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# NuGet
+packages/
+*.nupkg
+
+# Node
+node_modules/
+
+# Archives
+*.zip
+*.rar
+*.7z
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Rider
+.idea/
+# Build artifacts
+bin/
+obj/
+objetos/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# NuGet
+packages/
+*.nupkg
+
+# Node
+node_modules/
+
+# Archives
+*.zip
+*.rar
+*.7z
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Rider
+.idea/
 bin/
 obj/
 node_modules/
