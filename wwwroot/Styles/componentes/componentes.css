@@ -81,3 +81,37 @@
 /* Helpers */
 .ui-desplazable { overflow:auto; }
 
+/* Botones y controles - reglas no disruptivas */
+.btn {
+   font-family: inherit;
+   border-radius: 8px;
+   padding: 8px 12px;
+   cursor: pointer;
+   border: 1px solid transparent;
+}
+.btn.primario, .btn.azul, .btn.btn--primary { background: var(--btn-primary,#2563eb); color: #fff; }
+.btn.verde { background: #16a34a; color: #fff; }
+.btn.amarillo { background: #f59e0b; color: #111827; }
+.btn.rojo { background: #ef4444; color: #fff; }
+.btn.gris, .btn.gray { background: #f3f4f6; color:#111827; }
+
+/* Inputs y campos */
+.form-control, input.form-control, textarea.form-control, select.ui-filtros__select {
+   padding: 8px 10px;
+   border: 1px solid var(--input-border,#d1d5db);
+   border-radius: 6px;
+   background: var(--input-bg,#fff);
+   font-family: inherit;
+}
+.field-with-feedback { display:flex; gap:8px; align-items:center; }
+.field-icon { opacity:0.7; }
+
+/* Small layout helpers */
+.ui-card--centered { display:flex; align-items:center; justify-content:center; min-height:60vh; }
+.ui-page { padding:18px; }
+.ui-container { max-width:1180px; margin:0 auto; }
+
+/* Reduce specificity conflicts: prefer BEM classes but allow legacy to keep working */
+body .ui-card { box-sizing: border-box; }
+
+
