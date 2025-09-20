@@ -1,4 +1,4 @@
 /* Tipografías y estilos base de texto */
-html, body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color: var(--texto-oscuro); }
+html, body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color: var(--texto-oscuro); line-height: 1.35; }
 h1, h2, h3 { font-weight: 600; margin: 0 0 0.5rem 0; }
 p { margin: 0 0 1rem 0; }

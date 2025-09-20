@@ -1,6 +1,8 @@
 /* Estilos reutilizables para botones */
-.btn { display:inline-flex; align-items:center; justify-content:center; padding:0.5rem 0.75rem; border-radius:var(--radio-base); border:1px solid transparent; cursor:pointer; }
-.btn.primario { background:var(--color-primario); color:var(--texto-claro); }
+.btn { display:inline-flex; align-items:center; justify-content:center; padding:0.5rem 0.75rem; border-radius:var(--radio-base); border:1px solid transparent; cursor:pointer; transition: background-color .15s ease, box-shadow .15s ease; }
+.btn.primario, .btn.btn--primary { background:var(--color-primario); color:var(--texto-claro); }
+.btn.primario:hover, .btn.btn--primary:hover { filter: brightness(0.95); }
+.btn:focus { outline: none; box-shadow: 0 0 0 3px rgba(11,95,255,0.15); }
 .btn.azul { background:#1976d2; color:white; }
 .btn.amarillo { background:#ffb300; }
 .btn.rojo { background:var(--color-error); color:white; }
