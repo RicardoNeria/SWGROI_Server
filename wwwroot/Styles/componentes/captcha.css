@@ -1,0 +1,3 @@
+/* Captcha / validaciones */
+.ui-captcha{ display:flex; gap: var(--ui-gap); align-items:center; }
+.ui-captcha img{ border:1px solid var(--ui-border); border-radius: var(--ui-radius-xs); }

@@ -1,0 +1,4 @@
+/* Vistas de autenticación */
+.ui-auth{ max-width:420px; margin: 60px auto; background:#fff; border:1px solid var(--ui-border); border-radius: var(--ui-radius); padding: var(--ui-gap-lg); }
+.ui-auth__logo{ display:block; margin:0 auto var(--ui-gap-lg); }
+.ui-auth__links{ display:flex; justify-content:space-between; }

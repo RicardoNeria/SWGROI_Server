@@ -1,0 +1,3 @@
+/* Enlaces utilitarios */
+.ui-link{ color: var(--ui-primary); text-decoration:none; }
+.ui-link:hover{ text-decoration: underline; }

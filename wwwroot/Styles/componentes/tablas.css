@@ -1,0 +1,9 @@
+/* Tablas */
+.ui-table{ width:100%; border-collapse: collapse; }
+.ui-table th, .ui-table td{ padding: 10px 12px; border-bottom:1px solid var(--ui-border); text-align:left; }
+.ui-table th{ font-weight:600; background: var(--ui-surface); }
+.ui-table .acciones{ white-space:nowrap; }
+.ui-badge{ display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; }
+.ui-badge--success{ background:#ecfdf5; color:#047857; }
+.ui-badge--warn{ background:#fffbeb; color:#92400e; }
+.ui-badge--danger{ background:#fef2f2; color:#991b1b; }

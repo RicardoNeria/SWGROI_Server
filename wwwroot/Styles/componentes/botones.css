@@ -1,0 +1,8 @@
+/* Botones universales */
+.ui-btn{ display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius: var(--ui-radius-sm); border:1px solid var(--ui-border); background:#fff; color: var(--ui-fg); cursor:pointer; transition: .2s ease; text-decoration:none; }
+.ui-btn:hover{ box-shadow: 0 1px 2px var(--ui-elevate); }
+.ui-btn--primary{ background: var(--ui-primary); border-color: var(--ui-primary); color: var(--ui-primary-contrast); }
+.ui-btn--danger{ background: var(--ui-danger); border-color: var(--ui-danger); color: #fff; }
+.ui-btn--success{ background: var(--ui-success); border-color: var(--ui-success); color:#fff; }
+.ui-btn--ghost{ background: transparent; border-color: transparent; }
+.ui-btn--icon{ padding:6px 8px; }

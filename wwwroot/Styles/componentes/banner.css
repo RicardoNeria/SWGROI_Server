@@ -1,0 +1,5 @@
+/* Banner superior / avisos */
+.ui-banner{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius: var(--ui-radius); }
+.ui-banner--info{ background:#eff6ff; color:#1d4ed8; }
+.ui-banner--warn{ background:#fffbeb; color:#b45309; }
+.ui-banner--danger{ background:#fef2f2; color:#b91c1c; }

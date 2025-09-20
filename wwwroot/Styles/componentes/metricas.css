@@ -1,0 +1,3 @@
+/* Grillas y cajas para métricas */
+.ui-metrics{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: var(--ui-gap); }
+.ui-metric{ background:#fff; border:1px solid var(--ui-border); border-radius: var(--ui-radius); padding: var(--ui-gap-lg); }

@@ -1,0 +1,4 @@
+/* Tablero (dashboard) */
+.ui-kpi-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: var(--ui-gap); }
+.ui-kpi{ background:#fff; border:1px solid var(--ui-border); border-radius: var(--ui-radius); padding: var(--ui-gap-lg); }
+.ui-kpi strong{ display:block; font-size:24px; }

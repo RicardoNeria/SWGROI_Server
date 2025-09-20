@@ -1,0 +1,6 @@
+/* Tipografía base */
+html, body{ color: var(--ui-fg); background: var(--ui-bg); font-family: var(--ui-font); }
+.ui-text-muted{ color: var(--ui-muted); }
+.ui-h1{ font-size: clamp(24px, 3.5vw, 32px); font-weight: 700; margin: 0 0 var(--ui-gap-lg); }
+.ui-h2{ font-size: clamp(18px, 2.5vw, 24px); font-weight: 600; margin: 0 0 var(--ui-gap); }
+.ui-h3{ font-size: clamp(15px, 2vw, 18px); font-weight: 600; margin: 0 0 var(--ui-gap); }
