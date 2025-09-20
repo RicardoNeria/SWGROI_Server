@@ -1,0 +1,4 @@
+/* Barra lateral genérica */
+.ui-sidebar{ width:260px; background:#0f172a; color:#e2e8f0; padding: var(--ui-gap); }
+.ui-sidebar a{ color:#cbd5e1; text-decoration:none; display:block; padding:8px 10px; border-radius:6px; }
+.ui-sidebar a:hover{ background: rgba(255,255,255,.06); }

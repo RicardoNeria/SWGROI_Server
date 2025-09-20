@@ -1,0 +1,21 @@
+:root{
+  /* Paleta base (ajustable en siguientes pasos) */
+  --ui-bg: #ffffff;
+  --ui-fg: #111827;
+  --ui-muted: #6b7280;
+  --ui-border: #e5e7eb;
+  --ui-primary: #2563eb;
+  --ui-primary-contrast: #ffffff;
+  --ui-success: #10b981;
+  --ui-warning: #f59e0b;
+  --ui-danger: #ef4444;
+  --ui-surface: #f9fafb;
+  --ui-elevate: rgba(0,0,0,.06);
+  --ui-radius: 8px;
+  --ui-radius-sm: 6px;
+  --ui-radius-xs: 4px;
+  --ui-gap: 12px;
+  --ui-gap-lg: 16px;
+  --ui-gap-xl: 24px;
+  --ui-font: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}

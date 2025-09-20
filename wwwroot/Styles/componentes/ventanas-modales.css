@@ -1,0 +1,5 @@
+/* Modales */
+.ui-modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.4); z-index: 100; }
+.ui-modal__box{ background:#fff; border-radius: var(--ui-radius); box-shadow: 0 10px 30px rgba(0,0,0,.15); width:min(720px, 90vw); padding: var(--ui-gap-lg); }
+.ui-modal__header{ display:flex; align-items:center; justify-content:space-between; margin-bottom: var(--ui-gap); }
+.ui-modal__footer{ display:flex; gap: var(--ui-gap); justify-content:flex-end; margin-top: var(--ui-gap-lg); }

@@ -1,0 +1,6 @@
+/* Disposición */
+.ui-container{ max-width: 1200px; margin: 0 auto; padding: 0 var(--ui-gap-lg); }
+.ui-stack{ display:flex; flex-direction:column; gap: var(--ui-gap); }
+.ui-row{ display:flex; gap: var(--ui-gap); align-items: flex-start; }
+.ui-col{ flex:1 1 0; }
+.ui-card{ background:#fff; border:1px solid var(--ui-border); border-radius: var(--ui-radius); padding: var(--ui-gap-lg); box-shadow: 0 1px 2px var(--ui-elevate); }

@@ -1,0 +1,6 @@
+/* Formularios */
+.ui-field{ display:flex; flex-direction:column; gap:6px; margin-bottom: var(--ui-gap); }
+.ui-input, .ui-select, .ui-textarea{ border:1px solid var(--ui-border); border-radius: var(--ui-radius-xs); padding:10px 12px; background:#fff; color:var(--ui-fg); }
+.ui-textarea{ min-height: 96px; resize: vertical; }
+.ui-label{ font-weight: 600; }
+.ui-help{ font-size: 12px; color: var(--ui-muted); }

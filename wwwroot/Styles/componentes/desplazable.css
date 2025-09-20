@@ -1,0 +1,4 @@
+/* Contenedores desplazables */
+.ui-scroll{ overflow:auto; scrollbar-gutter: stable; }
+.ui-scroll::-webkit-scrollbar{ height:10px; width:10px; }
+.ui-scroll::-webkit-scrollbar-thumb{ background:#d1d5db; border-radius: 999px; }
