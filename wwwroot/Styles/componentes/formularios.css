@@ -1,12 +1,12 @@
-/* Formularios y campos */
-.formulario-aviso .campo { margin-bottom:0.75rem; }
-label { display:block; margin-bottom:0.25rem; font-size:0.95rem; }
-input[type="text"], textarea, select, input[type="password"], input[type="date"], input[type="number"], input[type="email"] { padding:0.5rem; border:1px solid #d1d5db; border-radius:6px; width:100%; box-sizing:border-box; background:#fff; }
-.form-control:focus, input:focus, textarea:focus, select:focus { outline: none; border-color: var(--color-primario); box-shadow: 0 0 0 3px rgba(11,95,255,0.15); }
+/* Formularios y campos - BEM */
+.formulario-aviso .campo { margin-bottom:var(--space-sm); }
+.ui-formulario label, label { display:block; margin-bottom:6px; font-size:0.95rem; color:var(--color-muted); }
+.ui-formulario input[type="text"], .ui-formulario textarea, .ui-formulario select, input[type="password"], input[type="date"], input[type="number"], input[type="email"] { padding:0.5rem 0.75rem; border:1px solid var(--color-border); border-radius:6px; width:100%; box-sizing:border-box; background:var(--color-surface); }
+.ui-formulario .form-control:focus, .ui-formulario input:focus, .ui-formulario textarea:focus, .ui-formulario select:focus { outline: none; border-color: var(--color-primario); box-shadow: 0 0 0 4px rgba(37,99,235,0.08); }
 .field-with-feedback { position:relative; }
-.field-icon { position:absolute; right:8px; top:50%; transform:translateY(-50%); }
+.field-icon { position:absolute; right:8px; top:50%; transform:translateY(-50%); opacity:0.75 }
 
 /* BEM: ui-formulario */
 .ui-formulario { display:block; }
-.ui-formulario__campo { margin-bottom:0.75rem; }
-.ui-formulario__acciones { display:flex; gap:0.5rem; flex-wrap:wrap; }
+.ui-formulario__campo { margin-bottom:var(--space-sm); }
+.ui-formulario__acciones { display:flex; gap:var(--space-sm); flex-wrap:wrap; }

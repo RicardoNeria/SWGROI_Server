@@ -1,10 +1,32 @@
-/* Variables globales de diseño (colores, espacios, etc.) */
+/* Variables globales de diseño (colores, espacios, tipografía, sombras) */
 :root {
-    --color-primario: #0b5fff;
-    --color-secundario: #f5f7fa;
-    --color-exito: #2d9a4a;
-    --color-error: #e53935;
-    --texto-oscuro: #212121;
+    /* Palette */
+    --color-primario: #2563eb; /* azul principal */
+    --color-primario-600: #1e40af;
+    --color-secundario: #f8fafc;
+    --color-surface: #ffffff;
+    --color-muted: #6b7280;
+    --color-success: #16a34a;
+    --color-danger: #ef4444;
+    --color-border: #e6e9ef;
+
+    /* Texto */
+    --texto-oscuro: #0f172a;
     --texto-claro: #ffffff;
-    --radio-base: 6px;
+
+    /* Spacing */
+    --space-xxs: 4px;
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 24px;
+
+    /* Radii / shadows */
+    --radio-base: 8px;
+    --shadow-sm: 0 1px 2px rgba(2,6,23,0.04);
+    --shadow-md: 0 8px 20px rgba(2,6,23,0.06);
+
+    /* Typography */
+    --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-size-base: 14px;
 }

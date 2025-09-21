@@ -1,7 +1,4 @@
 /* Controles de paginación */
-.paginacion { display:flex; justify-content:space-between; align-items:center; margin-top:1rem; }
-.paginacion-controles .btn { margin-left:0.25rem; }
-
-/* BEM: ui-paginacion */
-.ui-paginacion { display:flex; justify-content:space-between; align-items:center; margin-top:1rem; }
-.ui-paginacion__controles .btn { margin-left:0.25rem; }
+.paginacion, .ui-paginacion { display:flex; justify-content:space-between; align-items:center; margin-top:var(--space-md); gap:8px; }
+.paginacion-controles .btn, .ui-paginacion__controles .btn { margin-left:0.25rem; }
+.ui-paginacion__page { padding:6px 10px; border-radius:6px; background:var(--color-surface); border:1px solid var(--color-border); }

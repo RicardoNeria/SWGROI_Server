@@ -1,4 +1,9 @@
-/* Tipografías y estilos base de texto */
-html, body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color: var(--texto-oscuro); line-height: 1.35; }
-h1, h2, h3 { font-weight: 600; margin: 0 0 0.5rem 0; }
-p { margin: 0 0 1rem 0; }
+/* Tipografías y estilos base de texto - usar variables globales */
+html, body { font-family: var(--font-sans); color: var(--texto-oscuro); line-height: 1.45; font-size:var(--font-size-base); }
+h1, h2, h3 { font-weight: 600; margin: 0 0 0.5rem 0; color:var(--texto-oscuro); }
+p { margin: 0 0 var(--space-md) 0; }
+
+/* Headings sizes */
+h1{ font-size:1.6rem }
+h2{ font-size:1.25rem }
+h3{ font-size:1.05rem }

@@ -1,8 +1,8 @@
-/* Estilos reutilizables para botones */
-.btn { display:inline-flex; align-items:center; justify-content:center; padding:0.5rem 0.75rem; border-radius:var(--radio-base); border:1px solid transparent; cursor:pointer; transition: background-color .15s ease, box-shadow .15s ease; }
-.btn.primario, .btn.btn--primary { background:var(--color-primario); color:var(--texto-claro); }
-.btn.primario:hover, .btn.btn--primary:hover { filter: brightness(0.95); }
-.btn:focus { outline: none; box-shadow: 0 0 0 3px rgba(11,95,255,0.15); }
-.btn.azul { background:#1976d2; color:white; }
-.btn.amarillo { background:#ffb300; }
-.btn.rojo { background:var(--color-error); color:white; }
+/* Estilos reutilizables para botones - BEM-friendly */
+.ui-button, .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:0.5rem 0.75rem; border-radius:var(--radio-base); border:1px solid transparent; cursor:pointer; transition: background-color .12s ease, box-shadow .12s ease, transform .08s ease; font-weight:600; }
+.ui-button--primary, .btn.primario, .btn.btn--primary { background:var(--color-primario); color:var(--texto-claro); }
+.ui-button--primary:hover, .btn.primario:hover { background:var(--color-primario-600); transform:translateY(-1px); }
+.ui-button:focus, .btn:focus { outline: none; box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
+.ui-button--ghost, .btn--ghost { background:transparent; color:var(--color-primario); border-color:transparent; }
+.ui-button--danger, .btn.rojo { background:var(--color-danger); color:var(--texto-claro); }
+.ui-button--neutral, .btn.gris, .btn.gray { background:#f3f4f6; color:var(--texto-oscuro); }

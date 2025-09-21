@@ -1,5 +1,5 @@
 /* Tarjetas reutilizables */
-.ui-card { background: #fff; border-radius: var(--radio-base); padding: 1.25rem; box-shadow: 0 8px 20px rgba(2,6,23,0.06); max-width: 620px; margin: 0 auto; }
-.ui-card--centered { display: grid; place-items: center; min-height: 100vh; padding: 1rem; }
-.ui-card .logo { text-align: center; margin-bottom: 0.5rem; }
-.ui-card .titulo { text-align: center; margin-bottom: 1rem; }
+.ui-card { background: var(--color-surface); border-radius: var(--radio-base); padding: var(--space-md); box-shadow: var(--shadow-md); max-width: 100%; }
+.ui-card--centered { display: grid; place-items: center; min-height: 100vh; padding: var(--space-md); }
+.ui-card__brand, .ui-card .logo { text-align: center; margin-bottom: var(--space-sm); }
+.ui-card__title, .ui-card .titulo { text-align: center; margin-bottom: var(--space-md); font-size:1.15rem; }

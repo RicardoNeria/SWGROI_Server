@@ -1,8 +1,5 @@
 /* Tablas CRUD */
-.tabla-crud { width:100%; border-collapse:collapse; }
-.tabla-crud th, .tabla-crud td { padding:0.5rem 0.75rem; border-bottom:1px solid #e5e7eb; text-align:left; }
+.tabla-crud, .ui-tabla { width:100%; border-collapse:collapse; background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; overflow:hidden }
+.tabla-crud th, .tabla-crud td, .ui-tabla__head th, .ui-tabla__body td { padding:0.75rem 0.9rem; border-bottom:1px solid var(--color-border); text-align:left; }
 .table-wrap--viewport { overflow:auto; }
-
-/* BEM: ui-tabla */
-.ui-tabla { width:100%; border-collapse:collapse; }
-.ui-tabla__head th, .ui-tabla__body td { padding:0.5rem 0.75rem; border-bottom:1px solid #e5e7eb; text-align:left; }
+.ui-tabla__head th { background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(248,250,252,0.6)); color:var(--color-muted); font-weight:600; }

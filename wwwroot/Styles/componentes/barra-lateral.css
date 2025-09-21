@@ -1,5 +1,6 @@
-/* Barra lateral (sidebar) */
-.sidebar-dark { background:#0f172a; color:white; padding:1rem; width:220px; position:fixed; height:100vh; }
-.sidebar-dark .logo { font-size:1.25rem; margin-bottom:1rem; }
-.sidebar-dark nav a { color:rgba(255,255,255,0.9); display:block; padding:0.4rem 0; text-decoration:none; }
-.sidebar-dark nav a.active { font-weight:600; }
+/* Barra lateral (sidebar) - BEM: .ui-sidebar */
+.ui-sidebar, .sidebar-dark { background:var(--color-primario); color:var(--texto-claro); padding:var(--space-md); width:240px; position:fixed; height:100vh; box-shadow:var(--shadow-sm); }
+.ui-sidebar__brand, .sidebar-dark .logo { font-size:1.25rem; margin-bottom:var(--space-md); display:flex; align-items:center; gap:8px; }
+.ui-sidebar nav a, .sidebar-dark nav a { color:rgba(255,255,255,0.95); display:block; padding:0.5rem 0.25rem; text-decoration:none; border-radius:6px; }
+.ui-sidebar nav a:hover, .sidebar-dark nav a:hover { background:rgba(255,255,255,0.04); }
+.ui-sidebar nav a.ui-sidebar__link--active, .sidebar-dark nav a.active { font-weight:600; }

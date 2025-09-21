@@ -1,4 +1,4 @@
-/* Barra superior (topbar) */
-.topbar { margin-left:220px; padding:0.5rem 1rem; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(90deg,#ffffff,#f8fafc); box-shadow:0 1px 0 rgba(0,0,0,0.05); }
-.toggle-sidebar { background:transparent; border:none; font-size:1.25rem; }
-.breadcrumbs { font-size:0.95rem; }
+/* Barra superior (topbar) - BEM: .ui-topbar */
+.ui-topbar, .topbar { margin-left:240px; padding:0.5rem 1rem; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(90deg,var(--color-surface),var(--color-secundario)); box-shadow:0 1px 0 rgba(2,6,23,0.04); }
+.ui-topbar__toggle, .toggle-sidebar { background:transparent; border:none; font-size:1.25rem; cursor:pointer; }
+.ui-topbar__breadcrumbs, .breadcrumbs { font-size:0.95rem; color:var(--color-muted); }

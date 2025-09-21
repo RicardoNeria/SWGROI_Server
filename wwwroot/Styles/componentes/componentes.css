@@ -3,9 +3,11 @@
    Metodología BEM con prefijo ui-
    ================================ */
 
-/* Base */
+/* Imports ordenados: variables y tipografía primero, luego componentes */
 @import "./variables.css";
 @import "./tipografia.css";
+
+/* Componentes individuales (mantener import por compatibilidad) */
 @import "./botones.css";
 @import "./formularios.css";
 @import "./filtros.css";
@@ -15,103 +17,62 @@
 @import "./barra-superior.css";
 @import "./ventanas-modales.css";
 @import "./disposicion.css";
-
-/* Dashboard / Menú principal */
 @import "./tablero.css";
 @import "./banner.css";
 @import "./etiquetas.css";
 @import "./migas.css";
-
-/* UI: tarjeta reutilizable */
 @import "./card.css";
-
-/* Ventas / Reportes */
 @import "./indicadores.css";
-@import "./barra-herramientas.css";
 @import "./metricas.css";
 @import "./desplazable.css";
-
-/* Autenticación */
 @import "./autenticacion.css";
 @import "./captcha.css";
 @import "./enlaces.css";
-/* Reglas base no disruptivas para bloques ui- añadidos por la migración inicial */
 
-/* Layout principal */
+/* Reglas base BEM (ui-) para unificar aspecto y facilitar migración */
 .ui-main {
-   padding: 18px;
-   background: var(--bg, #ffffff);
+   padding: var(--space-md);
+   background: var(--color-secundario, #f8fafc);
 }
 
-/* Tarjetas */
 .ui-card {
-   background: var(--card-bg, #ffffff);
-   border: 1px solid var(--card-border, #e5e7eb);
-   border-radius: 8px;
-   box-shadow: 0 1px 2px rgba(16,24,40,0.03);
-   padding: 12px;
+   background: var(--color-surface);
+   border: 1px solid var(--color-border);
+   border-radius: var(--radio-base);
+   box-shadow: var(--shadow-sm);
+   padding: var(--space-md);
 }
-.ui-card--report { padding: 14px; }
-.ui-card--content { padding: 12px; }
+.ui-card--report { padding: calc(var(--space-md) + 4px); }
+.ui-card--content { padding: var(--space-md); }
 
-/* Formatos de tabla básicos (no intrusivos) */
 .ui-tabla { width: 100%; border-collapse: collapse; }
-.ui-tabla th, .ui-tabla td { padding: 8px 10px; border-bottom: 1px solid var(--table-border, #eaeef2); text-align: left; }
-.ui-tabla__head th { background: transparent; font-weight:700; }
-.ui-tabla__body tr:nth-child(even) { background: rgba(0,0,0,0.01); }
-.ui-tabla--striped .ui-tabla__body tr:nth-child(even){ background: rgba(0,0,0,0.02); }
+.ui-tabla th, .ui-tabla td { padding: 10px 12px; border-bottom: 1px solid var(--color-border); text-align: left; }
+.ui-tabla__head th { background: transparent; font-weight:700; color:var(--color-muted); }
+.ui-tabla__body tr:nth-child(even) { background: rgba(2,6,23,0.02); }
+.ui-tabla--striped .ui-tabla__body tr:nth-child(even){ background: rgba(2,6,23,0.03); }
 
-/* Filtros / formularios */
-.ui-filtros { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.ui-filtros { display:flex; gap:var(--space-sm); align-items:center; flex-wrap:wrap; }
 .ui-filtros__campo { min-width: 140px; }
-.ui-formulario { display:block; gap:10px; }
-.ui-formulario__campo { margin-bottom:8px; }
-.ui-formulario__acciones { margin-top:12px; display:flex; gap:8px; }
+.ui-formulario { display:block; gap:var(--space-sm); }
+.ui-formulario__campo { margin-bottom:var(--space-sm); }
+.ui-formulario__acciones { margin-top:var(--space-sm); display:flex; gap:var(--space-sm); }
 
-/* Paginación */
-.ui-paginacion { display:flex; gap:12px; align-items:center; }
+.ui-paginacion { display:flex; gap:var(--space-sm); align-items:center; }
 .ui-paginacion__controles button { min-width:64px; }
 
-/* Autenticación */
 .ui-auth-page { display:flex; align-items:center; justify-content:center; min-height:70vh; }
 .ui-auth-card { max-width:420px; margin:0 auto; }
-.ui-auth-form { display:flex; flex-direction:column; gap:10px; }
+.ui-auth-form { display:flex; flex-direction:column; gap:var(--space-sm); }
 .ui-auth-form__submit { align-self:flex-start; }
 
-/* Helpers */
 .ui-desplazable { overflow:auto; }
 
-/* Botones y controles - reglas no disruptivas */
-.btn {
-   font-family: inherit;
-   border-radius: 8px;
-   padding: 8px 12px;
-   cursor: pointer;
-   border: 1px solid transparent;
-}
-.btn.primario, .btn.azul, .btn.btn--primary { background: var(--btn-primary,#2563eb); color: #fff; }
-.btn.verde { background: #16a34a; color: #fff; }
-.btn.amarillo { background: #f59e0b; color: #111827; }
-.btn.rojo { background: #ef4444; color: #fff; }
-.btn.gris, .btn.gray { background: #f3f4f6; color:#111827; }
-
-/* Inputs y campos */
-.form-control, input.form-control, textarea.form-control, select.ui-filtros__select {
-   padding: 8px 10px;
-   border: 1px solid var(--input-border,#d1d5db);
-   border-radius: 6px;
-   background: var(--input-bg,#fff);
-   font-family: inherit;
-}
-.field-with-feedback { display:flex; gap:8px; align-items:center; }
-.field-icon { opacity:0.7; }
-
-/* Small layout helpers */
+/* Helpers y utilidades BEM-friendly */
 .ui-card--centered { display:flex; align-items:center; justify-content:center; min-height:60vh; }
-.ui-page { padding:18px; }
+.ui-page { padding:var(--space-md); }
 .ui-container { max-width:1180px; margin:0 auto; }
 
-/* Reduce specificity conflicts: prefer BEM classes but allow legacy to keep working */
+/* Compatibilidad: mantener clases legacy pero favorecer ui- */
 body .ui-card { box-sizing: border-box; }
 
 
