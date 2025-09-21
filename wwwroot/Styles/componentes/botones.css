@@ -1,6 +1,7 @@
 .ui-button{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:var(--ui-radius-sm);font-weight:600;font-size:var(--ui-fs-sm);cursor:pointer;border:none;transition:background-color 0.2s, color 0.2s, transform 0.1s}
 .ui-button:active{transform:translateY(1px)}
 .ui-button:focus{outline:3px solid rgba(11,59,122,0.18);outline-offset:2px}
+.ui-button:focus-visible{outline:3px solid rgba(11,59,122,0.36);outline-offset:2px}
 
 /* Variantes por color/estilo */
 .ui-button--primary{background:var(--ui-color-primario);color:#fff}
@@ -40,3 +41,8 @@
 .ui-button-group{display:flex;gap:var(--ui-gap-4)}
 .ui-button-group--stretched{width:100%}
 .ui-button-group--stretched .ui-button{flex:1}
+
+/* Extensiones para unificación: botón de ancho completo y variantes neutrales */
+.ui-button--block{display:flex;width:100%}
+.ui-button--link{background:transparent;border:none;color:var(--ui-color-primario);padding:0}
+.ui-button--link:hover{text-decoration:underline}

@@ -1,0 +1,14 @@
+<!-- iconos.html: Componente universal de iconos con Lucide -->
+<div class="ui-iconos" aria-hidden="true">
+  <!-- Contenedor vacío, Lucide reemplaza dinámicamente los <i data-lucide="..."> -->
+</div>
+
+<!-- Script de Lucide -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.lucide) {
+      lucide.createIcons(); // Renderiza todos los <i data-lucide="...">
+    }
+  });
+</script>
