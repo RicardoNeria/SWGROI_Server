@@ -1,6 +1,18 @@
-/* Barra lateral (sidebar) - BEM: .ui-sidebar */
-.ui-sidebar, .sidebar-dark { background:var(--color-primario); color:var(--texto-claro); padding:var(--space-md); width:240px; position:fixed; height:100vh; box-shadow:var(--shadow-sm); }
-.ui-sidebar__brand, .sidebar-dark .logo { font-size:1.25rem; margin-bottom:var(--space-md); display:flex; align-items:center; gap:8px; }
-.ui-sidebar nav a, .sidebar-dark nav a { color:rgba(255,255,255,0.95); display:block; padding:0.5rem 0.25rem; text-decoration:none; border-radius:6px; }
-.ui-sidebar nav a:hover, .sidebar-dark nav a:hover { background:rgba(255,255,255,0.04); }
-.ui-sidebar nav a.ui-sidebar__link--active, .sidebar-dark nav a.active { font-weight:600; }
+.ui-sidebar{background:var(--ui-color-primario);color:#fff;min-height:100vh;width:260px}
+.ui-sidebar__header{padding:var(--ui-gap-12);text-align:center;border-bottom:1px solid rgba(255,255,255,0.1)}
+.ui-sidebar__title{margin:0 0 var(--ui-gap-8);font-size:var(--ui-fs-lg)}
+.ui-sidebar__logo{width:80px;height:80px;margin:0 auto}
+.ui-sidebar__logo-img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.ui-sidebar__menu{list-style:none;margin:0;padding:0}
+.ui-sidebar__item{margin:0;position:relative}
+.ui-sidebar__link{padding:12px 16px;display:block;color:#fff;text-decoration:none;transition:background 0.2s}
+.ui-sidebar__link:hover{background:var(--ui-color-primario-hover)}
+.ui-sidebar__link:focus{outline:3px solid rgba(255,255,255,0.3);outline-offset:-3px;background:var(--ui-color-primario-hover)}
+.ui-sidebar__link--active{background:var(--ui-color-primario-hover)}
+.ui-sidebar__link--logout{border-top:1px solid rgba(255,255,255,0.1);margin-top:var(--ui-gap-12)}
+.ui-sidebar__link--toggle{cursor:pointer}
+.ui-sidebar__link--toggle:focus{outline:3px solid rgba(255,255,255,0.3);outline-offset:-3px}
+.ui-sidebar__submenu{display:none;list-style:none;margin:0;padding:0;background:rgba(0,0,0,0.1)}
+.ui-sidebar__sublink{padding:8px 16px 8px 32px;display:block;color:#fff;text-decoration:none;font-size:var(--ui-fs-sm);transition:background 0.2s}
+.ui-sidebar__sublink:hover{background:rgba(255,255,255,0.1)}
+.ui-sidebar__sublink:focus{outline:3px solid rgba(255,255,255,0.3);outline-offset:-3px;background:rgba(255,255,255,0.1)}

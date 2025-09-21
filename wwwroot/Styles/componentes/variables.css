@@ -1,32 +1,21 @@
-/* Variables globales de diseño (colores, espacios, tipografía, sombras) */
 :root {
-    /* Palette */
-    --color-primario: #2563eb; /* azul principal */
-    --color-primario-600: #1e40af;
-    --color-secundario: #f8fafc;
-    --color-surface: #ffffff;
-    --color-muted: #6b7280;
-    --color-success: #16a34a;
-    --color-danger: #ef4444;
-    --color-border: #e6e9ef;
-
-    /* Texto */
-    --texto-oscuro: #0f172a;
-    --texto-claro: #ffffff;
-
-    /* Spacing */
-    --space-xxs: 4px;
-    --space-xs: 8px;
-    --space-sm: 12px;
-    --space-md: 16px;
-    --space-lg: 24px;
-
-    /* Radii / shadows */
-    --radio-base: 8px;
-    --shadow-sm: 0 1px 2px rgba(2,6,23,0.04);
-    --shadow-md: 0 8px 20px rgba(2,6,23,0.06);
-
-    /* Typography */
-    --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --font-size-base: 14px;
+  --ui-color-primario:#0B3B7A;
+  --ui-color-primario-hover:#082C5A;
+  --ui-color-fondo:#ffffff;
+  --ui-color-muted:#eef2f7;
+  --ui-color-texto:#0f172a;
+  --ui-color-texto-muted:#475569;
+  --ui-color-exito:#16a34a;
+  --ui-color-peligro:#dc2626;
+  --ui-borde:#cbd5e1;
+  --ui-borde-claro:#e2e8f0;
+  --ui-font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --ui-fs-xs:12px; --ui-fs-sm:14px; --ui-fs-md:16px; --ui-fs-lg:18px; --ui-fs-xl:22px;
+  --ui-gap-2:4px; --ui-gap-3:6px; --ui-gap-4:8px; --ui-gap-6:12px;
+  --ui-gap-8:16px; --ui-gap-12:24px; --ui-gap-16:32px;
+  --ui-radius-sm:6px; --ui-radius-md:10px;
+  --ui-sombra-sm:0 1px 2px rgba(0,0,0,.08);
+  --ui-sombra-md:0 4px 10px rgba(0,0,0,.10);
 }
+*{box-sizing:border-box}
+body{margin:0;background:#f5f7fa;color:var(--ui-color-texto);font-family:var(--ui-font)}

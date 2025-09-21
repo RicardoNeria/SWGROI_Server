@@ -1,2 +1,3 @@
-/* Contenedores desplazables */
-.ui-desplazable { overflow:auto; }
+.ui-scrollable, .ui-desplazable {overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ui-scrollable::-webkit-scrollbar, .ui-desplazable::-webkit-scrollbar{height:8px}
+.ui-scrollable::-webkit-scrollbar-thumb, .ui-desplazable::-webkit-scrollbar-thumb{background:var(--ui-color-primario);border-radius:4px}

@@ -1,9 +1,6 @@
-/* Tipografías y estilos base de texto - usar variables globales */
-html, body { font-family: var(--font-sans); color: var(--texto-oscuro); line-height: 1.45; font-size:var(--font-size-base); }
-h1, h2, h3 { font-weight: 600; margin: 0 0 0.5rem 0; color:var(--texto-oscuro); }
-p { margin: 0 0 var(--space-md) 0; }
-
-/* Headings sizes */
-h1{ font-size:1.6rem }
-h2{ font-size:1.25rem }
-h3{ font-size:1.05rem }
+.ui-title{font-size:var(--ui-fs-xl);font-weight:700;margin:0 0 var(--ui-gap-12)}
+.ui-subtitle{font-size:var(--ui-fs-lg);font-weight:600;color:var(--ui-color-texto-muted)}
+.ui-message{padding:var(--ui-gap-8);border-radius:var(--ui-radius-sm);font-size:var(--ui-fs-sm);font-weight:600;margin-bottom:var(--ui-gap-8)}
+.ui-message--success{background:var(--ui-color-exito-claro);color:var(--ui-color-exito);border:1px solid var(--ui-color-exito)}
+.ui-message--error{background:var(--ui-color-peligro-claro);color:var(--ui-color-peligro);border:1px solid var(--ui-color-peligro)}
+.ui-message--warning{background:var(--ui-color-advertencia-claro);color:var(--ui-color-advertencia);border:1px solid var(--ui-color-advertencia)}

@@ -2,4 +2,12 @@
 .ui-card { background: var(--color-surface); border-radius: var(--radio-base); padding: var(--space-md); box-shadow: var(--shadow-md); max-width: 100%; }
 .ui-card--centered { display: grid; place-items: center; min-height: 100vh; padding: var(--space-md); }
 .ui-card__brand, .ui-card .logo { text-align: center; margin-bottom: var(--space-sm); }
-.ui-card__title, .ui-card .titulo { text-align: center; margin-bottom: var(--space-md); font-size:1.15rem; }
+.ui-card__title, .ui-card .titulo { text-align: left; margin-bottom: var(--space-md); font-size:1.15rem; }
+.ui-card--module{padding:16px}
+.ui-card__header{font-weight:700;margin-bottom:8px}
+.ui-card__header { padding: var(--space-sm); font-weight: 600; cursor: pointer; border-bottom: 1px solid var(--ui-borde); transition: background-color 0.2s; }
+.ui-card__header:hover { background-color: var(--ui-color-muted); }
+.ui-card__list { list-style: none; margin: 0; padding: 0; }
+.ui-card__item { margin: 0; padding: 0; }
+.ui-card__link { display: block; padding: var(--space-sm); color: var(--ui-color-texto); text-decoration: none; transition: background-color 0.2s; }
+.ui-card__link:hover { background-color: var(--ui-color-muted); }

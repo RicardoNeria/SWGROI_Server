@@ -1,4 +1,5 @@
-/* Controles de paginación */
-.paginacion, .ui-paginacion { display:flex; justify-content:space-between; align-items:center; margin-top:var(--space-md); gap:8px; }
-.paginacion-controles .btn, .ui-paginacion__controles .btn { margin-left:0.25rem; }
-.ui-paginacion__page { padding:6px 10px; border-radius:6px; background:var(--color-surface); border:1px solid var(--color-border); }
+.ui-pagination, .ui-paginacion{display:flex;justify-content:space-between;align-items:center}
+.ui-pagination__controls, .ui-paginacion__controls{display:flex;gap:var(--ui-gap-6)}
+.ui-pagination__label, .ui-paginacion__label{font-size:var(--ui-fs-sm);color:var(--ui-color-texto-muted)}
+.ui-paginacion button{border:1px solid var(--ui-borde);background:#fff;padding:6px 10px;border-radius:6px;margin-right:4px}
+.ui-paginacion button.activo{background:var(--ui-color-primario);color:#fff}

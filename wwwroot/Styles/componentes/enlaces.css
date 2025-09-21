@@ -1,2 +1,11 @@
-/* Enlaces y estilos relacionados */
-.ui-enlace { color:var(--color-primario); text-decoration:none; }
+.ui-link{font-size:var(--ui-fs-sm);color:var(--ui-color-primario);text-decoration:none;transition:color 0.2s,text-decoration 0.2s}
+.ui-link:hover{text-decoration:underline;color:var(--ui-color-primario-hover)}
+.ui-link--secondary{color:var(--ui-color-texto-muted)}
+.ui-link--block{display:block;padding:var(--ui-gap-6) 0}
+.ui-link--bold{font-weight:600}
+.ui-link--icon{display:inline-flex;align-items:center;gap:var(--ui-gap-2)}
+.ui-link--disabled{opacity:0.6;pointer-events:none}
+
+/* Enlaces agrupados (footer) */
+.ui-links-group{display:flex;gap:var(--ui-gap-6);justify-content:center;flex-wrap:wrap}
+.ui-links-group--spaced{gap:var(--ui-gap-12)}

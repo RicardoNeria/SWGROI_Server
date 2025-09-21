@@ -1,5 +1,10 @@
-/* Tablas CRUD */
-.tabla-crud, .ui-tabla { width:100%; border-collapse:collapse; background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; overflow:hidden }
-.tabla-crud th, .tabla-crud td, .ui-tabla__head th, .ui-tabla__body td { padding:0.75rem 0.9rem; border-bottom:1px solid var(--color-border); text-align:left; }
-.table-wrap--viewport { overflow:auto; }
-.ui-tabla__head th { background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(248,250,252,0.6)); color:var(--color-muted); font-weight:600; }
+.ui-table-wrap, .ui-tabla-wrap {background:#fff;border-radius:var(--ui-radius-md);overflow:hidden}
+.ui-table, .ui-tabla {width:100%;border-collapse:collapse}
+.ui-table__head th, .ui-tabla__head th {padding:12px;background:var(--ui-color-muted);font-weight:700}
+.ui-table__cell--acciones, .ui-tabla__cell--acciones {white-space:nowrap}
+.ui-table__body, .ui-tabla__body {background:transparent}
+.ui-actions{display:flex;gap:var(--ui-gap-4)}
+
+/* Small helpers for table links */
+.ui-tabla a, .ui-table a{color:var(--ui-color-primario);text-decoration:none}
+.ui-tabla a:hover, .ui-table a:hover{text-decoration:underline}

@@ -1,4 +1,6 @@
-/* Estilos para el captcha */
-.ui-captcha, .captcha-container { display:flex; align-items:center; gap:0.5rem; margin: 0.5rem 0; }
-.captcha-container img { height: 28px; width: auto; object-fit: contain; }
-.captcha-container #captchaPregunta { font-weight: 600; }
+.ui-captcha{margin:var(--ui-gap-12) 0;padding:var(--ui-gap-8);background:var(--ui-color-muted);border-radius:var(--ui-radius-sm)}
+.ui-captcha__question{font-weight:600;margin-bottom:var(--ui-gap-4)}
+.ui-captcha__image{display:flex;justify-content:center;margin:var(--ui-gap-4) 0}
+.ui-captcha__image img{max-height:40px}
+.ui-captcha__input{margin-top:var(--ui-gap-4);padding:8px 12px;border:1px solid var(--ui-borde);border-radius:var(--ui-radius-sm);width:100%;font-size:var(--ui-fs-md)}
+.ui-captcha__input:focus{outline:none;border-color:var(--ui-color-primario);box-shadow:0 0 0 2px rgba(11,59,122,0.2)}

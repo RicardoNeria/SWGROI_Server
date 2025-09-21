@@ -1,10 +1,20 @@
-/* Reglas de layout y disposición */
-.dashboard { display:flex; min-height:100vh; background:var(--color-secundario); }
-.main-content { margin-left:240px; padding:var(--space-md); width:100%; }
-.admin-container, .ui-container { max-width:1180px; margin:0 auto; }
+.ui-layout{display:grid;grid-template-columns:260px 1fr;grid-template-rows:auto 1fr;grid-template-areas:"sidebar topbar" "sidebar main";min-height:100vh}
+/* Colocar aside, header y main en sus áreas */
+.ui-sidebar{grid-area:sidebar}
+.ui-topbar{grid-area:topbar}
+.ui-layout__main{grid-area:main;padding:var(--ui-gap-16);background:var(--ui-color-fondo);overflow:auto}
+.ui-card{background:#fff;border-radius:var(--ui-radius-md);box-shadow:var(--ui-sombra-sm);margin-bottom:var(--ui-gap-16)}
+.ui-card__body{padding:var(--ui-gap-12)}
 
-/* Responsive adjustments */
-@media (max-width:900px){
-	.main-content { margin-left:0; padding:var(--space-sm); }
-	.ui-sidebar { position:relative; width:100%; height:auto }
-}
+/* Topbar */
+.ui-topbar{display:flex;align-items:center;padding:var(--ui-gap-12);background:#fff;border-radius:var(--ui-radius-md);box-shadow:var(--ui-sombra-sm);margin-bottom:var(--ui-gap-16)}
+.ui-topbar__brand{width:50px;margin-right:var(--ui-gap-12)}
+.ui-topbar__logo{width:100%;height:auto}
+.ui-topbar__title{margin:0;font-size:var(--ui-fs-lg);flex:1}
+
+/* Sidebar colapsable básico */
+.ui-layout--sidebar-collapsed .ui-sidebar{width:72px}
+.ui-layout--sidebar-collapsed{grid-template-columns:72px 1fr}
+
+/* Variante explícita sin topbar (mejor compatibilidad que :has) */
+.ui-layout--no-topbar{grid-template-rows:1fr;grid-template-areas:"sidebar main"}

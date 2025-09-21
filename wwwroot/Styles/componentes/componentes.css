@@ -3,11 +3,9 @@
    Metodología BEM con prefijo ui-
    ================================ */
 
-/* Imports ordenados: variables y tipografía primero, luego componentes */
+/* Base */
 @import "./variables.css";
 @import "./tipografia.css";
-
-/* Componentes individuales (mantener import por compatibilidad) */
 @import "./botones.css";
 @import "./formularios.css";
 @import "./filtros.css";
@@ -17,62 +15,20 @@
 @import "./barra-superior.css";
 @import "./ventanas-modales.css";
 @import "./disposicion.css";
+
+/* Dashboard / Menú principal */
 @import "./tablero.css";
 @import "./banner.css";
 @import "./etiquetas.css";
 @import "./migas.css";
-@import "./card.css";
+
+/* Ventas / Reportes */
 @import "./indicadores.css";
+@import "./barra-herramientas.css";
 @import "./metricas.css";
 @import "./desplazable.css";
+
+/* Autenticación */
 @import "./autenticacion.css";
 @import "./captcha.css";
 @import "./enlaces.css";
-
-/* Reglas base BEM (ui-) para unificar aspecto y facilitar migración */
-.ui-main {
-   padding: var(--space-md);
-   background: var(--color-secundario, #f8fafc);
-}
-
-.ui-card {
-   background: var(--color-surface);
-   border: 1px solid var(--color-border);
-   border-radius: var(--radio-base);
-   box-shadow: var(--shadow-sm);
-   padding: var(--space-md);
-}
-.ui-card--report { padding: calc(var(--space-md) + 4px); }
-.ui-card--content { padding: var(--space-md); }
-
-.ui-tabla { width: 100%; border-collapse: collapse; }
-.ui-tabla th, .ui-tabla td { padding: 10px 12px; border-bottom: 1px solid var(--color-border); text-align: left; }
-.ui-tabla__head th { background: transparent; font-weight:700; color:var(--color-muted); }
-.ui-tabla__body tr:nth-child(even) { background: rgba(2,6,23,0.02); }
-.ui-tabla--striped .ui-tabla__body tr:nth-child(even){ background: rgba(2,6,23,0.03); }
-
-.ui-filtros { display:flex; gap:var(--space-sm); align-items:center; flex-wrap:wrap; }
-.ui-filtros__campo { min-width: 140px; }
-.ui-formulario { display:block; gap:var(--space-sm); }
-.ui-formulario__campo { margin-bottom:var(--space-sm); }
-.ui-formulario__acciones { margin-top:var(--space-sm); display:flex; gap:var(--space-sm); }
-
-.ui-paginacion { display:flex; gap:var(--space-sm); align-items:center; }
-.ui-paginacion__controles button { min-width:64px; }
-
-.ui-auth-page { display:flex; align-items:center; justify-content:center; min-height:70vh; }
-.ui-auth-card { max-width:420px; margin:0 auto; }
-.ui-auth-form { display:flex; flex-direction:column; gap:var(--space-sm); }
-.ui-auth-form__submit { align-self:flex-start; }
-
-.ui-desplazable { overflow:auto; }
-
-/* Helpers y utilidades BEM-friendly */
-.ui-card--centered { display:flex; align-items:center; justify-content:center; min-height:60vh; }
-.ui-page { padding:var(--space-md); }
-.ui-container { max-width:1180px; margin:0 auto; }
-
-/* Compatibilidad: mantener clases legacy pero favorecer ui- */
-body .ui-card { box-sizing: border-box; }
-
-

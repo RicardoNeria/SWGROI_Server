@@ -1,2 +1,3 @@
-/* Indicadores y KPIs */
-.ui-indicador { background:#fff; padding:0.75rem; border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+.ui-badge{padding:4px 8px;border-radius:var(--ui-radius-sm);font-weight:600}
+.ui-badge--success{background:#dcfce7;color:#166534}
+.ui-badge--danger{background:#fee2e2;color:#991b1b}

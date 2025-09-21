@@ -1,2 +1,2 @@
-/* Métricas y gráficos */
-.metric { padding:0.5rem; }
+.ui-metrics{display:flex;gap:var(--ui-gap-8);background:#fff;border-radius:var(--ui-radius-md);padding:var(--ui-gap-8)}
+.ui-metrics__item{padding:6px 12px;background:var(--ui-color-muted);border-radius:var(--ui-radius-sm);font-weight:600}

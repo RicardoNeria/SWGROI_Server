@@ -1,8 +1,42 @@
-/* Estilos reutilizables para botones - BEM-friendly */
-.ui-button, .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:0.5rem 0.75rem; border-radius:var(--radio-base); border:1px solid transparent; cursor:pointer; transition: background-color .12s ease, box-shadow .12s ease, transform .08s ease; font-weight:600; }
-.ui-button--primary, .btn.primario, .btn.btn--primary { background:var(--color-primario); color:var(--texto-claro); }
-.ui-button--primary:hover, .btn.primario:hover { background:var(--color-primario-600); transform:translateY(-1px); }
-.ui-button:focus, .btn:focus { outline: none; box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
-.ui-button--ghost, .btn--ghost { background:transparent; color:var(--color-primario); border-color:transparent; }
-.ui-button--danger, .btn.rojo { background:var(--color-danger); color:var(--texto-claro); }
-.ui-button--neutral, .btn.gris, .btn.gray { background:#f3f4f6; color:var(--texto-oscuro); }
+.ui-button{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:var(--ui-radius-sm);font-weight:600;font-size:var(--ui-fs-sm);cursor:pointer;border:none;transition:background-color 0.2s, color 0.2s, transform 0.1s}
+.ui-button:active{transform:translateY(1px)}
+.ui-button:focus{outline:3px solid rgba(11,59,122,0.18);outline-offset:2px}
+
+/* Variantes por color/estilo */
+.ui-button--primary{background:var(--ui-color-primario);color:#fff}
+.ui-button--primary:hover{background:var(--ui-color-primario-hover)}
+.ui-button--secondary{border:1px solid var(--ui-color-primario);color:var(--ui-color-primario);background:#fff}
+.ui-button--secondary:hover{background:var(--ui-color-muted)}
+.ui-button--ghost{background:transparent;color:var(--ui-color-texto);border:1px solid var(--ui-borde)}
+.ui-button--ghost:hover{background:var(--ui-color-muted)}
+.ui-button--danger{background:var(--ui-color-peligro);color:#fff}
+.ui-button--danger:hover{background:#b91c1c}
+.ui-button--text{background:transparent;color:var(--ui-color-primario);padding:8px}
+.ui-button--text:hover{text-decoration:underline}
+
+/* Iconos dentro de botones */
+.ui-button i, .ui-button svg{width:16px;height:16px;display:inline-block;margin-right:8px;vertical-align:middle}
+.ui-button i:last-child, .ui-button svg:last-child{margin-right:0;margin-left:8px}
+.ui-button--sm i, .ui-button--sm svg{width:14px;height:14px;margin-right:6px}
+.ui-button--sm i:last-child, .ui-button--sm svg:last-child{margin-left:6px}
+
+/* Tight spacing for toolbar actions */
+.ui-actions .ui-button{padding:8px 12px}
+
+/* Variantes por tamaño */
+.ui-button--sm{padding:6px 12px;font-size:var(--ui-fs-xs)}
+.ui-button--lg{padding:12px 20px;font-size:var(--ui-fs-md)}
+
+/* Estados */
+.ui-button:disabled, .ui-button--disabled{opacity:0.6;cursor:not-allowed;pointer-events:none}
+.ui-button--loading{position:relative;color:transparent;pointer-events:none}
+.ui-button--loading::after{content:'';position:absolute;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:#fff;animation:button-loading 0.8s infinite linear}
+
+@keyframes button-loading{
+  to{transform:rotate(360deg)}
+}
+
+/* Grupo de botones */
+.ui-button-group{display:flex;gap:var(--ui-gap-4)}
+.ui-button-group--stretched{width:100%}
+.ui-button-group--stretched .ui-button{flex:1}

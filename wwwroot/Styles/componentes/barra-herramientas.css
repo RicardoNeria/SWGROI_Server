@@ -1,0 +1,2 @@
+.ui-toolbar{display:flex;gap:var(--ui-gap-8);margin-bottom:var(--ui-gap-12)}
+.ui-toolbar__group{display:flex;gap:var(--ui-gap-6)}

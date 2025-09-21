@@ -1,2 +1,2 @@
-/* Banner / hero */
-.ui-banner { background:var(--color-primario); color:var(--texto-claro); padding:1rem; border-radius:6px; }
+.ui-banner{border-radius:var(--ui-radius-md);overflow:hidden;box-shadow:var(--ui-sombra-sm)}
+.ui-banner img{width:100%;display:block}

@@ -1,9 +1,5 @@
-/* Barra de filtros reutilizable */
-.barra-filtros { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin:0.75rem 0; }
-.barra-filtros input, .barra-filtros select { min-width:120px; }
-
-/* BEM: ui-filtros */
-.ui-filtros { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin:0.75rem 0; }
-.ui-filtros__campo { position:relative; }
-.ui-filtros__select { min-width:120px; }
-.ui-filtros__accion { margin-left:0.25rem; }
+.ui-filters{display:flex;flex-wrap:wrap;gap:var(--ui-gap-8);margin:var(--ui-gap-12) 0}
+.ui-filters__input,.ui-filters__select{
+  padding:8px 10px;border:1px solid var(--ui-borde);border-radius:var(--ui-radius-sm);font-size:var(--ui-fs-sm);
+}
+.ui-filters__select{background:#fff}
