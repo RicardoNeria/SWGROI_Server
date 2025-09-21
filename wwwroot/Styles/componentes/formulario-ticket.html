@@ -1,0 +1,32 @@
+<section class="ui-ticket">
+  <form id="formularioTicket" class="ui-ticket__form ui-form">
+    <div class="ui-form__group">
+      <label for="folio" class="ui-form__label">Folio del Ticket</label>
+      <input id="folio" name="folio" type="text" class="ui-form__input" required>
+      <div id="folioFeedback" class="ui-form__feedback" aria-live="polite"></div>
+    </div>
+
+    <div class="ui-form__group">
+      <label for="descripcion" class="ui-form__label">Descripción</label>
+      <textarea id="descripcion" name="descripcion" class="ui-form__input" rows="3" required></textarea>
+      <div id="descripcionFeedback" class="ui-form__feedback" aria-live="polite"></div>
+    </div>
+
+    <div class="ui-form__group">
+      <label for="estado" class="ui-form__label">Estado inicial</label>
+      <select id="estado" name="estado" class="ui-form__input" required>
+        <option value="Almacén">Almacén</option>
+        <option value="Capturado">Capturado</option>
+        <option value="Programado/Asignado">Programado/Asignado</option>
+        <option value="Abierto">Abierto</option>
+        <option value="En Proceso">En Proceso</option>
+        <option value="Cerrado">Cerrado</option>
+      </select>
+    </div>
+
+    <div class="ui-form__actions">
+      <button type="submit" class="ui-button ui-button--primary">Registrar Ticket</button>
+      <button type="reset" class="ui-button ui-button--secondary">Limpiar</button>
+    </div>
+  </form>
+</section>
