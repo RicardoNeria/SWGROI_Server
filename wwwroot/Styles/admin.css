@@ -1,0 +1,158 @@
+/* ================================================
+   ADMIN.CSS - Estilos específicos para Administración de Usuarios
+   Metodología BEM + Componentes SWGROI
+   ================================================ */
+
+/* ================================
+   ESTILOS ESPECÍFICOS DEL MÓDULO
+   ================================ */
+
+/* Admin Page Wrapper */
+.admin-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Refinamientos específicos para formularios de usuario */
+.ui-form-group .ui-form__help {
+    font-size: var(--ui-font-size-sm);
+    color: var(--ui-color-texto-muted);
+    margin-top: var(--ui-gap-4);
+    display: block;
+}
+
+/* Valores de solo lectura en modales */
+.ui-form__value {
+    padding: var(--ui-gap-8);
+    background-color: var(--ui-color-fondo-alt);
+    border-radius: var(--ui-radius-sm);
+    font-weight: 500;
+}
+
+/* Tabla específica para usuarios */
+.ui-tabla__cell--acciones {
+    white-space: nowrap;
+    width: 160px;
+}
+
+.ui-tabla__cell--acciones .ui-button {
+    margin-right: var(--ui-gap-4);
+}
+
+.ui-tabla__cell--acciones .ui-button:last-child {
+    margin-right: 0;
+}
+
+/* KPIs específicos para administración */
+.ui-metrics__item {
+    text-align: center;
+}
+
+.ui-metrics__value {
+    letter-spacing: 0.5px;
+}
+
+/* Filtros específicos */
+.ui-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--ui-gap-16);
+    margin-bottom: var(--ui-gap-24);
+}
+
+.ui-filters__form {
+    display: flex;
+    gap: var(--ui-gap-12);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.ui-filters__input,
+.ui-filters__select {
+    min-width: 200px;
+}
+
+.ui-filters__input--search {
+    min-width: 280px;
+}
+
+/* Acciones específicas */
+.ui-actions {
+    display: flex;
+    gap: var(--ui-gap-8);
+    align-items: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ui-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .ui-filters__form {
+        justify-content: flex-start;
+    }
+    
+    .ui-actions {
+        justify-content: stretch;
+    }
+    
+    .ui-actions .ui-button {
+        flex: 1;
+    }
+    
+    .ui-tabla__cell--acciones {
+        min-width: 120px;
+    }
+    
+    .ui-tabla__cell--acciones .ui-button {
+        font-size: 0;
+        padding: var(--ui-gap-4);
+    }
+    
+    .ui-tabla__cell--acciones .ui-button__icon {
+        margin: 0;
+    }
+}
+
+/* Estados específicos para administración */
+.admin-page .ui-message--success {
+    border-left: 4px solid var(--ui-color-exito);
+}
+
+.admin-page .ui-message--error {
+    border-left: 4px solid var(--ui-color-error);
+}
+
+.admin-page .ui-message--warning {
+    border-left: 4px solid var(--ui-color-advertencia);
+}
+
+/* Mejoras de accesibilidad específicas */
+.ui-form__feedback[aria-live="polite"] {
+    min-height: 1.2em;
+}
+
+/* Indicadores de estado para roles */
+.admin-page .ui-badge--admin {
+    background-color: var(--ui-color-error);
+    color: white;
+}
+
+.admin-page .ui-badge--supervisor {
+    background-color: var(--ui-color-advertencia);
+    color: white;
+}
+
+.admin-page .ui-badge--operador {
+    background-color: var(--ui-color-info);
+    color: white;
+}
+
+.admin-page .ui-badge--tecnico {
+    background-color: var(--ui-color-secundario);
+    color: white;
+}
