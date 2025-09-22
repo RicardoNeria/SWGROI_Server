@@ -1,0 +1,24 @@
+/* Layout principal y contenedores */
+.ui-main{display:flex;flex-direction:column;min-height:100vh;padding:var(--ui-gap-12);background:var(--ui-color-fondo)}
+.ui-container{max-width:1200px;margin:0 auto;padding:0 var(--ui-gap-12);width:100%}
+.ui-content{flex:1;padding:var(--ui-gap-16) 0}
+
+/* Compatibilidad con clases legacy */
+.main-content{display:flex;flex-direction:column;min-height:100vh;padding:var(--ui-gap-12);background:var(--ui-color-fondo);flex:1;margin-left:300px}
+
+/* Ajuste para páginas con sidebar fijo */
+body:has(.sidebar-dark) .main-content{margin-left:300px}
+
+/* Grid de páginas */
+.ui-page-grid{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.ui-page-grid__sidebar{background:#fff;border-right:1px solid var(--ui-borde)}
+.ui-page-grid__content{background:var(--ui-color-fondo);overflow-x:auto}
+
+/* Responsive */
+@media (max-width: 768px){
+  .ui-main{padding:var(--ui-gap-8)}
+  .ui-container{padding:0 var(--ui-gap-8)}
+  .main-content{padding:var(--ui-gap-8)}
+  .ui-page-grid{grid-template-columns:1fr}
+  .ui-page-grid__sidebar{display:none}
+}

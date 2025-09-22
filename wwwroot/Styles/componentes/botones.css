@@ -18,6 +18,9 @@
 /* Iconos dentro de botones */
 .ui-button i, .ui-button svg{width:16px;height:16px;display:inline-block;margin-right:8px;vertical-align:middle}
 .ui-button i:last-child, .ui-button svg:last-child{margin-right:0;margin-left:8px}
+/* Emojis o spans como iconos */
+.ui-button .ui-button__icon{display:inline-flex;align-items:center;justify-content:center;margin-right:8px}
+.ui-button .ui-button__icon:last-child{margin-right:0;margin-left:8px}
 .ui-button--sm i, .ui-button--sm svg{width:14px;height:14px;margin-right:6px}
 .ui-button--sm i:last-child, .ui-button--sm svg:last-child{margin-left:6px}
 
@@ -46,3 +49,35 @@
 .ui-button--block{display:flex;width:100%}
 .ui-button--link{background:transparent;border:none;color:var(--ui-color-primario);padding:0}
 .ui-button--link:hover{text-decoration:underline}
+
+/* Compatibilidad con botones legacy */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:var(--ui-radius-sm);font-weight:600;font-size:var(--ui-fs-sm);cursor:pointer;border:1px solid transparent;transition:background-color 0.2s, color 0.2s, transform 0.1s;text-decoration:none}
+.btn:active{transform:translateY(1px)}
+.btn:focus{outline:3px solid rgba(11,59,122,0.18);outline-offset:2px}
+.btn:focus-visible{outline:3px solid rgba(11,59,122,0.36);outline-offset:2px}
+
+/* Variantes de botones legacy */
+.btn.verde, .btn.primario{background:var(--ui-color-primario);color:#fff;border-color:var(--ui-color-primario)}
+.btn.verde:hover, .btn.primario:hover{background:var(--ui-color-primario-hover);border-color:var(--ui-color-primario-hover)}
+.btn.azul{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.btn.azul:hover{background:#2563eb;border-color:#2563eb}
+.btn.secundario{background:#fff;color:var(--ui-color-primario);border-color:var(--ui-color-primario)}
+.btn.secundario:hover{background:var(--ui-color-muted);border-color:var(--ui-color-primario)}
+.btn.peligro{background:var(--ui-color-peligro);color:#fff;border-color:var(--ui-color-peligro)}
+.btn.peligro:hover{background:#b91c1c;border-color:#b91c1c}
+
+/* Iconos en botones legacy */
+.btn i, .btn svg{width:16px;height:16px;display:inline-block;margin-right:8px;vertical-align:middle}
+.btn i:last-child, .btn svg:last-child{margin-right:0;margin-left:8px}
+
+/* Botones especiales de interfaz */
+.icon-btn, .toggle-sidebar{background:transparent;border:none;color:var(--ui-color-texto);padding:8px;cursor:pointer;border-radius:var(--ui-radius-sm);transition:background-color 0.2s}
+.icon-btn:hover, .toggle-sidebar:hover{background:var(--ui-color-muted)}
+.icon-btn:focus, .toggle-sidebar:focus{outline:3px solid rgba(11,59,122,0.18);outline-offset:2px}
+
+/* Botones toggle */
+.btn.toggle{background:#6b7280;color:#fff;border-color:#6b7280}
+.btn.toggle:hover{background:#4b5563;border-color:#4b5563}
+.btn.toggle.active{background:var(--ui-color-primario);border-color:var(--ui-color-primario)}
+.btn.gray{background:#6b7280;color:#fff;border-color:#6b7280}
+.btn.gray:hover{background:#4b5563;border-color:#4b5563}

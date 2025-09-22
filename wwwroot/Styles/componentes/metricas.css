@@ -1,2 +1,12 @@
-.ui-metrics{display:flex;gap:var(--ui-gap-8);background:#fff;border-radius:var(--ui-radius-md);padding:var(--ui-gap-8)}
-.ui-metrics__item{padding:6px 12px;background:var(--ui-color-muted);border-radius:var(--ui-radius-sm);font-weight:600}
+.ui-metrics{display:flex;flex-wrap:wrap;gap:var(--ui-gap-8);background:#fff;border-radius:var(--ui-radius-md);padding:var(--ui-gap-8)}
+.ui-metrics__item{padding:10px 12px;background:var(--ui-color-muted);border-radius:var(--ui-radius-sm);min-width:120px;flex:1}
+.ui-metrics__title,.ui-metrics__label{font-size:var(--ui-fs-sm);color:var(--ui-color-texto-muted)}
+.ui-metrics__value,.ui-metrics__valor{font-size:var(--ui-fs-xl);font-weight:700;color:var(--ui-color-texto)}
+.ui-metrics--compact{gap:var(--ui-gap-6);padding:var(--ui-gap-6)}
+.ui-metrics--compact .ui-metrics__item{padding:8px 10px}
+
+/* KPIs alternativos (mismo estilo que metrics) */
+.ui-kpi{display:flex;flex-wrap:wrap;gap:var(--ui-gap-8);background:#fff;border-radius:var(--ui-radius-md);padding:var(--ui-gap-8)}
+.ui-kpi__item{padding:10px 12px;background:var(--ui-color-muted);border-radius:var(--ui-radius-sm);min-width:120px;flex:1;text-align:center}
+.ui-kpi__label{display:block;font-size:var(--ui-fs-sm);color:var(--ui-color-texto-muted);margin-bottom:var(--ui-gap-2)}
+.ui-kpi__valor{display:block;font-size:var(--ui-fs-xl);font-weight:700;color:var(--ui-color-texto)}

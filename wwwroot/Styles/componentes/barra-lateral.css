@@ -1,4 +1,4 @@
-.ui-sidebar{background:var(--ui-color-primario);color:#fff;min-height:100vh;width:260px}
+.ui-sidebar{background:var(--ui-color-primario);color:#fff;min-height:100vh;width:300px}
 .ui-sidebar__header{padding:var(--ui-gap-12);text-align:center;border-bottom:1px solid rgba(255,255,255,0.1)}
 .ui-sidebar__title{margin:0 0 var(--ui-gap-8);font-size:var(--ui-fs-lg)}
 .ui-sidebar__logo{width:80px;height:80px;margin:0 auto}
@@ -16,3 +16,11 @@
 .ui-sidebar__sublink{padding:8px 16px 8px 32px;display:block;color:#fff;text-decoration:none;font-size:var(--ui-fs-sm);transition:background 0.2s}
 .ui-sidebar__sublink:hover{background:rgba(255,255,255,0.1)}
 .ui-sidebar__sublink:focus{outline:3px solid rgba(255,255,255,0.3);outline-offset:-3px;background:rgba(255,255,255,0.1)}
+
+/* Compatibilidad con clases legacy sidebar */
+.sidebar-dark{background:var(--ui-color-primario);color:#fff;min-height:100vh;width:300px;position:fixed;left:0;top:0;padding:var(--ui-gap-12) 0}
+.sidebar-dark .logo{margin:0 0 var(--ui-gap-16);font-size:var(--ui-fs-xl);font-weight:700;text-align:center;color:#fff;padding:0 var(--ui-gap-12)}
+.sidebar-dark a{padding:12px 16px;display:block;color:#fff;text-decoration:none;transition:background 0.2s;margin:0 var(--ui-gap-8);border-radius:var(--ui-radius-sm)}
+.sidebar-dark a:hover{background:var(--ui-color-primario-hover)}
+.sidebar-dark a.active{background:var(--ui-color-primario-hover);font-weight:600}
+.sidebar-dark a:focus{outline:3px solid rgba(255,255,255,0.3);outline-offset:-3px;background:var(--ui-color-primario-hover)}

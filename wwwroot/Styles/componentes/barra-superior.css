@@ -1,2 +1,5 @@
-.ui-topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#fff}
-.ui-breadcrumbs{font-size:var(--ui-fs-sm);color:var(--ui-color-texto-muted)}
+.ui-topbar{display:flex;justify-content:space-between;align-items:center;padding:var(--ui-gap-8) var(--ui-gap-12);background:#fff;border-radius:var(--ui-radius-md);box-shadow:var(--ui-sombra-sm);margin-bottom:var(--ui-gap-12)}
+.ui-topbar__brand{display:flex;align-items:center;gap:var(--ui-gap-6)}
+.ui-topbar__title{margin:0;font-size:var(--ui-fs-lg)}
+.ui-topbar__actions{display:flex;align-items:center;gap:var(--ui-gap-6)}
+

@@ -13,3 +13,6 @@
 .ui-welcome{margin:var(--ui-gap-16) 0;padding:var(--ui-gap-12);background:#fff;border-radius:var(--ui-radius-md);box-shadow:var(--ui-sombra-sm)}
 .ui-welcome__greeting{margin:0 0 var(--ui-gap-4);font-size:var(--ui-fs-xl);color:var(--ui-color-primario)}
 .ui-welcome__datetime{margin:0;font-size:var(--ui-fs-md);color:var(--ui-color-texto-muted)}
+
+/* Compatibilidad con clases legacy dashboard */
+.dashboard{background:var(--ui-color-fondo);min-height:100vh}

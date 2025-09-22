@@ -4,3 +4,17 @@
 .ui-message--success{background:var(--ui-color-exito-claro);color:var(--ui-color-exito);border:1px solid var(--ui-color-exito)}
 .ui-message--error{background:var(--ui-color-peligro-claro);color:var(--ui-color-peligro);border:1px solid var(--ui-color-peligro)}
 .ui-message--warning{background:var(--ui-color-advertencia-claro);color:var(--ui-color-advertencia);border:1px solid var(--ui-color-advertencia)}
+
+/* Compatibilidad con clases legacy */
+.titulo-dashboard{font-size:var(--ui-fs-xl);font-weight:700;margin:0 0 var(--ui-gap-12);color:var(--ui-color-primario)}
+.admin-container{background:#fff;border-radius:var(--ui-radius-md);padding:var(--ui-gap-12);box-shadow:var(--ui-sombra-sm);margin-bottom:var(--ui-gap-16)}
+.hide-on-mobile{display:block}
+@media (max-width: 768px){
+  .hide-on-mobile{display:none}
+}
+
+/* Mensajes de leyenda legacy */
+.leyenda{padding:var(--ui-gap-8);border-radius:var(--ui-radius-sm);font-size:var(--ui-fs-sm);font-weight:600;margin-bottom:var(--ui-gap-8);background:var(--ui-color-muted);color:var(--ui-color-texto);border:1px solid var(--ui-borde)}
+.leyenda--error{background:var(--ui-color-peligro-claro);color:var(--ui-color-peligro);border-color:var(--ui-color-peligro)}
+.leyenda--warn{background:var(--ui-color-advertencia-claro);color:var(--ui-color-advertencia);border-color:var(--ui-color-advertencia)}
+.leyenda--info{background:var(--ui-color-info-claro);color:var(--ui-color-info);border-color:var(--ui-color-info)}

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Módulo Base - SWGROI</title>
+    <link rel="stylesheet" href="/Styles/componentes/componentes.css">
+    <script src="/Scripts/seguridad.js" defer></script>
+    <script src="/Scripts/ui.js" defer></script>
+</head>
+<body class="ui-layout ui-layout--no-topbar">
+
+    <!-- SIDEBAR UNIFICADO -->
+    <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
+        <div class="ui-sidebar__header">
+            <h2 class="ui-sidebar__title">SWGROI</h2>
+            <div class="ui-sidebar__logo">
+                <img src="/Imagenes/CENTRALDEALARMAS1.png" alt="Logo Central de Alarmas" class="ui-sidebar__logo-img">
+            </div>
+        </div>
+        <nav class="ui-sidebar__nav">
+            <ul class="ui-sidebar__menu">
+                <li class="ui-sidebar__item">
+                    <a href="/menu.html" class="ui-sidebar__link">🏠 Menú principal</a>
+                </li>
+                <li class="ui-sidebar__item">
+                    <a href="#" class="ui-sidebar__link ui-sidebar__link--active" aria-current="page">
+                        🎯 Módulo Actual
+                    </a>
+                </li>
+                <li class="ui-sidebar__item">
+                    <a href="/logout" class="ui-sidebar__link ui-sidebar__link--logout">🚪 Cerrar sesión</a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="ui-layout__main">
+        <div class="ui-card ui-card--module">
+            
+            <!-- BREADCRUMBS OPCIONALES -->
+            <nav class="ui-breadcrumbs" aria-label="Rastro de navegación">
+                <ol class="ui-breadcrumbs__list">
+                    <li class="ui-breadcrumbs__item">
+                        <a href="/menu.html" class="ui-breadcrumbs__link">Inicio</a>
+                    </li>
+                    <li class="ui-breadcrumbs__item ui-breadcrumbs__item--active" aria-current="page">
+                        <span class="ui-breadcrumbs__separator">/</span>
+                        <span class="ui-breadcrumbs__current">Módulo Actual</span>
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- TÍTULO PRINCIPAL -->
+            <h2 class="ui-card__title">🎯 Título del Módulo</h2>
+
+            <!-- KPIs/MÉTRICAS DEL MÓDULO -->
+            <section class="ui-metrics" aria-label="Indicadores principales">
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Total</div>
+                    <div id="kpiTotal" class="ui-metrics__value">0</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Activos</div>
+                    <div id="kpiActivos" class="ui-metrics__value">0</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Pendientes</div>
+                    <div id="kpiPendientes" class="ui-metrics__value">0</div>
+                </div>
+            </section>
+
+            <!-- FILTROS Y ACCIONES PRINCIPALES -->
+            <div class="ui-filters">
+                <form id="formFiltro" class="ui-filters__form" role="search" aria-label="Filtros de búsqueda">
+                    <input type="text" id="buscador" class="ui-filters__input" 
+                           placeholder="Buscar..." aria-label="Buscar elementos">
+                    
+                    <select id="filtroEstado" class="ui-filters__select" aria-label="Filtrar por estado">
+                        <option value="">-- Todos los estados --</option>
+                        <option value="activo">Activo</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+
+                    <input type="date" id="filtroFecha" class="ui-filters__input" 
+                           aria-label="Filtrar por fecha">
+
+                    <button type="button" id="btnBuscar" class="ui-button ui-button--primary" 
+                            onclick="aplicarFiltros()" aria-controls="tablaElementos">
+                        <span class="ui-button__icon">🔍</span>Buscar
+                    </button>
+                    <button type="button" id="btnLimpiar" class="ui-button ui-button--secondary" 
+                            onclick="limpiarFiltros()">
+                        <span class="ui-button__icon">🧹</span>Limpiar
+                    </button>
+                </form>
+
+                <div class="ui-actions">
+                    <button class="ui-button ui-button--primary" onclick="abrirFormulario()" 
+                            id="btnAgregar" aria-controls="modalFormulario">
+                        <span class="ui-button__icon">➕</span>Agregar
+                    </button>
+                    <button class="ui-button ui-button--ghost" id="btnExportar">
+                        <span class="ui-button__icon">📤</span>Exportar
+                    </button>
+                    <button class="ui-button ui-button--secondary" id="btnRefrescar" onclick="actualizarDatos()">
+                        <span class="ui-button__icon">🔄</span>Actualizar
+                    </button>
+                </div>
+            </div>
+
+            <!-- MENSAJE DE ESTADO GLOBAL -->
+            <div id="leyenda" class="ui-message" style="display:none" aria-live="polite"></div>
+
+            <!-- TABLA DE DATOS PRINCIPAL -->
+            <section class="ui-card ui-card--report" aria-label="Listado de elementos">
+                <div class="ui-tabla-wrap ui-desplazable">
+                    <table class="ui-tabla" role="table">
+                        <thead class="ui-tabla__head">
+                            <tr role="row">
+                                <th scope="col" class="ui-tabla__col">Acciones</th>
+                                <th scope="col" class="ui-tabla__col">ID</th>
+                                <th scope="col" class="ui-tabla__col">Nombre</th>
+                                <th scope="col" class="ui-tabla__col">Estado</th>
+                                <th scope="col" class="ui-tabla__col">Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaElementos" class="ui-tabla__body">
+                            <!-- Contenido dinámico generado por JS -->
+                            <tr class="ui-tabla__row">
+                                <td class="ui-tabla__cell ui-tabla__cell--acciones">
+                                    <button class="ui-button ui-button--sm ui-button--secondary" 
+                                            onclick="editarElemento(1)" aria-label="Editar elemento ID 1">
+                                        <span class="ui-button__icon">✏️</span>
+                                    </button>
+                                    <button class="ui-button ui-button--sm ui-button--danger" 
+                                            onclick="eliminarElemento(1)" aria-label="Eliminar elemento ID 1">
+                                        <span class="ui-button__icon">🗑️</span>
+                                    </button>
+                                </td>
+                                <td class="ui-tabla__cell">1</td>
+                                <td class="ui-tabla__cell">Elemento de ejemplo</td>
+                                <td class="ui-tabla__cell">
+                                    <span class="ui-badge ui-badge--success">Activo</span>
+                                </td>
+                                <td class="ui-tabla__cell">2025-09-21</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINACIÓN UNIFICADA -->
+                <div class="ui-paginacion" role="navigation" aria-label="Paginación de resultados">
+                    <span class="ui-paginacion__info">Mostrando 1-10 de 25 elementos</span>
+                    <div class="ui-paginacion__controles">
+                        <button class="ui-button ui-button--ghost ui-paginacion__btn" 
+                                type="button" aria-label="Página anterior" disabled>
+                            <span class="ui-button__icon">⬅️</span>Anterior
+                        </button>
+                        <button class="ui-button ui-button--ghost ui-paginacion__btn" 
+                                type="button" aria-label="Página siguiente">
+                            Siguiente<span class="ui-button__icon">➡️</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL FORMULARIO UNIFICADO -->
+    <div class="ui-modal-overlay" id="modalFormulario" role="dialog" aria-modal="true" 
+         aria-labelledby="modalTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalTitulo" class="ui-modal__title">Agregar Elemento</h3>
+                <button class="ui-button ui-button--ghost ui-modal__close" 
+                        aria-label="Cerrar modal" onclick="cerrarModal()">
+                    <span class="ui-button__icon">✖️</span>
+                </button>
+            </div>
+
+            <div class="ui-modal__body">
+                <form id="formElemento" class="ui-form" role="form">
+                    <input type="hidden" id="elementoId" />
+                    
+                    <div class="ui-form-group">
+                        <label for="nombre" class="ui-form__label">Nombre:</label>
+                        <div class="ui-form__field">
+                            <input id="nombre" name="nombre" type="text" class="ui-form__input" 
+                                   placeholder="Nombre del elemento" required maxlength="100"
+                                   aria-describedby="nombreFeedback">
+                        </div>
+                        <div id="nombreFeedback" class="ui-form__feedback" aria-live="polite"></div>
+                    </div>
+
+                    <div class="ui-form-group">
+                        <label for="descripcion" class="ui-form__label">Descripción:</label>
+                        <div class="ui-form__field">
+                            <textarea id="descripcion" name="descripcion" rows="4" 
+                                      class="ui-form__input" placeholder="Descripción opcional"
+                                      maxlength="500" aria-describedby="descripcionFeedback"></textarea>
+                        </div>
+                        <div id="descripcionFeedback" class="ui-form__feedback" aria-live="polite"></div>
+                        <small class="ui-form__counter">0/500</small>
+                    </div>
+
+                    <div class="ui-form-group">
+                        <label for="estado" class="ui-form__label">Estado:</label>
+                        <div class="ui-form__field">
+                            <select id="estado" name="estado" class="ui-form__input" required>
+                                <option value="">-- Seleccionar estado --</option>
+                                <option value="activo">Activo</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="ui-modal__actions">
+                <button class="ui-button ui-button--secondary" onclick="cerrarModal()">
+                    <span class="ui-button__icon">❌</span>Cancelar
+                </button>
+                <button class="ui-button ui-button--primary" onclick="guardarElemento()">
+                    <span class="ui-button__icon">💾</span>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN ELIMINACIÓN -->
+    <div class="ui-modal-overlay" id="modalEliminar" role="dialog" aria-modal="true" 
+         aria-labelledby="eliminarTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="eliminarTitulo" class="ui-modal__title">Confirmar eliminación</h3>
+                <button class="ui-button ui-button--ghost ui-modal__close" 
+                        aria-label="Cerrar modal" onclick="cerrarModalEliminar()">
+                    <span class="ui-button__icon">✖️</span>
+                </button>
+            </div>
+
+            <div class="ui-modal__body">
+                <p>¿Está seguro de que desea eliminar este elemento? Esta acción no se puede deshacer.</p>
+            </div>
+
+            <div class="ui-modal__actions">
+                <button class="ui-button ui-button--secondary" onclick="cerrarModalEliminar()">
+                    <span class="ui-button__icon">❌</span>Cancelar
+                </button>
+                <button class="ui-button ui-button--danger" onclick="confirmarEliminacion()">
+                    <span class="ui-button__icon">🗑️</span>Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funciones básicas del módulo - implementar según necesidades específicas
+        function aplicarFiltros() { console.log('Aplicar filtros'); }
+        function limpiarFiltros() { console.log('Limpiar filtros'); }
+        function actualizarDatos() { console.log('Actualizar datos'); }
+        function abrirFormulario() { console.log('Abrir formulario'); }
+        function cerrarModal() { console.log('Cerrar modal'); }
+        function guardarElemento() { console.log('Guardar elemento'); }
+        function editarElemento(id) { console.log('Editar elemento:', id); }
+        function eliminarElemento(id) { console.log('Eliminar elemento:', id); }
+        function cerrarModalEliminar() { console.log('Cerrar modal eliminar'); }
+        function confirmarEliminacion() { console.log('Confirmar eliminación'); }
+    </script>
+</body>
+</html>

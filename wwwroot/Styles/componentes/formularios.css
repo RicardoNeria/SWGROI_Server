@@ -1,24 +1,27 @@
-.ui-form-group{display:flex;flex-direction:column;gap:var(--ui-gap-4);margin-bottom:var(--ui-gap-8)}
+.ui-form-group{display:flex;flex-direction:column;gap:var(--ui-gap-4);margin-bottom:var(--ui-gap-12)}
 .ui-form__label{font-weight:600;font-size:var(--ui-fs-sm);color:var(--ui-color-texto)}
 .ui-form__field{position:relative;display:flex;align-items:center}
-.ui-form__input{width:100%;padding:10px 12px;border:1px solid var(--ui-borde);border-radius:var(--ui-radius-sm);font-size:var(--ui-fs-md);transition:border-color 0.2s}
+.ui-form__input{width:100%;padding:10px 12px;border:1px solid var(--ui-borde);border-radius:var(--ui-radius-sm);font-size:var(--ui-fs-md);transition:border-color 0.2s, box-shadow 0.2s}
 .ui-form__input:focus{outline:none;border-color:var(--ui-color-primario);box-shadow:0 0 0 2px rgba(11,59,122,0.2)}
-.ui-form__input:focus{outline:3px solid rgba(11,59,122,0.12);outline-offset:2px}
+.ui-form__input:focus-visible{outline:3px solid rgba(11,59,122,0.24);outline-offset:2px}
 .ui-form__input.is-valid{border-color:var(--ui-color-exito)}
 .ui-form__input.is-invalid{border-color:var(--ui-color-peligro)}
 .ui-form__icon{position:absolute;right:10px;width:16px;height:16px}
 .ui-form__feedback{min-height:18px;font-size:var(--ui-fs-xs);color:var(--ui-color-peligro)}
-.ui-form-group{margin-bottom:var(--ui-gap-12)}
 .ui-form__feedback.success{color:var(--ui-color-exito)}
 .ui-form__counter{font-size:var(--ui-fs-xs);color:var(--ui-color-muted);margin-top:var(--ui-gap-2);text-align:right}
 .ui-form__actions{display:flex;gap:var(--ui-gap-8);margin-top:var(--ui-gap-12)}
 
-/* Captcha específico */
-.ui-captcha{display:flex;flex-direction:column;gap:var(--ui-gap-4);margin-bottom:var(--ui-gap-12);padding:var(--ui-gap-8);background:var(--ui-color-muted);border-radius:var(--ui-radius-sm)}
-.ui-captcha__question{font-weight:bold;margin-bottom:var(--ui-gap-4)}
-.ui-captcha__image{display:flex;justify-content:center;margin:var(--ui-gap-4) 0}
-.ui-captcha__image img{max-height:40px}
+/* Compatibilidad con clases existentes en módulos */
+.field-with-feedback{position:relative;display:flex;flex-direction:column;gap:var(--ui-gap-2)}
+.field-feedback{min-height:18px;font-size:var(--ui-fs-xs);color:var(--ui-color-peligro)}
+.form-control{width:100%;padding:10px 12px;border:1px solid var(--ui-borde);border-radius:var(--ui-radius-sm);font-size:var(--ui-fs-md)}
+/* Estados de campos legacy */
+.form-control:disabled, .form-control[readonly]{background-color:var(--ui-color-muted);color:var(--ui-color-texto-muted);cursor:not-allowed}
+.form-control.readonly{background-color:var(--ui-color-muted);color:var(--ui-color-texto-muted);cursor:not-allowed}
 
-/* Filtros (mantenido para compatibilidad) */
-.ui-filters{display:flex;flex-wrap:wrap;gap:var(--ui-gap-8)}
-.ui-filters__input,.ui-filters__select{padding:8px;border:1px solid var(--ui-borde);border-radius:var(--ui-radius-sm)}
+/* Iconos en campos legacy */
+.field-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--ui-color-texto-muted);pointer-events:none}
+
+/* Captcha se define en captcha.css para evitar duplicidad */
+/* Filtros se definen en filtros.css para evitar duplicidad */

@@ -3,14 +3,7 @@
 .ui-sidebar{grid-area:sidebar;width:300px;height:100vh;overflow:hidden;padding:var(--ui-gap-16)}
 .ui-topbar{grid-area:topbar}
 .ui-layout__main{grid-area:main;padding:var(--ui-gap-16);background:var(--ui-color-fondo);overflow-y:auto}
-.ui-card{background:#fff;border-radius:var(--ui-radius-md);box-shadow:var(--ui-sombra-sm);margin-bottom:var(--ui-gap-16)}
-.ui-card__body{padding:var(--ui-gap-12)}
-
-/* Topbar */
-.ui-topbar{display:flex;align-items:center;padding:var(--ui-gap-12);background:#fff;border-radius:var(--ui-radius-md);box-shadow:var(--ui-sombra-sm);margin-bottom:var(--ui-gap-16)}
-.ui-topbar__brand{width:50px;margin-right:var(--ui-gap-12)}
-.ui-topbar__logo{width:100%;height:auto}
-.ui-topbar__title{margin:0;font-size:var(--ui-fs-lg);flex:1}
+/* Tarjetas (.ui-card) y Topbar se definen en sus archivos dedicados para evitar duplicidad */
 
 /* Sidebar colapsable básico */
 .ui-layout--sidebar-collapsed .ui-sidebar{width:72px}

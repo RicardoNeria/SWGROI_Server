@@ -1,0 +1,432 @@
+/* ================================================
+   LOGIN.CSS - SWGROI Sistema de Login
+   Componentes compilados sin @import
+   ================================================ */
+
+/* ================================
+   VARIABLES CSS (BASE)
+   ================================ */
+:root {
+    /* Colores primarios */
+    --ui-color-primario: #1e40af;
+    --ui-color-primario-hover: #1d4ed8;
+    --ui-color-secundario: #64748b;
+    --ui-color-texto: #1f2937;
+    --ui-color-texto-muted: #6b7280;
+    
+    /* Colores de estado */
+    --ui-color-exito: #059669;
+    --ui-color-error: #dc2626;
+    --ui-color-advertencia: #d97706;
+    --ui-color-info: #0284c7;
+    
+    /* Fondos */
+    --ui-color-fondo: #ffffff;
+    --ui-color-fondo-alt: #f8fafc;
+    --ui-color-borde: #e2e8f0;
+    
+    /* Espaciado */
+    --ui-gap-4: 0.25rem;
+    --ui-gap-8: 0.5rem;
+    --ui-gap-12: 0.75rem;
+    --ui-gap-16: 1rem;
+    --ui-gap-24: 1.5rem;
+    --ui-gap-32: 2rem;
+    
+    /* Tipografía */
+    --ui-font-size-sm: 0.875rem;
+    --ui-font-size-base: 1rem;
+    --ui-font-size-lg: 1.125rem;
+    --ui-font-size-xl: 1.25rem;
+    --ui-font-size-2xl: 1.5rem;
+    
+    /* Radios */
+    --ui-radius-sm: 0.25rem;
+    --ui-radius-base: 0.375rem;
+    --ui-radius-lg: 0.5rem;
+    
+    /* Sombras */
+    --ui-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --ui-shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --ui-shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --ui-shadow-xl: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================
+   RESET Y BASE
+   ================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
+    color: var(--ui-color-texto);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ================================
+   LAYOUT DEL LOGIN
+   ================================ */
+.ui-login-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: var(--ui-gap-24);
+}
+
+/* ================================
+   BLOQUE LOGIN PRINCIPAL
+   ================================ */
+.ui-login {
+    width: 100%;
+    max-width: 420px;
+}
+
+.ui-login__container {
+    background: var(--ui-color-fondo);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-xl);
+    overflow: hidden;
+    border: 1px solid var(--ui-color-borde);
+}
+
+/* ================================
+   HEADER DEL LOGIN
+   ================================ */
+.ui-login__header {
+    text-align: center;
+    padding: var(--ui-gap-32) var(--ui-gap-24) var(--ui-gap-24);
+    background: var(--ui-color-fondo-alt);
+    border-bottom: 1px solid var(--ui-color-borde);
+}
+
+.ui-login__logo {
+    margin-bottom: var(--ui-gap-16);
+}
+
+.ui-login__logo-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: var(--ui-radius-base);
+    box-shadow: var(--ui-shadow-sm);
+}
+
+.ui-login__title {
+    margin: 0 0 var(--ui-gap-8) 0;
+    font-size: var(--ui-font-size-2xl);
+    font-weight: 700;
+    color: var(--ui-color-primario);
+    letter-spacing: -0.025em;
+}
+
+.ui-login__subtitle {
+    margin: 0;
+    font-size: var(--ui-font-size-base);
+    color: var(--ui-color-texto-muted);
+    font-weight: 400;
+}
+
+/* ================================
+   SECCIÓN DEL FORMULARIO
+   ================================ */
+.ui-login__form-section {
+    padding: var(--ui-gap-32) var(--ui-gap-24);
+}
+
+.ui-login__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-gap-24);
+}
+
+/* ================================
+   MENSAJE DE ESTADO
+   ================================ */
+.ui-login__message {
+    padding: var(--ui-gap-16);
+    border-radius: var(--ui-radius-base);
+    font-size: var(--ui-font-size-sm);
+    font-weight: 500;
+    text-align: center;
+    border: 1px solid transparent;
+    transition: opacity 0.3s ease;
+}
+
+.ui-login__message--error {
+    background: #fef2f2;
+    color: var(--ui-color-error);
+    border-color: #fca5a5;
+}
+
+.ui-login__message--success {
+    background: #ecfdf5;
+    color: var(--ui-color-exito);
+    border-color: #a7f3d0;
+}
+
+.ui-login__message--warning {
+    background: #fffbeb;
+    color: var(--ui-color-advertencia);
+    border-color: #fde68a;
+}
+
+.ui-login__message--info {
+    background: #eff6ff;
+    color: var(--ui-color-info);
+    border-color: #93c5fd;
+}
+
+/* ================================
+   GRUPOS DE CAMPOS
+   ================================ */
+.ui-login__field-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-gap-8);
+}
+
+.ui-login__label {
+    font-weight: 500;
+    color: var(--ui-color-texto);
+    font-size: var(--ui-font-size-base);
+    margin-bottom: var(--ui-gap-4);
+}
+
+.ui-login__captcha-question {
+    font-weight: 600;
+    color: var(--ui-color-primario);
+}
+
+.ui-login__field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ui-login__input {
+    width: 100%;
+    padding: var(--ui-gap-16) var(--ui-gap-16) var(--ui-gap-16) 3rem;
+    border: 1px solid var(--ui-color-borde);
+    border-radius: var(--ui-radius-base);
+    font-size: var(--ui-font-size-base);
+    font-family: inherit;
+    background: var(--ui-color-fondo);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.ui-login__input:focus-visible {
+    outline: none;
+    border-color: var(--ui-color-primario);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+.ui-login__input:disabled {
+    background: #f1f5f9;
+    color: var(--ui-color-texto-muted);
+    cursor: not-allowed;
+}
+
+.ui-login__input.is-invalid {
+    border-color: var(--ui-color-error);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.ui-login__input.is-valid {
+    border-color: var(--ui-color-exito);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.ui-login__input-icon {
+    position: absolute;
+    left: var(--ui-gap-16);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: var(--ui-font-size-lg);
+    color: var(--ui-color-texto-muted);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.ui-login__feedback {
+    font-size: var(--ui-font-size-sm);
+    color: var(--ui-color-error);
+    min-height: 1.25rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.ui-login__feedback:not(:empty) {
+    opacity: 1;
+}
+
+.ui-login__feedback.error {
+    color: var(--ui-color-error);
+}
+
+.ui-login__feedback.success {
+    color: var(--ui-color-exito);
+}
+
+/* ================================
+   ACCIONES Y BOTONES
+   ================================ */
+.ui-login__actions {
+    margin-top: var(--ui-gap-8);
+}
+
+.ui-login__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ui-gap-8);
+    padding: var(--ui-gap-16) var(--ui-gap-24);
+    border-radius: var(--ui-radius-base);
+    font-size: var(--ui-font-size-base);
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    width: 100%;
+    min-height: 3rem;
+    box-sizing: border-box;
+}
+
+.ui-login__button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.ui-login__button--primary {
+    background: var(--ui-color-primario);
+    color: white;
+    border-color: var(--ui-color-primario);
+}
+
+.ui-login__button--primary:hover:not(:disabled) {
+    background: var(--ui-color-primario-hover);
+    border-color: var(--ui-color-primario-hover);
+}
+
+.ui-login__button--primary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.3);
+}
+
+.ui-login__button-icon {
+    font-size: 1em;
+    line-height: 1;
+}
+
+.ui-login__button-text {
+    flex: 1;
+    text-align: center;
+}
+
+.ui-login__button-spinner {
+    font-size: 1em;
+    line-height: 1;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ================================
+   FOOTER Y ENLACES
+   ================================ */
+.ui-login__footer {
+    padding: var(--ui-gap-24);
+    background: var(--ui-color-fondo-alt);
+    border-top: 1px solid var(--ui-color-borde);
+    text-align: center;
+}
+
+.ui-login__nav {
+    margin-bottom: var(--ui-gap-16);
+}
+
+.ui-login__link {
+    display: inline-block;
+    margin: 0 var(--ui-gap-12) var(--ui-gap-8) 0;
+    color: var(--ui-color-primario);
+    text-decoration: none;
+    font-size: var(--ui-font-size-sm);
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.ui-login__link:hover,
+.ui-login__link:focus-visible {
+    color: var(--ui-color-primario-hover);
+    text-decoration: underline;
+}
+
+.ui-login__link:focus-visible {
+    outline: 2px solid var(--ui-color-primario);
+    outline-offset: 2px;
+    border-radius: var(--ui-radius-sm);
+}
+
+.ui-login__copyright {
+    color: var(--ui-color-texto-muted);
+    font-size: var(--ui-font-size-sm);
+}
+
+/* ================================
+   RESPONSIVE
+   ================================ */
+@media (max-width: 640px) {
+    .ui-login-layout {
+        padding: var(--ui-gap-16);
+    }
+    
+    .ui-login__container {
+        border-radius: var(--ui-radius-base);
+    }
+    
+    .ui-login__header {
+        padding: var(--ui-gap-24) var(--ui-gap-16) var(--ui-gap-16);
+    }
+    
+    .ui-login__form-section {
+        padding: var(--ui-gap-24) var(--ui-gap-16);
+    }
+    
+    .ui-login__footer {
+        padding: var(--ui-gap-16);
+    }
+    
+    .ui-login__logo-img {
+        width: 64px;
+        height: 64px;
+    }
+    
+    .ui-login__title {
+        font-size: var(--ui-font-size-xl);
+    }
+}
+
+@media (max-width: 480px) {
+    .ui-login-layout {
+        padding: var(--ui-gap-8);
+        align-items: flex-start;
+        padding-top: var(--ui-gap-32);
+    }
+    
+    .ui-login__link {
+        display: block;
+        margin: 0 0 var(--ui-gap-8) 0;
+    }
+}

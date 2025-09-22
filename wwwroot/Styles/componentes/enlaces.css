@@ -1,5 +1,6 @@
 .ui-link{font-size:var(--ui-fs-sm);color:var(--ui-color-primario);text-decoration:none;transition:color 0.2s,text-decoration 0.2s}
 .ui-link:hover{text-decoration:underline;color:var(--ui-color-primario-hover)}
+.ui-link:focus-visible{outline:3px solid rgba(11,59,122,0.24);outline-offset:2px}
 .ui-link--secondary{color:var(--ui-color-texto-muted)}
 .ui-link--block{display:block;padding:var(--ui-gap-6) 0}
 .ui-link--bold{font-weight:600}

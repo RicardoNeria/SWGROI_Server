@@ -1,0 +1,16 @@
+/* Controles de ordenamiento y opciones de vista */
+.ui-controls{display:flex;justify-content:space-between;align-items:center;margin:var(--ui-gap-8) 0;padding:var(--ui-gap-6) 0;border-top:1px solid var(--ui-borde-claro)}
+.ui-controls__group{display:flex;align-items:center;gap:var(--ui-gap-6)}
+.ui-controls__label{font-size:var(--ui-fs-sm);color:var(--ui-color-texto-muted);margin-right:var(--ui-gap-3)}
+.ui-controls__select{padding:6px 8px;border:1px solid var(--ui-borde);border-radius:var(--ui-radius-sm);font-size:var(--ui-fs-sm);background:#fff}
+.ui-controls__select:focus{outline:none;border-color:var(--ui-color-primario);box-shadow:0 0 0 2px rgba(11,59,122,0.2)}
+.ui-controls__select:focus-visible{outline:3px solid rgba(11,59,122,0.24);outline-offset:2px}
+
+/* Resúmenes y estadísticas */
+.resumen{background:#fff;border-radius:var(--ui-radius-md);padding:var(--ui-gap-8);box-shadow:var(--ui-sombra-sm);margin:var(--ui-gap-8) 0}
+.resumen__item{display:inline-block;margin-right:var(--ui-gap-12);font-size:var(--ui-fs-sm)}
+.resumen__label{color:var(--ui-color-texto-muted);margin-right:var(--ui-gap-3)}
+.resumen__value{font-weight:600;color:var(--ui-color-texto)}
+
+/* Barra de resumen específica */
+.resumenBar{background:var(--ui-color-muted);padding:var(--ui-gap-6);border-radius:var(--ui-radius-sm);font-size:var(--ui-fs-sm);color:var(--ui-color-texto)}

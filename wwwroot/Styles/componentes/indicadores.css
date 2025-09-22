@@ -1,3 +1,4 @@
 .ui-badge{padding:4px 8px;border-radius:var(--ui-radius-sm);font-weight:600}
+.ui-badge:focus-visible{outline:3px solid rgba(11,59,122,0.24);outline-offset:2px}
 .ui-badge--success{background:#dcfce7;color:#166534}
 .ui-badge--danger{background:#fee2e2;color:#991b1b}

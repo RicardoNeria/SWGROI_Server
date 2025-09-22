@@ -1,0 +1,96 @@
+/* ================================================
+   RECUPERAR.CSS - MÓDULO DE RECUPERACIÓN DE CONTRASEÑA
+   Sistema de Componentes SWGROI - BEM Estricto
+   ================================================ */
+
+/* ================================
+   FORMULARIO DE RECUPERACIÓN
+   ================================ */
+.ui-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-gap-16);
+    padding: var(--ui-gap-24);
+    background: var(--ui-color-fondo);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-base);
+    border: 1px solid var(--ui-color-borde);
+}
+
+.ui-form__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-gap-8);
+}
+
+.ui-form__label {
+    font-size: var(--ui-font-size-base);
+    font-weight: 600;
+    color: var(--ui-color-texto);
+}
+
+.ui-form__input {
+    padding: var(--ui-gap-12);
+    font-size: var(--ui-font-size-base);
+    border: 1px solid var(--ui-color-borde);
+    border-radius: var(--ui-radius-base);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ui-form__input:focus {
+    border-color: var(--ui-color-primario);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    outline: none;
+}
+
+.ui-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--ui-gap-12);
+}
+
+.ui-message {
+    padding: var(--ui-gap-16);
+    border-radius: var(--ui-radius-base);
+    margin-top: var(--ui-gap-16);
+    border: 1px solid transparent;
+    font-size: var(--ui-font-size-base);
+    display: none;
+}
+
+.ui-message--error {
+    background: #fef2f2;
+    color: var(--ui-color-error);
+    border-color: #fca5a5;
+}
+
+.ui-message--success {
+    background: #ecfdf5;
+    color: var(--ui-color-exito);
+    border-color: #a7f3d0;
+}
+
+/* ================================
+   RESPONSIVE
+   ================================ */
+@media (max-width: 768px) {
+    .ui-form {
+        padding: var(--ui-gap-16);
+    }
+
+    .ui-form__input {
+        padding: var(--ui-gap-8);
+    }
+}
+
+@media (max-width: 480px) {
+    .ui-form {
+        gap: var(--ui-gap-12);
+    }
+
+    .ui-form__actions {
+        flex-direction: column;
+        gap: var(--ui-gap-8);
+    }
+}

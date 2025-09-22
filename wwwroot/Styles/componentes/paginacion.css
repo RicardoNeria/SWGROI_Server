@@ -1,5 +1,13 @@
-.ui-pagination, .ui-paginacion{display:flex;justify-content:space-between;align-items:center}
-.ui-pagination__controls, .ui-paginacion__controls{display:flex;gap:var(--ui-gap-6)}
-.ui-pagination__label, .ui-paginacion__label{font-size:var(--ui-fs-sm);color:var(--ui-color-texto-muted)}
-.ui-paginacion button{border:1px solid var(--ui-borde);background:#fff;padding:6px 10px;border-radius:6px;margin-right:4px}
-.ui-paginacion button.activo{background:var(--ui-color-primario);color:#fff}
+.ui-pagination, .ui-paginacion, .paginacion{display:flex;justify-content:space-between;align-items:center;gap:var(--ui-gap-8);margin:var(--ui-gap-8) 0}
+/* Controles: soportar ambos idiomas de BEM */
+.ui-pagination__controls, .ui-paginacion__controls, .ui-paginacion__controles{display:flex;gap:var(--ui-gap-6);align-items:center}
+.ui-pagination__label, .ui-paginacion__label, .ui-paginacion__info, .paginacion-total{font-size:var(--ui-fs-sm);color:var(--ui-color-texto-muted)}
+/* Botones: normalmente usar ui-button; opcionalmente ajustar tamaño */
+.ui-paginacion__btn, .ui-pagination__btn{padding:8px 12px}
+/* Estados */
+.ui-paginacion__btn[disabled], .ui-pagination__btn[disabled]{opacity:.6;pointer-events:none}
+/* Accesibilidad de focus */
+.ui-paginacion__btn:focus-visible, .ui-pagination__btn:focus-visible{outline:3px solid rgba(11,59,122,0.24);outline-offset:2px}
+/* Variante compacta */
+.ui-paginacion--compact .ui-paginacion__btn{padding:6px 8px;font-size:var(--ui-fs-xs)}
+.ui-paginacion--compact .ui-paginacion__info{font-size:var(--ui-fs-xs)}
