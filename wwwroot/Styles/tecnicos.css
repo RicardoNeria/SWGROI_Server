@@ -1,0 +1,419 @@
+/* =================================================================
+   TECNICOS.CSS - Estilos específicos del módulo de seguimiento técnico
+   Siguiendo metodología BEM y sistema de componentes unificado
+   ================================================================= */
+
+/* ================================
+   VARIABLES ESPECÍFICAS DEL MÓDULO
+   ================================ */
+:root {
+    --tecnicos-color-primario: #2563eb;
+    --tecnicos-color-secundario: #64748b;
+    --tecnicos-color-exito: #059669;
+    --tecnicos-color-warning: #d97706;
+    --tecnicos-color-error: #dc2626;
+    --tecnicos-bg-form: #f8fafc;
+    --tecnicos-border-radius: 8px;
+    --tecnicos-espaciado: 1rem;
+}
+
+/* ================================
+   SECCIÓN DE ACTUALIZACIÓN
+   ================================ */
+.tecnicos-actualizacion {
+    margin-bottom: 2rem;
+    background: var(--tecnicos-bg-form);
+    border-left: 4px solid var(--tecnicos-color-primario);
+}
+
+.tecnicos-actualizacion__titulo {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--tecnicos-color-primario);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ================================
+   FORMULARIO DE SEGUIMIENTO
+   ================================ */
+.tecnicos-form {
+    max-width: none;
+}
+
+.tecnicos-form__grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.tecnicos-form__acciones {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+/* Estilo específico para el folio */
+.tecnicos-folio {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--tecnicos-border-radius);
+    padding: 0.75rem 1rem;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--tecnicos-color-primario);
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.tecnicos-folio:empty::before {
+    content: 'Seleccione un ticket de la tabla';
+    color: var(--tecnicos-color-secundario);
+    font-style: italic;
+    font-family: inherit;
+}
+
+.tecnicos-folio--selected {
+    border-color: var(--tecnicos-color-primario);
+    background: #eff6ff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ================================
+   TABLA DE TICKETS
+   ================================ */
+.tecnicos-tabla__titulo {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--tecnicos-color-primario);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Filas de tabla con interacción */
+.ui-tabla__row {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.ui-tabla__row:hover {
+    background-color: #f1f5f9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.ui-tabla__row--selected {
+    background-color: #eff6ff;
+    border-left: 4px solid var(--tecnicos-color-primario);
+}
+
+.ui-tabla__row--selected:hover {
+    background-color: #dbeafe;
+}
+
+/* Estados de tickets en la tabla */
+.tecnicos-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.tecnicos-estado--almacen {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.tecnicos-estado--capturado {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.tecnicos-estado--programado {
+    background-color: #e0e7ff;
+    color: #3730a3;
+}
+
+.tecnicos-estado--abierto {
+    background-color: #fef2f2;
+    color: #991b1b;
+}
+
+.tecnicos-estado--proceso {
+    background-color: #fef7cd;
+    color: #a16207;
+}
+
+.tecnicos-estado--cerrado {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+/* ================================
+   MENSAJES Y NOTIFICACIONES
+   ================================ */
+.ui-message {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: var(--tecnicos-border-radius);
+    font-weight: 500;
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.ui-message--info {
+    background-color: #eff6ff;
+    color: #1e40af;
+    border-left: 4px solid #3b82f6;
+}
+
+.ui-message--success {
+    background-color: #f0fdf4;
+    color: #166534;
+    border-left: 4px solid #22c55e;
+}
+
+.ui-message--error {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+}
+
+.ui-message--warning {
+    background-color: #fffbeb;
+    color: #92400e;
+    border-left: 4px solid #f59e0b;
+}
+
+.ui-message--hidden {
+    display: none !important;
+}
+
+/* ================================
+   ESTADOS DE CARGA Y FEEDBACK
+   ================================ */
+.tecnicos-cargando {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.tecnicos-cargando::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--tecnicos-color-primario);
+    border-radius: 50%;
+    animation: tecnicos-spin 1s linear infinite;
+}
+
+@keyframes tecnicos-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Feedback visual para formulario */
+.tecnicos-form .ui-form-group.has-error .ui-form__input,
+.tecnicos-form .ui-form-group.has-error .ui-form__textarea,
+.tecnicos-form .ui-form-group.has-error .ui-form__select {
+    border-color: var(--tecnicos-color-error);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.tecnicos-form .ui-form-group.has-success .ui-form__input,
+.tecnicos-form .ui-form-group.has-success .ui-form__textarea,
+.tecnicos-form .ui-form-group.has-success .ui-form__select {
+    border-color: var(--tecnicos-color-exito);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* ================================
+   RESPONSIVE - MOBILE FIRST
+   ================================ */
+@media (max-width: 768px) {
+    .tecnicos-form__grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .tecnicos-form__acciones {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .tecnicos-form__acciones .ui-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .ui-filters__form {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .ui-filters__input,
+    .ui-filters__select {
+        width: 100%;
+    }
+    
+    .ui-tabla-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .ui-tabla {
+        min-width: 600px;
+    }
+    
+    .ui-tabla__cell {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .tecnicos-actualizacion {
+        margin-bottom: 1rem;
+        padding: 1rem;
+    }
+    
+    .tecnicos-actualizacion__titulo {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .tecnicos-form__grid {
+        gap: 0.75rem;
+    }
+    
+    .ui-message {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .tecnicos-folio {
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        min-height: 2.5rem;
+    }
+}
+
+/* ================================
+   ACCESIBILIDAD
+   ================================ */
+.ui-button:focus-visible,
+.ui-form__input:focus-visible,
+.ui-form__textarea:focus-visible,
+.ui-form__select:focus-visible {
+    outline: 2px solid var(--tecnicos-color-primario);
+    outline-offset: 2px;
+}
+
+.ui-tabla__row:focus-visible {
+    outline: 2px solid var(--tecnicos-color-primario);
+    outline-offset: -2px;
+}
+
+/* Reducir movimiento para usuarios que lo prefieren */
+@media (prefers-reduced-motion: reduce) {
+    .ui-tabla__row,
+    .tecnicos-folio,
+    .ui-message,
+    .ui-form__input,
+    .ui-form__textarea,
+    .ui-form__select {
+        transition: none;
+    }
+    
+    @keyframes tecnicos-spin {
+        0% { transform: none; }
+        100% { transform: none; }
+    }
+}
+
+/* ================================
+   MODO OSCURO (opcional)
+   ================================ */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --tecnicos-bg-form: #1e293b;
+        --tecnicos-color-secundario: #94a3b8;
+    }
+    
+    .tecnicos-actualizacion {
+        background: var(--tecnicos-bg-form);
+    }
+    
+    .tecnicos-folio {
+        background: #334155;
+        border-color: #475569;
+        color: #e2e8f0;
+    }
+    
+    .tecnicos-folio--selected {
+        background: #1e40af;
+        border-color: #3b82f6;
+    }
+    
+    .ui-tabla__row:hover {
+        background-color: #334155;
+    }
+    
+    .ui-tabla__row--selected {
+        background-color: #1e40af;
+    }
+}
+
+/* ================================
+   IMPRESIÓN
+   ================================ */
+@media print {
+    .ui-sidebar,
+    .ui-breadcrumbs,
+    .tecnicos-form__acciones,
+    .ui-filters {
+        display: none !important;
+    }
+    
+    .ui-layout__main {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .tecnicos-actualizacion {
+        background: white !important;
+        border: 1px solid #ccc;
+    }
+    
+    .ui-tabla {
+        font-size: 12px;
+    }
+    
+    .ui-tabla__row:hover {
+        background: none !important;
+    }
+    
+    .tecnicos-estado {
+        border: 1px solid #ccc;
+        background: white !important;
+        color: black !important;
+    }
+}
