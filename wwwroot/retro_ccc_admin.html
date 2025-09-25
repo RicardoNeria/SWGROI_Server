@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCC - Retroalimentación</title>
+  <link rel="stylesheet" href="/Styles/estilo_general.css" />
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#f6f7f9;color:#222}
+    .wrap{max-width:900px;margin:20px auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+    h1{color:#1f2937;margin:0 0 20px;font-size:1.5rem}
+    .form-group{margin-bottom:16px}
+    label{display:block;margin-bottom:6px;font-weight:600;color:#374151}
+    input[type="text"]{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:14px}
+    .btn-group{display:flex;gap:10px;margin-top:10px}
+    button{padding:10px 16px;border:0;border-radius:6px;font-weight:500;cursor:pointer;font-size:14px}
+    .btn-primary{background:#2563eb;color:white}
+    .btn-secondary{background:#6b7280;color:white}
+    .btn-primary:hover{background:#1d4ed8}
+    .btn-secondary:hover{background:#4b5563}
+    .result-box{margin-top:20px;padding:15px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:6px;font-family:monospace;white-space:pre-wrap;min-height:100px}
+    .status{padding:10px;border-radius:6px;margin-top:10px}
+    .status.success{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
+    .status.error{background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca}
+    .status.info{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd}
+    table{width:100%;border-collapse:collapse;margin-top:15px;display:none}
+    table.show{display:table}
+    th,td{padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb}
+    th{background:#f9fafb;font-weight:600;color:#374151}
+    .link-cell{word-break:break-all}
+    .link-cell a{color:#2563eb;text-decoration:none}
+    .link-cell a:hover{text-decoration:underline}
+  </style>
+  <script src="/Scripts/retro_admin.js" defer></script>
+</head>
+<body>
+  <div class="wrap">
+    <h1>📋 CCC - Módulo de Retroalimentación</h1>
+    <p style="color:#6b7280;margin-bottom:25px">
+      Genere enlaces de encuesta para clientes y consulte sus respuestas para análisis de satisfacción.
+    </p>
+    
+    <div class="form-group">
+      <label for="folioInput">Folio del Ticket:</label>
+      <input 
+        id="folioInput" 
+        type="text" 
+        placeholder="Ejemplo: TCK-00123, FOLIO456, etc." 
+        autocomplete="off"
+      />
+      <div class="btn-group">
+        <button id="btnGenerar" class="btn-primary">🔗 Generar Enlace</button>
+        <button id="btnBuscar" class="btn-secondary">🔍 Buscar Respuestas</button>
+      </div>
+    </div>
+
+    <div id="statusMsg" class="status info" style="display:none"></div>
+    
+    <div class="result-box" id="resultBox">
+      💡 Ingrese un folio de ticket y seleccione una acción.
+      
+      Funciones disponibles:
+      • Generar Enlace: Crea un enlace único para que el cliente responda la encuesta
+      • Buscar Respuestas: Muestra las respuestas ya enviadas por el cliente
+    </div>
+
+    <table id="responseTable">
+      <thead>
+        <tr>
+          <th>Campo</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Folio</strong></td><td id="rFolio">-</td></tr>
+        <tr><td><strong>Cliente</strong></td><td id="rCliente">-</td></tr>
+        <tr><td><strong>Enlace</strong></td><td id="rEnlace" class="link-cell">-</td></tr>
+        <tr><td><strong>Fecha Respuesta</strong></td><td id="rFecha">-</td></tr>
+        <tr><td><strong>Pregunta 1</strong></td><td id="rR1">-</td></tr>
+        <tr><td><strong>Pregunta 2</strong></td><td id="rR2">-</td></tr>
+        <tr><td><strong>Pregunta 3</strong></td><td id="rR3">-</td></tr>
+        <tr><td><strong>Pregunta 4</strong></td><td id="rR4">-</td></tr>
+        <tr><td><strong>Comentarios</strong></td><td id="rR5">-</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const folioInput = $('folioInput');
+    const btnGenerar = $('btnGenerar');
+    const btnBuscar = $('btnBuscar');
+    const statusMsg = $('statusMsg');
+    const resultBox = $('resultBox');
+    const responseTable = $('responseTable');
+
+    function showStatus(message, type = 'info') {
+      statusMsg.textContent = message;
+      statusMsg.className = `status ${type}`;
+      statusMsg.style.display = 'block';
+      setTimeout(() => {
+        statusMsg.style.display = 'none';
+      }, 5000);
+    }
+
+    function hideTable() {
+      responseTable.classList.remove('show');
+    }
+
+    function showTable(data) {
+      $('rFolio').textContent = data.folio || '-';
+      $('rCliente').textContent = data.cliente || '-';
+      
+      const enlaceCompleto = data.enlace ? 
+        `${location.origin}/retroalimentacion.html?t=${encodeURIComponent(data.enlace)}` : '-';
+      
+      if (data.enlace) {
+        $('rEnlace').innerHTML = `<a href="${enlaceCompleto}" target="_blank">${enlaceCompleto}</a>`;
+      } else {
+        $('rEnlace').textContent = '-';
+      }
+      
+      $('rFecha').textContent = data.fechaRespuesta || '-';
+      $('rR1').textContent = data.r1 || '-';
+      $('rR2').textContent = data.r2 || '-';
+      $('rR3').textContent = data.r3 || '-';
+      $('rR4').textContent = data.r4 || '-';
+      $('rR5').textContent = data.r5 || '-';
+      
+      responseTable.classList.add('show');
+    }
+
+    btnGenerar.addEventListener('click', async () => {
+      const folio = folioInput.value.trim();
+      if (!folio) {
+        showStatus('❌ Por favor ingrese un folio válido', 'error');
+        folioInput.focus();
+        return;
+      }
+
+      btnGenerar.disabled = true;
+      btnGenerar.textContent = '⏳ Generando...';
+      hideTable();
+      
+      try {
+        const resultado = await window.RetroAdmin.generar(folio);
+        
+        const estado = resultado.contestada ? 
+          '✅ (Encuesta ya contestada)' : 
+          '📝 (Pendiente de respuesta)';
+          
+        resultBox.textContent = `🔗 ENLACE GENERADO EXITOSAMENTE\n\n` +
+          `Estado: ${estado}\n` +
+          `Enlace: ${resultado.link}\n\n` +
+          `✉️ Copie este enlace y envíelo al cliente para que complete la encuesta de satisfacción.`;
+        
+        showStatus('✅ Enlace generado correctamente', 'success');
+        
+      } catch (error) {
+        resultBox.textContent = `❌ ERROR AL GENERAR ENLACE\n\n` +
+          `Detalles: ${error.message}\n\n` +
+          `Posibles causas:\n` +
+          `• El folio no existe en el sistema\n` +
+          `• No tiene permisos para esta operación\n` +
+          `• Error de conectividad con el servidor`;
+        
+        showStatus('❌ Error al generar enlace', 'error');
+      } finally {
+        btnGenerar.disabled = false;
+        btnGenerar.textContent = '🔗 Generar Enlace';
+      }
+    });
+
+    btnBuscar.addEventListener('click', async () => {
+      const folio = folioInput.value.trim();
+      if (!folio) {
+        showStatus('❌ Por favor ingrese un folio válido', 'error');
+        folioInput.focus();
+        return;
+      }
+
+      btnBuscar.disabled = true;
+      btnBuscar.textContent = '🔍 Buscando...';
+      hideTable();
+      
+      try {
+        const resultado = await window.RetroAdmin.buscar(folio);
+        
+        if (resultado.fechaRespuesta) {
+          resultBox.textContent = `✅ RESPUESTAS ENCONTRADAS\n\n` +
+            `El cliente completó la encuesta el ${resultado.fechaRespuesta}\n` +
+            `Consulte la tabla inferior para ver los detalles completos.`;
+          
+          showTable(resultado);
+          showStatus('✅ Respuestas encontradas', 'success');
+          
+        } else {
+          resultBox.textContent = `📋 ENCUESTA PENDIENTE\n\n` +
+            `Se ha generado el enlace pero el cliente aún no ha respondido.\n` +
+            `Enlace: ${location.origin}/retroalimentacion.html?t=${encodeURIComponent(resultado.enlace || '')}\n\n` +
+            `💡 Considere reenviar el enlace al cliente.`;
+          
+          showStatus('ℹ️ Encuesta pendiente de respuesta', 'info');
+        }
+        
+      } catch (error) {
+        resultBox.textContent = `❌ ERROR EN LA BÚSQUEDA\n\n` +
+          `Detalles: ${error.message}\n\n` +
+          `Posibles causas:\n` +
+          `• No existe una encuesta para este folio\n` +
+          `• El folio es incorrecto\n` +
+          `• No tiene permisos para esta consulta`;
+        
+        showStatus('❌ Error en la búsqueda', 'error');
+      } finally {
+        btnBuscar.disabled = false;
+        btnBuscar.textContent = '🔍 Buscar Respuestas';
+      }
+    });
+
+    // Enter key support
+    folioInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        btnGenerar.click();
+      }
+    });
+
+    // Auto-focus en el input al cargar
+    folioInput.focus();
+  </script>
+</body>
+</html>

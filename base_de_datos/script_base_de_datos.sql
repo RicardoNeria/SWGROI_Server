@@ -154,15 +154,27 @@ CREATE TABLE IF NOT EXISTS metricas (
   PRIMARY KEY (Id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- ========================
+-- MÓDULO CCC - RETROALIMENTACIÓN
+-- ========================
+
+-- Tabla principal para gestión de enlaces de retroalimentación
 CREATE TABLE IF NOT EXISTS retroalimentacion (
   RetroID INT NOT NULL AUTO_INCREMENT,
   Cliente VARCHAR(100) NOT NULL,
   EnlaceUnico VARCHAR(255) NOT NULL,
   UsuarioID INT,
+  TicketID INT,
+  FechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  Estado ENUM('Pendiente', 'Contestada', 'Expirada') DEFAULT 'Pendiente',
   PRIMARY KEY (RetroID),
   UNIQUE KEY uq_retro_enlace (EnlaceUnico),
-  KEY (UsuarioID),
-  CONSTRAINT retroalimentacion_ibfk_1 FOREIGN KEY (UsuarioID) REFERENCES usuarios (IdUsuario)
+  UNIQUE KEY uq_retro_ticket (TicketID),
+  KEY idx_retro_usuario (UsuarioID),
+  KEY idx_retro_fecha (FechaCreacion),
+  KEY idx_retro_estado (Estado),
+  CONSTRAINT retroalimentacion_ibfk_1 FOREIGN KEY (UsuarioID) REFERENCES usuarios (IdUsuario),
+  CONSTRAINT retroalimentacion_ibfk_2 FOREIGN KEY (TicketID) REFERENCES tickets (Id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE IF NOT EXISTS serviciostecnicos (
@@ -210,6 +222,226 @@ INSERT IGNORE INTO estadoscotizacion (Nombre) VALUES
 
 INSERT IGNORE INTO usuarios (NombreCompleto, Usuario, Contrasena, Rol)
 VALUES ('Administrador General', 'admin', 'admin123', 'Administrador');
+
+-- ========================
+-- Retroalimentación CCC - Respuestas
+-- ========================
+
+-- Tabla para almacenar las respuestas de las 5 preguntas de satisfacción
+CREATE TABLE IF NOT EXISTS respuestas_retroalimentacion (
+  RetroID INT NOT NULL,
+  -- 5 preguntas específicas para evaluar el servicio CCC
+  Pregunta1_Atencion_Operador VARCHAR(1000) NOT NULL COMMENT 'Calificación atención del operador CCC (1-5)',
+  Pregunta2_Tiempo_Respuesta VARCHAR(1000) NOT NULL COMMENT 'Evaluación tiempo de respuesta (1-5)', 
+  Pregunta3_Solucion_Brindada VARCHAR(1000) NOT NULL COMMENT 'Si la solución resolvió la necesidad (1-5)',
+  Pregunta4_Recomendacion VARCHAR(1000) NOT NULL COMMENT 'Si recomendaría el servicio (1-5)',
+  Pregunta5_Comentarios VARCHAR(1000) COMMENT 'Comentarios adicionales del cliente',
+  -- Metadatos de auditoría
+  FechaRespuesta DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  DireccionIP VARCHAR(45) COMMENT 'IP desde donde respondió',
+  UserAgent VARCHAR(500) COMMENT 'Navegador usado',
+  TiempoCompletado INT COMMENT 'Segundos que tardó en completar',
+  PRIMARY KEY (RetroID),
+  CONSTRAINT respuestas_retroalimentacion_ibfk_1 FOREIGN KEY (RetroID) REFERENCES retroalimentacion (RetroID) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Tabla para análisis y métricas del módulo CCC
+CREATE TABLE IF NOT EXISTS metricas_retroalimentacion (
+  MetricaID INT NOT NULL AUTO_INCREMENT,
+  Periodo DATE NOT NULL,
+  TotalEncuestasGeneradas INT DEFAULT 0,
+  TotalEncuestasContestadas INT DEFAULT 0,
+  PromedioSatisfaccion DECIMAL(3,2) DEFAULT 0.00,
+  PromedioAtencionOperador DECIMAL(3,2) DEFAULT 0.00,
+  PromedioTiempoRespuesta DECIMAL(3,2) DEFAULT 0.00,
+  PromedioSolucion DECIMAL(3,2) DEFAULT 0.00,
+  PromedioRecomendacion DECIMAL(3,2) DEFAULT 0.00,
+  TicketsConEncuesta INT DEFAULT 0,
+  TicketsSinEncuesta INT DEFAULT 0,
+  FechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (MetricaID),
+  UNIQUE KEY uq_metrica_periodo (Periodo),
+  KEY idx_metrica_fecha (FechaActualizacion)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Vista para reportes de satisfacción completos
+CREATE OR REPLACE VIEW vista_satisfaccion_ccc AS
+SELECT 
+    r.RetroID,
+    r.Cliente,
+    t.Folio,
+    t.Descripcion AS DescripcionTicket,
+    t.Estado AS EstadoTicket,
+    t.Responsable,
+    r.FechaCreacion AS FechaGeneracionEncuesta,
+    rr.FechaRespuesta,
+    r.Estado AS EstadoEncuesta,
+    CAST(rr.Pregunta1_Atencion_Operador AS SIGNED) AS CalificacionAtencion,
+    CAST(rr.Pregunta2_Tiempo_Respuesta AS SIGNED) AS CalificacionTiempo,
+    CAST(rr.Pregunta3_Solucion_Brindada AS SIGNED) AS CalificacionSolucion,
+    CAST(rr.Pregunta4_Recomendacion AS SIGNED) AS CalificacionRecomendacion,
+    rr.Pregunta5_Comentarios AS Comentarios,
+    ROUND((
+        CAST(rr.Pregunta1_Atencion_Operador AS SIGNED) + 
+        CAST(rr.Pregunta2_Tiempo_Respuesta AS SIGNED) + 
+        CAST(rr.Pregunta3_Solucion_Brindada AS SIGNED) + 
+        CAST(rr.Pregunta4_Recomendacion AS SIGNED)
+    ) / 4.0, 2) AS PromedioSatisfaccion,
+    DATEDIFF(IFNULL(rr.FechaRespuesta, NOW()), r.FechaCreacion) AS DiasParaRespuesta,
+    u.NombreCompleto AS OperadorGenerador
+FROM retroalimentacion r
+INNER JOIN tickets t ON r.TicketID = t.Id
+LEFT JOIN respuestas_retroalimentacion rr ON r.RetroID = rr.RetroID
+LEFT JOIN usuarios u ON r.UsuarioID = u.IdUsuario
+ORDER BY r.FechaCreacion DESC;
+
+-- Migración idempotente para instalaciones previas
+ALTER TABLE retroalimentacion 
+  ADD COLUMN IF NOT EXISTS TicketID INT NULL AFTER UsuarioID,
+  ADD COLUMN IF NOT EXISTS FechaCreacion DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER TicketID,
+  ADD COLUMN IF NOT EXISTS Estado ENUM('Pendiente', 'Contestada', 'Expirada') DEFAULT 'Pendiente' AFTER FechaCreacion,
+  ADD UNIQUE KEY IF NOT EXISTS uq_retro_ticket (TicketID),
+  ADD KEY IF NOT EXISTS idx_retro_fecha (FechaCreacion),
+  ADD KEY IF NOT EXISTS idx_retro_estado (Estado);
+
+-- Agregar FK si no existe (TicketID)
+SET @has_fk_retro_t := (
+  SELECT COUNT(*) FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS 
+  WHERE CONSTRAINT_SCHEMA = DATABASE() AND CONSTRAINT_NAME = 'retroalimentacion_ibfk_2'
+);
+SET @sql_retro_t := IF(@has_fk_retro_t=0,
+  'ALTER TABLE retroalimentacion ADD CONSTRAINT retroalimentacion_ibfk_2 FOREIGN KEY (TicketID) REFERENCES tickets (Id)',
+  'SELECT 1');
+PREPARE s2 FROM @sql_retro_t; EXECUTE s2; DEALLOCATE PREPARE s2;
+
+-- Procedimiento para actualizar métricas diarias (ejecutar con CRON)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE ActualizarMetricasCCC(IN fecha_calculo DATE)
+BEGIN
+    DECLARE total_generadas INT DEFAULT 0;
+    DECLARE total_contestadas INT DEFAULT 0;
+    DECLARE promedio_satisfaccion DECIMAL(3,2) DEFAULT 0.00;
+    DECLARE promedio_atencion DECIMAL(3,2) DEFAULT 0.00;
+    DECLARE promedio_tiempo DECIMAL(3,2) DEFAULT 0.00;
+    DECLARE promedio_solucion DECIMAL(3,2) DEFAULT 0.00;
+    DECLARE promedio_recomendacion DECIMAL(3,2) DEFAULT 0.00;
+    DECLARE tickets_con_encuesta INT DEFAULT 0;
+    DECLARE tickets_sin_encuesta INT DEFAULT 0;
+    
+    -- Calcular métricas del día
+    SELECT COUNT(*) INTO total_generadas
+    FROM retroalimentacion 
+    WHERE DATE(FechaCreacion) = fecha_calculo;
+    
+    SELECT COUNT(*) INTO total_contestadas
+    FROM retroalimentacion r
+    INNER JOIN respuestas_retroalimentacion rr ON r.RetroID = rr.RetroID
+    WHERE DATE(rr.FechaRespuesta) = fecha_calculo;
+    
+    SELECT 
+        AVG((CAST(Pregunta1_Atencion_Operador AS SIGNED) + 
+             CAST(Pregunta2_Tiempo_Respuesta AS SIGNED) + 
+             CAST(Pregunta3_Solucion_Brindada AS SIGNED) + 
+             CAST(Pregunta4_Recomendacion AS SIGNED)) / 4.0),
+        AVG(CAST(Pregunta1_Atencion_Operador AS SIGNED)),
+        AVG(CAST(Pregunta2_Tiempo_Respuesta AS SIGNED)),
+        AVG(CAST(Pregunta3_Solucion_Brindada AS SIGNED)),
+        AVG(CAST(Pregunta4_Recomendacion AS SIGNED))
+    INTO promedio_satisfaccion, promedio_atencion, promedio_tiempo, promedio_solucion, promedio_recomendacion
+    FROM respuestas_retroalimentacion
+    WHERE DATE(FechaRespuesta) = fecha_calculo;
+    
+    SELECT COUNT(DISTINCT r.TicketID) INTO tickets_con_encuesta
+    FROM retroalimentacion r
+    WHERE DATE(r.FechaCreacion) = fecha_calculo;
+    
+    SELECT COUNT(*) - tickets_con_encuesta INTO tickets_sin_encuesta
+    FROM tickets 
+    WHERE DATE(FechaRegistro) = fecha_calculo;
+    
+    -- Insertar o actualizar métricas
+    INSERT INTO metricas_retroalimentacion 
+    (Periodo, TotalEncuestasGeneradas, TotalEncuestasContestadas, 
+     PromedioSatisfaccion, PromedioAtencionOperador, PromedioTiempoRespuesta,
+     PromedioSolucion, PromedioRecomendacion, TicketsConEncuesta, TicketsSinEncuesta)
+    VALUES 
+    (fecha_calculo, total_generadas, total_contestadas, 
+     IFNULL(promedio_satisfaccion, 0), IFNULL(promedio_atencion, 0), IFNULL(promedio_tiempo, 0),
+     IFNULL(promedio_solucion, 0), IFNULL(promedio_recomendacion, 0), tickets_con_encuesta, tickets_sin_encuesta)
+    ON DUPLICATE KEY UPDATE
+        TotalEncuestasGeneradas = VALUES(TotalEncuestasGeneradas),
+        TotalEncuestasContestadas = VALUES(TotalEncuestasContestadas),
+        PromedioSatisfaccion = VALUES(PromedioSatisfaccion),
+        PromedioAtencionOperador = VALUES(PromedioAtencionOperador),
+        PromedioTiempoRespuesta = VALUES(PromedioTiempoRespuesta),
+        PromedioSolucion = VALUES(PromedioSolucion),
+        PromedioRecomendacion = VALUES(PromedioRecomendacion),
+        TicketsConEncuesta = VALUES(TicketsConEncuesta),
+        TicketsSinEncuesta = VALUES(TicketsSinEncuesta);
+END$$
+DELIMITER ;
+  Periodo DATE NOT NULL,
+  TotalEncuestasGeneradas INT DEFAULT 0,
+  TotalEncuestasContestadas INT DEFAULT 0,
+  PromedioSatisfaccion DECIMAL(3,2) DEFAULT 0.00,
+  PromedioAtencionOperador DECIMAL(3,2) DEFAULT 0.00,
+  PromedioTiempoRespuesta DECIMAL(3,2) DEFAULT 0.00,
+  PromedioSolucion DECIMAL(3,2) DEFAULT 0.00,
+  PromedioRecomendacion DECIMAL(3,2) DEFAULT 0.00,
+  TicketsConEncuesta INT DEFAULT 0,
+  TicketsSinEncuesta INT DEFAULT 0,
+  FechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (MetricaID),
+  UNIQUE KEY uq_metrica_periodo (Periodo),
+  KEY idx_metrica_fecha (FechaActualizacion)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Vista para reportes de satisfacción completos
+CREATE OR REPLACE VIEW vista_satisfaccion_ccc AS
+SELECT 
+    r.RetroID,
+    r.Cliente,
+    t.Folio,
+    t.Descripcion AS DescripcionTicket,
+    t.Estado AS EstadoTicket,
+    t.Responsable,
+    r.FechaCreacion AS FechaGeneracionEncuesta,
+    rr.FechaRespuesta,
+    r.Estado AS EstadoEncuesta,
+    CAST(rr.Pregunta1_Atencion_Operador AS SIGNED) AS CalificacionAtencion,
+    CAST(rr.Pregunta2_Tiempo_Respuesta AS SIGNED) AS CalificacionTiempo,
+    CAST(rr.Pregunta3_Solucion_Brindada AS SIGNED) AS CalificacionSolucion,
+    CAST(rr.Pregunta4_Recomendacion AS SIGNED) AS CalificacionRecomendacion,
+    rr.Pregunta5_Comentarios AS Comentarios,
+    ROUND((
+        CAST(rr.Pregunta1_Atencion_Operador AS SIGNED) + 
+        CAST(rr.Pregunta2_Tiempo_Respuesta AS SIGNED) + 
+        CAST(rr.Pregunta3_Solucion_Brindada AS SIGNED) + 
+        CAST(rr.Pregunta4_Recomendacion AS SIGNED)
+    ) / 4.0, 2) AS PromedioSatisfaccion,
+    DATEDIFF(IFNULL(rr.FechaRespuesta, NOW()), r.FechaCreacion) AS DiasParaRespuesta,
+    u.NombreCompleto AS OperadorGenerador
+FROM retroalimentacion r
+INNER JOIN tickets t ON r.TicketID = t.Id
+LEFT JOIN respuestas_retroalimentacion rr ON r.RetroID = rr.RetroID
+LEFT JOIN usuarios u ON r.UsuarioID = u.IdUsuario
+ORDER BY r.FechaCreacion DESC;
+
+-- Migración idempotente para instalaciones previas
+ALTER TABLE retroalimentacion 
+  ADD COLUMN IF NOT EXISTS TicketID INT NULL AFTER UsuarioID,
+  ADD COLUMN IF NOT EXISTS FechaCreacion DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER TicketID,
+  ADD KEY IF NOT EXISTS idx_retro_ticket (TicketID);
+
+-- Agregar FK si no existe (TicketID)
+SET @has_fk_retro_t := (
+  SELECT COUNT(*) FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS 
+  WHERE CONSTRAINT_SCHEMA = DATABASE() AND CONSTRAINT_NAME = 'retroalimentacion_ibfk_2'
+);
+SET @sql_retro_t := IF(@has_fk_retro_t=0,
+  'ALTER TABLE retroalimentacion ADD CONSTRAINT retroalimentacion_ibfk_2 FOREIGN KEY (TicketID) REFERENCES tickets (Id)',
+  'SELECT 1');
+PREPARE s2 FROM @sql_retro_t; EXECUTE s2; DEALLOCATE PREPARE s2;
 
 -- ========================
 -- Auditoría
