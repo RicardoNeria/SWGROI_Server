@@ -67,10 +67,16 @@
               <div id="kpiPromedio" class="ui-metrics__value">-</div>
               <div id="kpiSugerencia" class="small-muted" style="margin-top:6px">-</div>
             </div>
-            <div style="width:80px;text-align:center;">
-              <div id="kpiSemaforo" title="Indicador" style="width:46px;height:46px;border-radius:999px;margin:0 auto;background:#d1d5db;border:4px solid rgba(0,0,0,0.04)"></div>
-              <div class="small-muted" style="font-size:0.75rem;margin-top:6px">Estado</div>
-            </div>
+                <div style="width:120px;text-align:center;">
+                  <div id="kpiSemaforo" title="Indicador" style="width:46px;height:46px;border-radius:999px;margin:0 auto;background:#d1d5db;border:4px solid rgba(0,0,0,0.04)"></div>
+                  <div class="small-muted" style="font-size:0.75rem;margin-top:6px">Estado</div>
+                  <div id="kpiSamples" class="small-muted" style="font-size:0.75rem;margin-top:6px">Muestras: -</div>
+                  <div id="kpiLegend" style="margin-top:8px;display:flex;flex-direction:column;gap:4px;font-size:0.75rem;text-align:left">
+                    <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ef4444;margin-right:6px;vertical-align:middle"></span> Deficiente</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-right:6px;vertical-align:middle"></span> Mejorable</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#10b981;margin-right:6px;vertical-align:middle"></span> Excelente</span>
+                  </div>
+                </div>
           </div>
         </div>
       </section>
@@ -236,17 +242,46 @@
       }
       list.forEach(item => {
         const tr = document.createElement('tr'); tr.className='ui-tabla__row';
+        const completed = isCompleted(item);
+        const estadoText = completed ? 'Completada' : 'Pendiente';
+        const fecha = item.fechaRespuesta || '-';
+        const enlaceCell = item.enlace || item.link ? `<a href="${normalizeUrl(item.enlace || item.link)}" target="_blank">Abrir</a>` : '-';
         tr.innerHTML = `
           <td class="ui-tabla__cell">${item.folio||'-'}</td>
           <td class="ui-tabla__cell">${item.cliente||'-'}</td>
-          <td class="ui-tabla__cell">${item.contestada? 'Completada':'Pendiente'}</td>
-          <td class="ui-tabla__cell">${item.fechaRespuesta||'-'}</td>
-          <td class="ui-tabla__cell link-cell">${item.enlace? `<a href="${location.origin}/retroalimentacion.html?t=${encodeURIComponent(item.enlace)}" target="_blank">Abrir</a>`:'-'}</td>
+          <td class="ui-tabla__cell">${estadoText}</td>
+          <td class="ui-tabla__cell">${fecha}</td>
+          <td class="ui-tabla__cell link-cell">${enlaceCell}</td>
         `;
         tbody.appendChild(tr);
       });
       $('historyEmpty').style.display='none';
       $('historyTableWrap').style.display='block';
+    }
+
+    function isCompleted(item){
+      if(!item) return false;
+      if (item.contestada === true || String(item.contestada).toLowerCase() === 'true') return true;
+      if (item.fechaRespuesta) return true;
+      // si existen respuestas r1..r4 numéricas o etiquetas significativas
+      for (let i = 1; i <= 4; i++){
+        const v = item['r'+i];
+        if (v == null) continue;
+        const n = Number(v);
+        if (!isNaN(n) && n > 0) return true;
+        if (typeof v === 'string' && /muy malo|malo|regular|bueno|excelente/i.test(v)) return true;
+      }
+      return false;
+    }
+
+    function normalizeUrl(maybe){
+      if(!maybe) return '';
+      try{
+        const decoded = decodeURIComponent(maybe);
+        if (decoded.startsWith('http')) return decoded;
+      }catch(e){}
+      if (maybe.startsWith('http')) return maybe;
+      return `${location.origin}/retroalimentacion.html?t=${encodeURIComponent(maybe)}`;
     }
 
     function computeMetricsFromHistory(list){
@@ -289,6 +324,7 @@
         $('kpiPromedio').textContent = '-';
         $('kpiSugerencia').textContent = 'No hay respuestas cuantificables para calcular un promedio.';
         const sem = $('kpiSemaforo'); if(sem) sem.style.background = '#fbbf24';
+        const samplesEl = $('kpiSamples'); if(samplesEl) samplesEl.textContent = 'Muestras: 0';
       } else {
         const avg = sum / count;
         const avgDisplay = (Math.round(avg * 10) / 10).toFixed(1);
@@ -300,7 +336,8 @@
         else if (avg < 3.5) suger = 'Mejorable: identificar puntos débiles';
         else if (avg < 4.5) suger = 'Bueno: mantener prácticas positivas';
         else suger = 'Excelente: mantener y documentar buenas prácticas';
-        $('kpiSugerencia').textContent = suger;
+  $('kpiSugerencia').textContent = suger;
+  const samplesEl2 = $('kpiSamples'); if(samplesEl2) samplesEl2.textContent = `Muestras: ${count}`;
         // semáforo: rojo <2.5, amarillo 2.5-3.9, verde >=4.0
         const sem = $('kpiSemaforo');
         if(sem){
