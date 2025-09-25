@@ -255,6 +255,28 @@
 
       const labels = extractLabels(data);
 
+      // If labels empty but we have an enlace, try to fetch the form to obtain question texts
+      if ((!labels || labels.length===0) && (data.enlace || data.link)){
+        const token = extractTokenFromUrl(data.enlace || data.link);
+        if (token){
+          fetchFormByToken(token).then(formData=>{
+            if (formData && Array.isArray(formData.preguntas) && formData.preguntas.length){
+              const newLabels = formData.preguntas.map(p=>p.texto||p.text||p.label||p.pregunta||p.question).filter(Boolean);
+              // actualizar filas existentes en la tabla
+              const tbody2 = $('responseTBody');
+              const rows = tbody2.querySelectorAll('tr');
+              // rows include header ones (folio, cliente, fecha) then preguntas
+              for (let i=0;i<newLabels.length && (i+3) < rows.length; i++){
+                const tr = rows[i+3];
+                if (tr) {
+                  tr.children[0].textContent = newLabels[i];
+                }
+              }
+            }
+          }).catch(()=>{});
+        }
+      }
+
       // Recolectar respuestas r1..r5 y usar label si existe
       for (let i = 1; i <= 5; i++){
         const key = 'r'+i;
@@ -281,21 +303,37 @@
       }
       // Build rows and collect question texts for tooltip
       const usedQuestions = [];
-      list.forEach(item => {
+      list.forEach(rawItem => {
+        const item = normalizeItem(rawItem || {});
         const tr = document.createElement('tr'); tr.className='ui-tabla__row';
         const completed = isCompleted(item);
         const estadoText = completed ? 'Completada' : 'Pendiente';
         const fecha = item.fechaRespuesta || '-';
-        const enlaceCell = item.enlace || item.link ? `<a href="${normalizeUrl(item.enlace || item.link)}" target="_blank">Abrir</a>` : '-';
+        const enlaceCell = item.enlace ? `<a href="${normalizeUrl(item.enlace)}" target="_blank">Abrir</a>` : '-';
 
         // obtener labels si estan
         let labels = [];
         if (Array.isArray(item.preguntas)) {
-          labels = item.preguntas.map(p=>p.texto || p.label || p.pregunta || p.text).filter(Boolean);
+          labels = item.preguntas.map(p=> typeof p === 'string' ? p : (p.texto || p.text || p.label || p.pregunta || p.question || '')).filter(Boolean);
           labels.forEach(l=> usedQuestions.push(l));
         } else {
           // intentar inferir desde keys r1..r4
           for (let i=1;i<=4;i++){ if(item['r'+i]) usedQuestions.push(`Pregunta ${i}`); }
+          // si no hay labels pero existe enlace, intentar recuperar el form para obtener textos
+          if (!labels.length && (item.enlace || item.link)){
+            const token = extractTokenFromUrl(item.enlace || item.link);
+            if (token) {
+              fetchFormByToken(token).then(formData=>{
+                if (formData && Array.isArray(formData.preguntas) && formData.preguntas.length){
+                  // actualizar tooltip
+                  const sem = $('kpiSemaforo'); if(sem){
+                    const newLabels = formData.preguntas.map(p=>p.texto||p.text||p.label||p.pregunta||p.question).filter(Boolean);
+                    sem.title = `Preguntas usadas: ${newLabels.join(' • ')}`;
+                  }
+                }
+              }).catch(()=>{});
+            }
+          }
         }
 
         tr.innerHTML = `
@@ -344,6 +382,103 @@
       return `${location.origin}/retroalimentacion.html?t=${encodeURIComponent(maybe)}`;
     }
 
+    function extractTokenFromUrl(url){
+      if(!url) return null;
+      try{
+        const u = new URL(url);
+        return u.searchParams.get('t') || null;
+      }catch(e){
+        // maybe it's already a token or encoded
+        try{
+          const dec = decodeURIComponent(url);
+          const m = dec.match(/[?&]t=([^&]+)/);
+          if(m) return decodeURIComponent(m[1]);
+        }catch(e2){}
+      }
+      return null;
+    }
+
+    async function fetchFormByToken(token){
+      if(!token) return null;
+      try{
+        const resp = await fetch(`/retroalimentacion?op=form&token=${encodeURIComponent(token)}`, { credentials:'include' });
+        if(!resp.ok) return null;
+        const data = await resp.json();
+        // esperamos que devuelva estructura con preguntas
+        return data;
+      }catch(e){
+        return null;
+      }
+    }
+
+    // Normaliza un objeto de respuesta para usar claves consistentes en la UI
+    function normalizeItem(raw){
+      if(!raw || typeof raw !== 'object') return raw || {};
+      const obj = Object.assign({}, raw);
+
+      // folio
+      obj.folio = obj.folio || obj.ticket || obj.folio_ticket || obj.folioTicket || obj.reference || obj.ref || obj.numero || obj.num || '';
+      // cliente
+      obj.cliente = obj.cliente || obj.nombre || obj.nombreCliente || obj.customer || obj.clienteNombre || obj.nombre_cliente || '';
+      // enlace
+      obj.enlace = obj.enlace || obj.link || obj.url || obj.href || obj.enlaceUrl || '';
+      // fechaRespuesta
+      obj.fechaRespuesta = obj.fechaRespuesta || obj.fecha || obj.fecha_respuesta || obj.respondedAt || obj.fechaRespuestaCliente || '';
+      // contestada flag
+      if (obj.contestada === undefined) {
+        if (obj.respondida === true || obj.respondida === '1' || obj.respondida === 'true') obj.contestada = true;
+        else if (obj.fechaRespuesta) obj.contestada = true;
+        else obj.contestada = false;
+      }
+
+      // map r1..r5 variants
+      for (let i=1;i<=5;i++){
+        const keys = [`r${i}`, `resp${i}`, `respuesta${i}`, `answer${i}`, `a${i}`];
+        for (const k of keys){ if (obj[k] !== undefined) { obj['r'+i] = obj[k]; break; } }
+      }
+
+      // preguntas (labels) possible keys
+      if (!obj.preguntas) obj.preguntas = obj.labels || obj.questions || obj.questions_text || obj.questionText || obj.preguntas_text || null;
+
+      // si faltan campos, intentar buscarlos recursivamente
+      if (!obj.folio) {
+        const found = deepFindValue(raw, ['folio','ticket','ref','reference','numero','num']);
+        if (found) obj.folio = String(found);
+      }
+      if (!obj.cliente) {
+        const found = deepFindValue(raw, ['cliente','nombre','name','customer']);
+        if (found) obj.cliente = String(found);
+      }
+      if (!obj.enlace) {
+        const found = deepFindValue(raw, ['enlace','link','url','href']);
+        if (found) obj.enlace = String(found);
+      }
+      if (!obj.fechaRespuesta) {
+        const found = deepFindValue(raw, ['fecha','date','respond','respuesta','respondida']);
+        if (found) obj.fechaRespuesta = String(found);
+      }
+
+      return obj;
+    }
+
+    // búsqueda recursiva de valores por patrones o por keys candidatas
+    function deepFindValue(o, keyPatterns, valueTest) {
+      if (!o || typeof o !== 'object') return null;
+      for (const k of Object.keys(o)) {
+        try {
+          const v = o[k];
+          if (keyPatterns && keyPatterns.some(p => k.toLowerCase().includes(p))) {
+            if (!valueTest || valueTest(v)) return v;
+          }
+          if (typeof v === 'object') {
+            const r = deepFindValue(v, keyPatterns, valueTest);
+            if (r) return r;
+          }
+        } catch (e) { /* ignore */ }
+      }
+      return null;
+    }
+
     function computeMetricsFromHistory(list){
       if(!list || !list.length){
         $('kpiEficiencia').textContent = '-';
@@ -358,7 +493,10 @@
       const total = list.length;
       const completed = list.filter(x=>x.contestada).length;
       const pending = total - completed;
-      const eficiencia = Math.round((completed/total)*100) + '%';
+  // Calcular eficiencia: preferir base sobre ítems que tienen enlace generado (se supone enviados al cliente)
+  const generatedCount = list.filter(x=> x.enlace || x.link).length;
+  const base = generatedCount > 0 ? generatedCount : total;
+  const eficiencia = base > 0 ? Math.round((completed/base)*100) + '%' : '-';
       $('kpiEficiencia').textContent = eficiencia;
       $('kpiCompletadas').textContent = String(completed);
       $('kpiPendientes2').textContent = String(pending);
@@ -385,6 +523,8 @@
         $('kpiSugerencia').textContent = 'No hay respuestas cuantificables para calcular un promedio.';
         const sem = $('kpiSemaforo'); if(sem) sem.style.background = '#fbbf24';
         const samplesEl = $('kpiSamples'); if(samplesEl) samplesEl.textContent = 'Muestras: 0';
+        // tooltip with counts
+        const sem2 = $('kpiSemaforo'); if(sem2) sem2.title = `Total: ${total} • Generadas: ${generatedCount} • Completadas: ${completed} • Eficiencia: ${eficiencia}`;
       } else {
         const avg = sum / count;
         const avgDisplay = (Math.round(avg * 10) / 10).toFixed(1);
@@ -398,6 +538,8 @@
         else suger = 'Excelente: mantener y documentar buenas prácticas';
   $('kpiSugerencia').textContent = suger;
   const samplesEl2 = $('kpiSamples'); if(samplesEl2) samplesEl2.textContent = `Muestras: ${count}`;
+  // tooltip with counts
+  const sem2 = $('kpiSemaforo'); if(sem2) sem2.title = `Total: ${total} • Generadas: ${generatedCount} • Completadas: ${completed} • Eficiencia: ${eficiencia}`;
         // semáforo: rojo <2.5, amarillo 2.5-3.9, verde >=4.0
         const sem = $('kpiSemaforo');
         if(sem){
@@ -419,7 +561,13 @@
         resultIntro.textContent = '🔗 Enlace generado. Use el botón para copiar o abrir.';
         showStatus('✅ Enlace generado correctamente','success');
   // optionally update history if returned; if not, normalize single result into history for metrics
-  const hist = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
+        const rawHist = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
+        const hist = rawHist.map(item => {
+          const n = normalizeItem(item);
+          if(!n.folio) n.folio = resultado.folio || resultado.ticket || folio || '';
+          if(!n.cliente) n.cliente = resultado.cliente || resultado.nombre || '';
+          return n;
+        });
   renderHistory(hist);
   computeMetricsFromHistory(hist);
       }catch(err){
@@ -449,7 +597,13 @@
           showStatus('ℹ️ Encuesta pendiente','info');
         }
   // Normalizar historial: usar resultado.historial si existe, o el propio resultado como entrada única
-  const hist2 = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
+        const rawHist2 = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
+        const hist2 = rawHist2.map(item=>{
+          const n = normalizeItem(item);
+          if(!n.folio) n.folio = resultado.folio || resultado.ticket || folio || '';
+          if(!n.cliente) n.cliente = resultado.cliente || resultado.nombre || '';
+          return n;
+        });
   renderHistory(hist2);
   computeMetricsFromHistory(hist2);
       }catch(err){
