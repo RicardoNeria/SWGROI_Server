@@ -664,3 +664,98 @@ body {
         padding: var(--ui-gap-24);
     }
 }
+
+/* Estilos añadidos desde retroalimentacion.html (migrados de inline) */
+.retro-card-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.retro-card-header h2 { margin:0; }
+.retro-progress { width:100%; height:10px; background:#eef2ff; border-radius:999px; overflow:hidden; margin-top:0.75rem; }
+.retro-progress__bar { height:100%; background:linear-gradient(90deg,#1e40af,#3b82f6); width:0%; transition:width .4s ease; }
+.retro-exito__icono, .retro-error__icono { font-size:2.25rem; }
+.retro-obligatorio { text-align:left; }
+.retro-preguntas .retro-pregunta { margin-bottom:1rem; }
+.ui-card--form { max-width:880px; margin:0 auto; }
+@media (max-width:768px) { .ui-layout__main { padding:1rem; } }
+
+/* Layout de encuesta centrada */
+body.ui-layout--survey .ui-layout__main {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:2.5rem;
+    min-height:100vh;
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+body.ui-layout--survey .ui-card--form {
+    width:100%;
+    max-width:760px;
+    box-shadow: 0 6px 20px rgba(16,24,40,0.08);
+    border-radius:12px;
+    padding:1.5rem 2rem;
+}
+
+/* Ajustes visuales para look de encuesta */
+.retro-card-header { gap:0.5rem; }
+.retro-card-header h2 { font-size:1.25rem; }
+.retro-obligatorio { background:#f1f5f9; border-left:4px solid #bfdbfe; padding:.75rem 1rem; border-radius:6px; }
+.retro-acciones { display:flex; gap:0.75rem; justify-content:flex-end; }
+.retro-acciones .ui-button--ghost { background:transparent; border:1px solid var(--ui-color-borde); }
+
+/* Utilidad de espaciado para secciones internas */
+.retro-card-spacing { margin-top:1rem; }
+
+/* Leyenda roja obligatoria específica */
+.leyenda-roja { color: var(--ui-color-error); border-left-color: var(--ui-color-error); background:#fff5f5; }
+
+/* Nota secundaria para la encuesta (visible sólo si no contestada) */
+#retroNota { color: var(--ui-color-texto-muted); padding:0.6rem 0; }
+
+/* Subtitulo de tarjeta en modo error (leyenda roja) */
+.ui-card__subtitle--error {
+    color: #dc2626; /* rojo pedido */
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.ui-card__subtitle--error::before {
+    content: '⚠️';
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+/* Panel de desarrollo para probar JSON de ejemplo */
+.dev-panel {
+    margin-top: 1rem;
+    border: 1px dashed var(--ui-color-borde);
+    padding: 0.75rem;
+    background: #fff;
+    border-radius: 8px;
+}
+.dev-panel textarea { width:100%; min-height:120px; font-family: monospace; font-size:0.95rem; padding:0.5rem; border:1px solid var(--ui-color-borde); border-radius:6px }
+.dev-panel .dev-actions { margin-top:0.5rem; display:flex; gap:0.5rem; justify-content:flex-end }
+.dev-toggle { font-size:0.9rem; margin-left:0.5rem }
+
+/* Leyenda cuando la encuesta ya fue contestada */
+.leyenda-contestada { background:#eff6ff; border-left:4px solid #93c5fd; color:var(--ui-color-info); padding:0.75rem 1rem; border-radius:6px; }
+
+/* Center inner question container */
+.retro-preguntas { max-width:680px; margin: 0 auto; display:block; }
+
+/* Logo in header */
+.retro-logo { width:64px; height:auto; object-fit:contain; margin-right:0.75rem; vertical-align:middle; }
+
+/* Typography and color improvements */
+.retro-pregunta__texto { font-weight:700; color:var(--ui-color-primario); font-size:1rem; display:block; margin-bottom:0.5rem; }
+.retro-escala__label { color:var(--ui-color-texto); font-weight:600; }
+.retro-respuesta textarea { border:1px solid var(--ui-color-borde); border-radius:6px; }
+.retro-respuesta textarea:focus { outline:none; box-shadow:0 0 0 4px rgba(59,130,246,0.08); border-color:var(--ui-color-primario); }
+
+/* Subtle color tweaks for options */
+.retro-escala__opcion { background: #ffffff; padding: 0.25rem; border-radius:6px; }
+
+/* Make question text clearer on small screens */
+@media (max-width:480px) {
+    .retro-pregunta__texto { font-size:0.98rem; }
+    .retro-logo { width:48px; }
+}
