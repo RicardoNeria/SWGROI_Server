@@ -13,6 +13,11 @@
     .link-actions { display:flex; gap:8px; align-items:center }
     .small-muted { color: var(--ui-color-texto-muted); font-size: .95rem }
     .history-empty { padding:12px; background:var(--ui-color-fondo); border:1px dashed var(--ui-color-borde); border-radius:6px; }
+    /* Row states */
+    .history-completed { background: rgba(16,185,129,0.06); }
+    .history-pending { background: rgba(245,158,11,0.03); }
+    /* Semaforo tooltip cursor */
+    #kpiSemaforo { cursor: help; }
   </style>
 </head>
 <body class="ui-layout ui-layout--no-topbar">
@@ -119,14 +124,7 @@
             <table class="ui-tabla" role="table" aria-label="Detalle de respuesta" id="responseTable">
               <thead class="ui-tabla__head"><tr><th class="ui-tabla__col">Campo</th><th class="ui-tabla__col">Valor</th></tr></thead>
               <tbody id="responseTBody" class="ui-tabla__body">
-                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Folio</td><td id="rFolio" class="ui-tabla__cell">-</td></tr>
-                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Cliente</td><td id="rCliente" class="ui-tabla__cell">-</td></tr>
-                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Fecha Respuesta</td><td id="rFecha" class="ui-tabla__cell">-</td></tr>
-                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Pregunta 1</td><td id="rR1" class="ui-tabla__cell">-</td></tr>
-                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Pregunta 2</td><td id="rR2" class="ui-tabla__cell">-</td></tr>
-                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Pregunta 3</td><td id="rR3" class="ui-tabla__cell">-</td></tr>
-                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Pregunta 4</td><td id="rR4" class="ui-tabla__cell">-</td></tr>
-                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Comentarios</td><td id="rR5" class="ui-tabla__cell">-</td></tr>
+                <!-- Rellenado dinámico por JS -->
               </tbody>
             </table>
           </div>
@@ -222,14 +220,55 @@
     });
 
     function fillResponseDetail(data){
-      $('rFolio').textContent = data.folio || '-';
-      $('rCliente').textContent = data.cliente || '-';
-      $('rFecha').textContent = data.fechaRespuesta || '-';
-      $('rR1').textContent = data.r1 || '-';
-      $('rR2').textContent = data.r2 || '-';
-      $('rR3').textContent = data.r3 || '-';
-      $('rR4').textContent = data.r4 || '-';
-      $('rR5').textContent = data.r5 || '-';
+      const tbody = $('responseTBody'); tbody.innerHTML = '';
+      const rows = [];
+      rows.push(['Folio', data.folio || '-']);
+      rows.push(['Cliente', data.cliente || '-']);
+      rows.push(['Fecha Respuesta', data.fechaRespuesta || '-']);
+
+      // Extraer etiquetas de pregunta soportando múltiples formatos
+      const extractLabels = (d) => {
+        const labels = [];
+        if (!d) return labels;
+        // Posibles ubicaciones: d.preguntas, d.labels, d.questions, d.questionText
+        const candidates = [d.preguntas, d.labels, d.questions, d.questionText, d.questions_text];
+        for (const cand of candidates) {
+          if (!cand) continue;
+          if (Array.isArray(cand)) {
+            cand.forEach(item => {
+              if (!item) return;
+              if (typeof item === 'string') labels.push(item);
+              else if (typeof item === 'object') {
+                labels.push(item.texto || item.text || item.label || item.pregunta || item.question || '');
+              }
+            });
+            if (labels.length) return labels;
+          }
+        }
+        // último recurso: buscar keys r1_text etc
+        for (let i=1;i<=5;i++){
+          const k = 'r'+i+'_text';
+          if (d[k]) labels.push(d[k]);
+        }
+        return labels;
+      };
+
+      const labels = extractLabels(data);
+
+      // Recolectar respuestas r1..r5 y usar label si existe
+      for (let i = 1; i <= 5; i++){
+        const key = 'r'+i;
+        const label = labels[i-1] || `Pregunta ${i}`;
+        const val = (data[key] !== undefined && data[key] !== null && data[key] !== '') ? data[key] : '-';
+        rows.push([label, val]);
+      }
+
+      rows.forEach(([campo, valor]) => {
+        const tr = document.createElement('tr'); tr.className='ui-tabla__row';
+        tr.innerHTML = `<td class="ui-tabla__cell">${campo}</td><td class="ui-tabla__cell">${valor}</td>`;
+        tbody.appendChild(tr);
+      });
+
       responseDetail.style.display='block';
     }
 
@@ -240,12 +279,25 @@
         $('historyEmpty').style.display='block';
         return;
       }
+      // Build rows and collect question texts for tooltip
+      const usedQuestions = [];
       list.forEach(item => {
         const tr = document.createElement('tr'); tr.className='ui-tabla__row';
         const completed = isCompleted(item);
         const estadoText = completed ? 'Completada' : 'Pendiente';
         const fecha = item.fechaRespuesta || '-';
         const enlaceCell = item.enlace || item.link ? `<a href="${normalizeUrl(item.enlace || item.link)}" target="_blank">Abrir</a>` : '-';
+
+        // obtener labels si estan
+        let labels = [];
+        if (Array.isArray(item.preguntas)) {
+          labels = item.preguntas.map(p=>p.texto || p.label || p.pregunta || p.text).filter(Boolean);
+          labels.forEach(l=> usedQuestions.push(l));
+        } else {
+          // intentar inferir desde keys r1..r4
+          for (let i=1;i<=4;i++){ if(item['r'+i]) usedQuestions.push(`Pregunta ${i}`); }
+        }
+
         tr.innerHTML = `
           <td class="ui-tabla__cell">${item.folio||'-'}</td>
           <td class="ui-tabla__cell">${item.cliente||'-'}</td>
@@ -253,8 +305,16 @@
           <td class="ui-tabla__cell">${fecha}</td>
           <td class="ui-tabla__cell link-cell">${enlaceCell}</td>
         `;
+
+        tr.classList.add(completed ? 'history-completed' : 'history-pending');
         tbody.appendChild(tr);
       });
+
+      // set tooltip with used question texts
+      const sem = $('kpiSemaforo'); if(sem){
+        const unique = Array.from(new Set(usedQuestions)).slice(0,8);
+        sem.title = unique.length ? `Preguntas usadas: ${unique.join(' • ')}` : 'No se detectaron preguntas usadas';
+      }
       $('historyEmpty').style.display='none';
       $('historyTableWrap').style.display='block';
     }
