@@ -4,228 +4,365 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CCC - Retroalimentación</title>
-  <link rel="stylesheet" href="/Styles/estilo_general.css" />
-  <style>
-    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#f6f7f9;color:#222}
-    .wrap{max-width:900px;margin:20px auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-    h1{color:#1f2937;margin:0 0 20px;font-size:1.5rem}
-    .form-group{margin-bottom:16px}
-    label{display:block;margin-bottom:6px;font-weight:600;color:#374151}
-    input[type="text"]{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:14px}
-    .btn-group{display:flex;gap:10px;margin-top:10px}
-    button{padding:10px 16px;border:0;border-radius:6px;font-weight:500;cursor:pointer;font-size:14px}
-    .btn-primary{background:#2563eb;color:white}
-    .btn-secondary{background:#6b7280;color:white}
-    .btn-primary:hover{background:#1d4ed8}
-    .btn-secondary:hover{background:#4b5563}
-    .result-box{margin-top:20px;padding:15px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:6px;font-family:monospace;white-space:pre-wrap;min-height:100px}
-    .status{padding:10px;border-radius:6px;margin-top:10px}
-    .status.success{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
-    .status.error{background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca}
-    .status.info{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd}
-    table{width:100%;border-collapse:collapse;margin-top:15px;display:none}
-    table.show{display:table}
-    th,td{padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb}
-    th{background:#f9fafb;font-weight:600;color:#374151}
-    .link-cell{word-break:break-all}
-    .link-cell a{color:#2563eb;text-decoration:none}
-    .link-cell a:hover{text-decoration:underline}
-  </style>
+  <link rel="stylesheet" href="/Styles/componentes/componentes.css" />
   <script src="/Scripts/retro_admin.js" defer></script>
+  <style>
+    /* Small local tweaks to adapt plantilla to this page */
+    .wrap-custom { max-width: 1100px; margin: 20px auto; }
+    .result-code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; white-space: nowrap; overflow:auto }
+    .link-actions { display:flex; gap:8px; align-items:center }
+    .small-muted { color: var(--ui-color-texto-muted); font-size: .95rem }
+    .history-empty { padding:12px; background:var(--ui-color-fondo); border:1px dashed var(--ui-color-borde); border-radius:6px; }
+  </style>
 </head>
-<body>
-  <div class="wrap">
-    <h1>📋 CCC - Módulo de Retroalimentación</h1>
-    <p style="color:#6b7280;margin-bottom:25px">
-      Genere enlaces de encuesta para clientes y consulte sus respuestas para análisis de satisfacción.
-    </p>
-    
-    <div class="form-group">
-      <label for="folioInput">Folio del Ticket:</label>
-      <input 
-        id="folioInput" 
-        type="text" 
-        placeholder="Ejemplo: TCK-00123, FOLIO456, etc." 
-        autocomplete="off"
-      />
-      <div class="btn-group">
-        <button id="btnGenerar" class="btn-primary">🔗 Generar Enlace</button>
-        <button id="btnBuscar" class="btn-secondary">🔍 Buscar Respuestas</button>
+<body class="ui-layout ui-layout--no-topbar">
+
+  <!-- SIDEBAR UNIFICADO (reutiliza la plantilla base) -->
+  <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
+    <div class="ui-sidebar__header">
+      <h2 class="ui-sidebar__title">SWGROI</h2>
+      <div class="ui-sidebar__logo">
+        <img src="/Imagenes/CENTRALDEALARMAS1.png" alt="Logo" class="ui-sidebar__logo-img">
       </div>
     </div>
+    <nav class="ui-sidebar__nav">
+      <ul class="ui-sidebar__menu">
+        <li class="ui-sidebar__item"><a href="/menu.html" class="ui-sidebar__link">🏠 Menú principal</a></li>
+        <li class="ui-sidebar__item"><a href="#" class="ui-sidebar__link ui-sidebar__link--active">📋 Retroalimentación (CCC)</a></li>
+        <li class="ui-sidebar__item"><a href="/logout" class="ui-sidebar__link ui-sidebar__link--logout">🚪 Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </aside>
 
-    <div id="statusMsg" class="status info" style="display:none"></div>
-    
-    <div class="result-box" id="resultBox">
-      💡 Ingrese un folio de ticket y seleccione una acción.
-      
-      Funciones disponibles:
-      • Generar Enlace: Crea un enlace único para que el cliente responda la encuesta
-      • Buscar Respuestas: Muestra las respuestas ya enviadas por el cliente
+  <main class="ui-layout__main">
+    <div class="ui-card ui-card--module wrap-custom">
+      <nav class="ui-breadcrumbs" aria-label="Rastro de navegación">
+        <ol class="ui-breadcrumbs__list">
+          <li class="ui-breadcrumbs__item"><a href="/menu.html" class="ui-breadcrumbs__link">Inicio</a></li>
+          <li class="ui-breadcrumbs__item ui-breadcrumbs__item--active" aria-current="page"><span class="ui-breadcrumbs__separator">/</span><span class="ui-breadcrumbs__current">Retroalimentación</span></li>
+        </ol>
+      </nav>
+
+      <h2 class="ui-card__title">📋 CCC - Módulo de Retroalimentación</h2>
+      <p class="small-muted">Genere enlaces de encuesta para clientes y consulte sus respuestas para análisis de satisfacción.</p>
+
+      <!-- METRICAS -->
+      <section class="ui-metrics" aria-label="Indicadores principales" style="margin-top:12px;display:flex;gap:12px;align-items:stretch;">
+        <div class="ui-metrics__item" style="flex:1;">
+          <div class="ui-metrics__title">Eficiencia</div>
+          <div id="kpiEficiencia" class="ui-metrics__value">-</div>
+        </div>
+        <div class="ui-metrics__item" style="flex:1;">
+          <div class="ui-metrics__title">Encuestas Completadas</div>
+          <div id="kpiCompletadas" class="ui-metrics__value">0</div>
+        </div>
+        <div class="ui-metrics__item" style="flex:1;">
+          <div class="ui-metrics__title">Pendientes</div>
+          <div id="kpiPendientes2" class="ui-metrics__value">0</div>
+        </div>
+        <div class="ui-metrics__item" style="flex:2;display:flex;flex-direction:column;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="flex:1">
+              <div class="ui-metrics__title">Puntaje medio</div>
+              <div id="kpiPromedio" class="ui-metrics__value">-</div>
+              <div id="kpiSugerencia" class="small-muted" style="margin-top:6px">-</div>
+            </div>
+            <div style="width:80px;text-align:center;">
+              <div id="kpiSemaforo" title="Indicador" style="width:46px;height:46px;border-radius:999px;margin:0 auto;background:#d1d5db;border:4px solid rgba(0,0,0,0.04)"></div>
+              <div class="small-muted" style="font-size:0.75rem;margin-top:6px">Estado</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FORMULARIO PRINCIPAL -->
+      <div class="ui-filters" style="margin-top:18px;">
+        <form id="formFiltro" class="ui-filters__form" role="search" aria-label="Filtros de búsqueda" onsubmit="return false;">
+          <input type="text" id="folioInput" class="ui-filters__input" placeholder="Folio del ticket - Ej: TCK-00123" aria-label="Folio del ticket" autocomplete="off">
+
+          <div style="margin-top:8px; display:flex; gap:8px;">
+            <button type="button" id="btnGenerar" class="ui-button ui-button--primary">🔗 Generar Enlace</button>
+            <button type="button" id="btnBuscar" class="ui-button ui-button--secondary">🔍 Buscar Respuestas</button>
+            <button type="button" id="btnRefrescarLocal" class="ui-button ui-button--ghost" title="Limpiar" onclick="limpiarUI()">🧹 Limpiar</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="leyenda" class="ui-message ui-message--info" style="display:none;margin-top:12px;" aria-live="polite"></div>
+
+      <!-- RESULTADOS Y ACCIONES -->
+      <section style="margin-top:14px;">
+        <div id="resultBox" class="ui-card ui-card--report" style="padding:14px;">
+          <div id="resultIntro">💡 Ingrese un folio de ticket y seleccione una acción.</div>
+          <div id="generatedArea" style="margin-top:12px;display:none;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+              <div>
+                <div class="small-muted">Enlace de encuesta</div>
+                <div class="result-code" id="generatedLink">-</div>
+              </div>
+              <div class="link-actions">
+                <button id="btnCopyLink" class="ui-button ui-button--primary" title="Copiar enlace">📋 Copiar</button>
+                <a id="btnOpenLink" class="ui-button ui-button--ghost" target="_blank" rel="noopener">🔗 Abrir</a>
+              </div>
+            </div>
+            <div class="small-muted" style="margin-top:8px">Estado: <span id="estadoEncuesta">-</span></div>
+          </div>
+
+          <div id="responseDetail" style="margin-top:12px;display:none;">
+            <h3 style="margin:0 0 8px 0">Detalle de la respuesta</h3>
+            <table class="ui-tabla" role="table" aria-label="Detalle de respuesta" id="responseTable">
+              <thead class="ui-tabla__head"><tr><th class="ui-tabla__col">Campo</th><th class="ui-tabla__col">Valor</th></tr></thead>
+              <tbody id="responseTBody" class="ui-tabla__body">
+                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Folio</td><td id="rFolio" class="ui-tabla__cell">-</td></tr>
+                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Cliente</td><td id="rCliente" class="ui-tabla__cell">-</td></tr>
+                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Fecha Respuesta</td><td id="rFecha" class="ui-tabla__cell">-</td></tr>
+                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Pregunta 1</td><td id="rR1" class="ui-tabla__cell">-</td></tr>
+                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Pregunta 2</td><td id="rR2" class="ui-tabla__cell">-</td></tr>
+                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Pregunta 3</td><td id="rR3" class="ui-tabla__cell">-</td></tr>
+                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Pregunta 4</td><td id="rR4" class="ui-tabla__cell">-</td></tr>
+                <tr class="ui-tabla__row"><td class="ui-tabla__cell">Comentarios</td><td id="rR5" class="ui-tabla__cell">-</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- HISTORIAL DE ENCUESTAS -->
+      <section style="margin-top:16px;">
+        <h3 class="ui-card__title" style="font-size:1rem;margin-bottom:8px">📜 Historial de encuestas</h3>
+        <div id="historyContainer" class="ui-card ui-card--report" style="padding:12px;">
+          <div id="historyEmpty" class="history-empty">No hay historiales cargados. Use "Buscar Respuestas" para ver el historial asociado al folio.</div>
+          <div id="historyTableWrap" style="display:none;">
+            <div class="ui-desplazable">
+              <table class="ui-tabla" id="historyTable" role="table">
+                <thead class="ui-tabla__head"><tr><th class="ui-tabla__col">Folio</th><th class="ui-tabla__col">Cliente</th><th class="ui-tabla__col">Estado</th><th class="ui-tabla__col">Fecha</th><th class="ui-tabla__col">Enlace</th></tr></thead>
+                <tbody id="historyTBody" class="ui-tabla__body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
-
-    <table id="responseTable">
-      <thead>
-        <tr>
-          <th>Campo</th>
-          <th>Valor</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td><strong>Folio</strong></td><td id="rFolio">-</td></tr>
-        <tr><td><strong>Cliente</strong></td><td id="rCliente">-</td></tr>
-        <tr><td><strong>Enlace</strong></td><td id="rEnlace" class="link-cell">-</td></tr>
-        <tr><td><strong>Fecha Respuesta</strong></td><td id="rFecha">-</td></tr>
-        <tr><td><strong>Pregunta 1</strong></td><td id="rR1">-</td></tr>
-        <tr><td><strong>Pregunta 2</strong></td><td id="rR2">-</td></tr>
-        <tr><td><strong>Pregunta 3</strong></td><td id="rR3">-</td></tr>
-        <tr><td><strong>Pregunta 4</strong></td><td id="rR4">-</td></tr>
-        <tr><td><strong>Comentarios</strong></td><td id="rR5">-</td></tr>
-      </tbody>
-    </table>
-  </div>
+  </main>
 
   <script>
     const $ = (id) => document.getElementById(id);
     const folioInput = $('folioInput');
     const btnGenerar = $('btnGenerar');
     const btnBuscar = $('btnBuscar');
-    const statusMsg = $('statusMsg');
-    const resultBox = $('resultBox');
-    const responseTable = $('responseTable');
+    const btnCopyLink = $('btnCopyLink');
+    const btnOpenLink = $('btnOpenLink');
+    const generatedArea = $('generatedArea');
+    const generatedLink = $('generatedLink');
+    const estadoEncuesta = $('estadoEncuesta');
+    const resultIntro = $('resultIntro');
+    const leyenda = $('leyenda');
+    const responseDetail = $('responseDetail');
 
     function showStatus(message, type = 'info') {
-      statusMsg.textContent = message;
-      statusMsg.className = `status ${type}`;
-      statusMsg.style.display = 'block';
-      setTimeout(() => {
-        statusMsg.style.display = 'none';
-      }, 5000);
+      leyenda.textContent = message;
+      leyenda.className = `ui-message ui-message--${type}`;
+      leyenda.style.display = 'block';
+      setTimeout(() => leyenda.style.display = 'none', 6000);
     }
 
-    function hideTable() {
-      responseTable.classList.remove('show');
+    function limpiarUI(){
+      generatedArea.style.display='none';
+      responseDetail.style.display='none';
+      $('historyTableWrap').style.display='none';
+      $('historyEmpty').style.display='block';
+      resultIntro.textContent = '💡 Ingrese un folio de ticket y seleccione una acción.';
+      folioInput.value='';
+      folioInput.focus();
     }
 
-    function showTable(data) {
+    function renderGenerated(link, contestada){
+      if(!link) { generatedArea.style.display='none'; return; }
+
+      // El backend puede devolver: a) sólo el token, b) la URL completa, c) la URL completa ya codificada.
+      // Evitamos envolver dos veces la URL (caso c) ya que provoca que el parámetro t contenga otra URL).
+      let full = link;
+      try {
+        // Si viene codificado, decodeURIComponent revelará la URL real
+        const decoded = decodeURIComponent(link);
+        if (decoded.includes('/retroalimentacion.html') || decoded.includes('t=')) {
+          full = decoded;
+        }
+      } catch (e) {
+        // ignore – link no está codificado
+      }
+
+      // Si después de todo no parece una URL, construimos la ruta local con el token
+      if (!/^https?:\/\//i.test(full) && !full.includes('/retroalimentacion.html')) {
+        full = `${location.origin}/retroalimentacion.html?t=${encodeURIComponent(link)}`;
+      }
+
+      generatedLink.textContent = full;
+      btnOpenLink.href = full;
+      estadoEncuesta.textContent = contestada ? '✅ Contestada' : '📝 Pendiente';
+      generatedArea.style.display = 'block';
+    }
+
+    btnCopyLink.addEventListener('click', async () => {
+      const text = generatedLink.textContent || '';
+      if(!text) return showStatus('No hay enlace para copiar','error');
+      try{
+        await navigator.clipboard.writeText(text);
+        showStatus('✅ Enlace copiado al portapapeles','success');
+      }catch(e){
+        showStatus('❌ No se pudo copiar. Seleccione y copie manualmente.','error');
+      }
+    });
+
+    function fillResponseDetail(data){
       $('rFolio').textContent = data.folio || '-';
       $('rCliente').textContent = data.cliente || '-';
-      
-      const enlaceCompleto = data.enlace ? 
-        `${location.origin}/retroalimentacion.html?t=${encodeURIComponent(data.enlace)}` : '-';
-      
-      if (data.enlace) {
-        $('rEnlace').innerHTML = `<a href="${enlaceCompleto}" target="_blank">${enlaceCompleto}</a>`;
-      } else {
-        $('rEnlace').textContent = '-';
-      }
-      
       $('rFecha').textContent = data.fechaRespuesta || '-';
       $('rR1').textContent = data.r1 || '-';
       $('rR2').textContent = data.r2 || '-';
       $('rR3').textContent = data.r3 || '-';
       $('rR4').textContent = data.r4 || '-';
       $('rR5').textContent = data.r5 || '-';
-      
-      responseTable.classList.add('show');
+      responseDetail.style.display='block';
+    }
+
+    function renderHistory(list){
+      const tbody = $('historyTBody'); tbody.innerHTML='';
+      if(!list || !list.length){
+        $('historyTableWrap').style.display='none';
+        $('historyEmpty').style.display='block';
+        return;
+      }
+      list.forEach(item => {
+        const tr = document.createElement('tr'); tr.className='ui-tabla__row';
+        tr.innerHTML = `
+          <td class="ui-tabla__cell">${item.folio||'-'}</td>
+          <td class="ui-tabla__cell">${item.cliente||'-'}</td>
+          <td class="ui-tabla__cell">${item.contestada? 'Completada':'Pendiente'}</td>
+          <td class="ui-tabla__cell">${item.fechaRespuesta||'-'}</td>
+          <td class="ui-tabla__cell link-cell">${item.enlace? `<a href="${location.origin}/retroalimentacion.html?t=${encodeURIComponent(item.enlace)}" target="_blank">Abrir</a>`:'-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      $('historyEmpty').style.display='none';
+      $('historyTableWrap').style.display='block';
+    }
+
+    function computeMetricsFromHistory(list){
+      if(!list || !list.length){
+        $('kpiEficiencia').textContent = '-';
+        $('kpiCompletadas').textContent = '0';
+        $('kpiPendientes2').textContent = '0';
+        $('kpiPromedio').textContent = '-';
+        $('kpiSugerencia').textContent = '-';
+        // semáforo gris
+        const sem = $('kpiSemaforo'); if(sem) sem.style.background = '#d1d5db';
+        return;
+      }
+      const total = list.length;
+      const completed = list.filter(x=>x.contestada).length;
+      const pending = total - completed;
+      const eficiencia = Math.round((completed/total)*100) + '%';
+      $('kpiEficiencia').textContent = eficiencia;
+      $('kpiCompletadas').textContent = String(completed);
+      $('kpiPendientes2').textContent = String(pending);
+
+      // Calcular puntaje medio sobre preguntas de escala (r1..r4). Soporta valores numéricos o etiquetas.
+      let sum = 0; let count = 0;
+      list.forEach(item => {
+        for (let i = 1; i <= 4; i++) {
+          const key = 'r' + i;
+          const val = item[key];
+          if (val == null) continue;
+          const num = Number(val);
+          if (!isNaN(num)) { sum += num; count++; }
+          else {
+            // intentar mapear etiquetas comunes a valores
+            const map = { 'Muy malo':1, 'Malo':2, 'Regular':3, 'Bueno':4, 'Excelente':5 };
+            if (map[val]) { sum += map[val]; count++; }
+          }
+        }
+      });
+
+      if (count === 0) {
+        $('kpiPromedio').textContent = '-';
+        $('kpiSugerencia').textContent = 'No hay respuestas cuantificables para calcular un promedio.';
+        const sem = $('kpiSemaforo'); if(sem) sem.style.background = '#fbbf24';
+      } else {
+        const avg = sum / count;
+        const avgDisplay = (Math.round(avg * 10) / 10).toFixed(1);
+        $('kpiPromedio').textContent = `${avgDisplay} / 5`;
+
+        // Sugerencias básicas
+        let suger = 'Adecuado';
+        if (avg < 2.5) suger = 'Deficiente: revisar procesos y atención al cliente';
+        else if (avg < 3.5) suger = 'Mejorable: identificar puntos débiles';
+        else if (avg < 4.5) suger = 'Bueno: mantener prácticas positivas';
+        else suger = 'Excelente: mantener y documentar buenas prácticas';
+        $('kpiSugerencia').textContent = suger;
+        // semáforo: rojo <2.5, amarillo 2.5-3.9, verde >=4.0
+        const sem = $('kpiSemaforo');
+        if(sem){
+          if (avg < 2.5) sem.style.background = '#ef4444';
+          else if (avg < 4.0) sem.style.background = '#f59e0b';
+          else sem.style.background = '#10b981';
+        }
+      }
     }
 
     btnGenerar.addEventListener('click', async () => {
       const folio = folioInput.value.trim();
-      if (!folio) {
-        showStatus('❌ Por favor ingrese un folio válido', 'error');
-        folioInput.focus();
-        return;
-      }
-
-      btnGenerar.disabled = true;
-      btnGenerar.textContent = '⏳ Generando...';
-      hideTable();
-      
-      try {
+      if (!folio) { showStatus('❌ Por favor ingrese un folio válido','error'); folioInput.focus(); return; }
+      btnGenerar.disabled = true; btnGenerar.textContent = '⏳ Generando...';
+      try{
         const resultado = await window.RetroAdmin.generar(folio);
-        
-        const estado = resultado.contestada ? 
-          '✅ (Encuesta ya contestada)' : 
-          '📝 (Pendiente de respuesta)';
-          
-        resultBox.textContent = `🔗 ENLACE GENERADO EXITOSAMENTE\n\n` +
-          `Estado: ${estado}\n` +
-          `Enlace: ${resultado.link}\n\n` +
-          `✉️ Copie este enlace y envíelo al cliente para que complete la encuesta de satisfacción.`;
-        
-        showStatus('✅ Enlace generado correctamente', 'success');
-        
-      } catch (error) {
-        resultBox.textContent = `❌ ERROR AL GENERAR ENLACE\n\n` +
-          `Detalles: ${error.message}\n\n` +
-          `Posibles causas:\n` +
-          `• El folio no existe en el sistema\n` +
-          `• No tiene permisos para esta operación\n` +
-          `• Error de conectividad con el servidor`;
-        
-        showStatus('❌ Error al generar enlace', 'error');
-      } finally {
-        btnGenerar.disabled = false;
-        btnGenerar.textContent = '🔗 Generar Enlace';
-      }
+        // resultado expected: { link, contestada, ... }
+        renderGenerated(resultado.link || resultado.enlace || '', resultado.contestada === true);
+        resultIntro.textContent = '🔗 Enlace generado. Use el botón para copiar o abrir.';
+        showStatus('✅ Enlace generado correctamente','success');
+  // optionally update history if returned; if not, normalize single result into history for metrics
+  const hist = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
+  renderHistory(hist);
+  computeMetricsFromHistory(hist);
+      }catch(err){
+        resultIntro.textContent = '❌ Error al generar enlace. Revise el mensaje.';
+        showStatus('❌ Error al generar enlace','error');
+        console.error(err);
+      }finally{ btnGenerar.disabled=false; btnGenerar.textContent='🔗 Generar Enlace'; }
     });
 
     btnBuscar.addEventListener('click', async () => {
       const folio = folioInput.value.trim();
-      if (!folio) {
-        showStatus('❌ Por favor ingrese un folio válido', 'error');
-        folioInput.focus();
-        return;
-      }
-
-      btnBuscar.disabled = true;
-      btnBuscar.textContent = '🔍 Buscando...';
-      hideTable();
-      
-      try {
+      if (!folio) { showStatus('❌ Por favor ingrese un folio válido','error'); folioInput.focus(); return; }
+      btnBuscar.disabled=true; btnBuscar.textContent='🔍 Buscando...';
+      try{
         const resultado = await window.RetroAdmin.buscar(folio);
-        
-        if (resultado.fechaRespuesta) {
-          resultBox.textContent = `✅ RESPUESTAS ENCONTRADAS\n\n` +
-            `El cliente completó la encuesta el ${resultado.fechaRespuesta}\n` +
-            `Consulte la tabla inferior para ver los detalles completos.`;
-          
-          showTable(resultado);
-          showStatus('✅ Respuestas encontradas', 'success');
-          
+        // Mostrar detalles si tiene fechaRespuesta
+        if(resultado.fechaRespuesta){
+          fillResponseDetail(resultado);
+          renderGenerated(resultado.enlace || resultado.link || '', true);
+          resultIntro.textContent = `✅ Respuestas encontradas: ${resultado.fechaRespuesta}`;
+          showStatus('✅ Respuestas encontradas','success');
         } else {
-          resultBox.textContent = `📋 ENCUESTA PENDIENTE\n\n` +
-            `Se ha generado el enlace pero el cliente aún no ha respondido.\n` +
-            `Enlace: ${location.origin}/retroalimentacion.html?t=${encodeURIComponent(resultado.enlace || '')}\n\n` +
-            `💡 Considere reenviar el enlace al cliente.`;
-          
-          showStatus('ℹ️ Encuesta pendiente de respuesta', 'info');
+          // No respondida aun
+          renderGenerated(resultado.enlace || resultado.link || '', false);
+          responseDetail.style.display='none';
+          resultIntro.textContent = '📋 Encuesta pendiente o sin respuesta registrada.';
+          showStatus('ℹ️ Encuesta pendiente','info');
         }
-        
-      } catch (error) {
-        resultBox.textContent = `❌ ERROR EN LA BÚSQUEDA\n\n` +
-          `Detalles: ${error.message}\n\n` +
-          `Posibles causas:\n` +
-          `• No existe una encuesta para este folio\n` +
-          `• El folio es incorrecto\n` +
-          `• No tiene permisos para esta consulta`;
-        
-        showStatus('❌ Error en la búsqueda', 'error');
-      } finally {
-        btnBuscar.disabled = false;
-        btnBuscar.textContent = '🔍 Buscar Respuestas';
-      }
+  // Normalizar historial: usar resultado.historial si existe, o el propio resultado como entrada única
+  const hist2 = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
+  renderHistory(hist2);
+  computeMetricsFromHistory(hist2);
+      }catch(err){
+        resultIntro.textContent = '❌ Error en la búsqueda';
+        showStatus('❌ Error en la búsqueda','error');
+        console.error(err);
+      }finally{ btnBuscar.disabled=false; btnBuscar.textContent='🔍 Buscar Respuestas'; }
     });
 
-    // Enter key support
-    folioInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        btnGenerar.click();
-      }
-    });
-
-    // Auto-focus en el input al cargar
+    folioInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ btnGenerar.click(); } });
     folioInput.focus();
   </script>
 </body>
