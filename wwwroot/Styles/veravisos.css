@@ -1,0 +1,23 @@
+/* VERAVISOS.CSS - ajustes compactos para tabla de avisos (sólo lectura) */
+
+/* Compactar botones/controles si se agregan acciones en el futuro y mantener consistencia visual */
+#tablaAvisos .ui-tabla__cell--acciones { white-space: nowrap; }
+#tablaAvisos .ui-tabla__cell--acciones .ui-action { display: inline-flex; }
+
+@media (max-width: 768px) {
+    #tablaAvisos .ui-tabla__cell--acciones .ui-action { margin-right: 0; padding: var(--ui-gap-4); }
+    #tablaAvisos .ui-tabla__cell--acciones .ui-action .ui-button__icon { margin: 0; }
+}
+
+/* Celdas de mensaje: permitir wrapping como en ventas */
+.ui-tabla__cell--mensaje {
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* Indicador visual: clicable y subrayado al hover (consistente con ventas) */
+.js-leer-mas { cursor: pointer; }
+.js-leer-mas:hover { text-decoration: underline; }

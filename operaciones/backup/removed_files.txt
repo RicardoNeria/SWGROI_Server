@@ -1,0 +1,3 @@
+Archivos renombrados/eliminados el 2025-09-16 durante limpieza:
+- FolderProfile.pubxml -> FolderProfile.pubxml.deleted
+- FolderProfile1.pubxml -> FolderProfile1.pubxml.deleted

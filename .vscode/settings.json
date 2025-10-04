@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.bem_report.json": "json",
+    ".bem_report.json": "json"
+  },
+  "json.validate.enable": true,
+  "json.format.enable": true
+}
