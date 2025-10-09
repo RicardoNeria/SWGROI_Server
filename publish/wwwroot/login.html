@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - SWGROI</title>
+    <!-- Sistema de componentes unificado -->
+    <link rel="stylesheet" href="Styles/componentes/componentes.css">
+    <link rel="stylesheet" href="Styles/login.css">
+    <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/ui-utils.js" defer></script>
+    <script src="Scripts/seguridad.js" defer></script>
+    <script src="Scripts/login.js" defer></script>
+</head>
+<body class="login-body ui-animate-fade-in">
+    
+    <!-- Tarjeta de login con componentes del sistema -->
+    <div class="login-card ui-animate-slide-in">
+        
+        <!-- Header del login siguiendo patrón ui-login__header -->
+        <header class="login-header" role="banner">
+            <img src="Imagenes/CENTRALDEALARMAS.jpg" 
+                 alt="Logo Central de Alarmas" 
+                 class="login-logo">
+            <h1 class="login-title">Inicio de Sesión</h1>
+            <p class="login-subtitle">SWGROI</p>
+        </header>
+
+        <!-- Mensajes de estado usando ui-message unificado -->
+        <div id="loginMessage" class="ui-message-container"></div>
+
+        <!-- Formulario usando ui-form del sistema -->
+        <form id="loginForm" 
+              class="login-form ui-form" 
+              role="form" 
+              aria-label="Formulario de inicio de sesión">
+            
+            <!-- Campo Usuario usando ui-form-group -->
+            <div class="form-group ui-form-group">
+                <label for="usuario" class="form-label ui-form__label">
+                    <span class="form-label-icon"><span class="ui-button__icon" data-icon="user"></span></span>
+                    Usuario: <span class="required" aria-label="Campo requerido"></span>
+                </label>
+                <div class="ui-form__field">
+                    <input type="text" 
+                           id="usuario" 
+                           name="Usuario"
+                           class="form-input ui-form__input" 
+                           placeholder="Ingresa tu usuario"
+                           required
+                           autocomplete="username"
+                           aria-describedby="usuario-help"
+                           maxlength="50">
+                </div>
+                <div id="usuario-help" 
+                     class="form-feedback ui-form__feedback" 
+                     aria-live="polite"></div>
+            </div>
+
+            <!-- Campo Contraseña usando ui-form-group -->
+            <div class="form-group ui-form-group">
+                <label for="contrasena" class="form-label ui-form__label">
+                    <span class="form-label-icon"><span class="ui-button__icon" data-icon="lock" aria-hidden="true"></span></span>
+                    Contraseña: <span class="required" aria-label="Campo requerido"></span>
+                </label>
+                <div class="password-wrapper ui-form__field">
+                    <input type="password" 
+                           id="contrasena" 
+                           name="Contrasena"
+                           class="form-input ui-form__input" 
+                           placeholder="Ingresa tu contraseña"
+                           required
+                           autocomplete="current-password"
+                           aria-describedby="contrasena-help"
+                           minlength="6"
+                           maxlength="100">
+                    <button type="button" 
+                            class="password-toggle" 
+                            onclick="togglePassword()"
+                            aria-label="Mostrar/ocultar contraseña"
+                            tabindex="-1">
+                        <span id="passwordToggleIcon" class="ui-button__icon" data-icon="eye-closed" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div id="contrasena-help" 
+                     class="form-feedback ui-form__feedback" 
+                     aria-live="polite"></div>
+            </div>
+
+            <!-- Recaptcha de sumatoria -->
+            <div class="captcha-group">
+                <div class="captcha-question">
+                    <img src="Imagenes/RECAPTCHA.png" alt="Recaptcha" class="form-label-icon-img">
+                    <span>Verificación de seguridad:</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--ui-gap-8);">
+                    <span class="captcha-equation" id="captchaEquation">5 + 3 = ?</span>
+                    <input type="number" 
+                           id="captchaAnswer" 
+                           name="captchaAnswer"
+                           class="form-input captcha-input" 
+                           placeholder="?"
+                           required
+                           min="0" 
+                           max="20"
+                           aria-label="Respuesta del captcha">
+                </div>
+            </div>
+
+            <!-- Opciones adicionales usando componentes del sistema -->
+            <div class="form-options">
+                <label class="checkbox-label">
+                    <input type="checkbox" 
+                           id="recordar" 
+                           name="recordar"
+                           class="ui-form__checkbox">
+                    <span class="checkbox-text"><span class="ui-button__icon" data-icon="refresh"></span> Recordar sesión</span>
+                </label>
+                     <a href="recuperar.html" 
+                         class="link ui-login__link">
+                         <span class="ui-button__icon" data-icon="key" aria-hidden="true"></span> ¿Olvidaste tu contraseña?
+                     </a>
+            </div>
+
+            <!-- Botón de login usando ui-button -->
+            <div class="ui-login__actions">
+                <button type="submit" 
+                        id="btnLogin" 
+                        class="btn-login ui-button ui-button--primary ui-button--block">
+                    <span class="btn-text ui-button__text"><span class="ui-button__icon" data-icon="login" aria-hidden="true"></span> Iniciar Sesión</span>
+                    <span class="btn-spinner ui-button__spinner" aria-hidden="true"></span>
+                </button>
+            </div>
+
+        </form>
+
+        <!-- Copyright compacto -->
+        <div class="login-copyright">
+            <small>© 2025 SWGROI. By. Ricardo Neria - Central de Alarmas</small>
+        </div>
+
+    </div>
+
+    <!-- Loading overlay usando ui-modal del sistema -->
+    <div id="loadingOverlay" 
+         class="loading-overlay ui-modal-overlay" 
+         style="display:none" 
+         aria-hidden="true"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="loadingTitle">
+        <div class="loading-content ui-modal" role="document">
+            <div class="loading-spinner"></div>
+            <h2 id="loadingTitle" class="ui-modal__title">Verificando credenciales...</h2>
+            <p class="ui-content">Por favor espera un momento</p>
+        </div>
+    </div>
+
+</body>
+</html>

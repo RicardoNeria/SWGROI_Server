@@ -1,0 +1,346 @@
+/* ================================================
+   TICKETS.CSS - Estilos específicos del módulo Tickets
+   Basado en componentes.css con metodología BEM
+   ================================================ */
+
+/* ================================
+   COMPONENTE: TICKETS BUSCADOR
+   ================================ */
+.tickets-buscador {
+    margin-bottom: var(--ui-gap-24);
+    padding: var(--ui-gap-16);
+    background-color: var(--ui-color-fondo-alt);
+    border: 1px solid var(--ui-color-borde);
+    border-radius: var(--ui-radius-base);
+}
+
+.tickets-buscador__field {
+    display: flex;
+    gap: var(--ui-gap-12);
+    align-items: flex-end;
+    max-width: 600px;
+}
+
+.tickets-buscador__field .ui-form__input {
+    flex: 1;
+}
+
+/* ================================
+   COMPONENTE: TICKETS FORMULARIO
+   ================================ */
+.tickets-formulario {
+    margin-bottom: var(--ui-gap-32);
+}
+
+.tickets-formulario__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--ui-gap-32);
+    margin-bottom: var(--ui-gap-24);
+}
+
+.tickets-formulario__columna {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-gap-16);
+}
+
+.tickets-formulario__acciones {
+    display: flex;
+    gap: var(--ui-gap-12);
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-top: var(--ui-gap-16);
+    border-top: 1px solid var(--ui-color-borde);
+}
+
+/* Contador de caracteres consistente con otros módulos */
+.ui-form__counter {
+    font-size: var(--ui-font-size-sm);
+    color: var(--ui-color-texto-muted);
+    margin-top: var(--ui-gap-4);
+    display: block;
+    text-align: right;
+}
+
+/* ================================
+   COMPONENTE: TICKETS MÉTRICAS
+   ================================ */
+.tickets-metricas {
+    margin-bottom: var(--ui-gap-24);
+}
+
+/* KPI colors: utilizar el color primario global de componentes.css (no overrides locales) */
+
+/* ================================
+   COMPONENTE: TICKETS TABLA
+   ================================ */
+.tickets-mensaje-vacio {
+    text-align: center;
+    padding: var(--ui-gap-32);
+    color: var(--ui-color-texto-muted);
+    font-style: italic;
+}
+
+/* Cabecera de acciones con ancho fijo para uniformidad */
+#tablaTickets .ui-tabla__col--acciones { width: 120px; white-space: nowrap; }
+/* Si el tbody no agrega la clase --acciones, asegurar ancho por la última columna */
+#tablaTickets td:last-child { white-space: nowrap; width: 120px; }
+
+/* Usar clases unificadas .ui-action en lugar de reglas locales duplicadas */
+#tablaTickets .ui-tabla__cell--acciones { white-space: nowrap; }
+#tablaTickets .ui-tabla__cell--acciones .ui-action { display: inline-flex; }
+#tablaTickets .ui-tabla__cell--acciones .ui-action + .ui-action { margin-left: var(--ui-gap-6); }
+
+/* Estados específicos para tickets */
+.ui-badge--almacen {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.ui-badge--capturado {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.ui-badge--programado {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.ui-badge--abierto {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.ui-badge--proceso {
+    background-color: #64748b; /* slate-500 unificado */
+    color: #ffffff; /* alto contraste */
+}
+
+.ui-badge--cerrado {
+    background-color: #dcfce7;
+    color: #059669;
+}
+
+/* Mantener casing de estados (no forzar uppercase en badges dentro de tickets) */
+.documentos-container .ui-badge { text-transform: none; }
+
+/* ================================
+   MODIFICADORES RESPONSIVOS
+   ================================ */
+@media (max-width: 768px) {
+    .tickets-formulario__grid {
+        grid-template-columns: 1fr;
+        gap: var(--ui-gap-16);
+    }
+    
+    .tickets-buscador__field {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .tickets-formulario__acciones {
+        flex-direction: column;
+    }
+    
+    .ui-filters__form {
+        flex-direction: column;
+        gap: var(--ui-gap-8);
+    }
+    
+    .ui-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .tickets-formulario__columna {
+        gap: var(--ui-gap-12);
+    }
+    
+    .ui-tabla-wrap {
+        overflow-x: auto;
+    }
+    
+    .ui-tabla {
+        min-width: 600px;
+    }
+
+    /* En móviles: botones compactos pero manteniendo el estilo moderno */
+    #tablaTickets .ui-tabla__cell--acciones .ui-action {
+        margin-right: 0;
+        padding: var(--ui-gap-6);
+        min-width: 32px;
+        height: 32px;
+    }
+    #tablaTickets .ui-tabla__cell--acciones .ui-action .ui-button__icon { 
+        font-size: 1em;
+    }
+}
+
+/* ================================
+   ESTADO: CAMPOS DESHABILITADOS
+   ================================ */
+.ui-form__input[readonly],
+.ui-form__textarea[readonly] {
+    background-color: #f9fafb;
+    cursor: not-allowed;
+}
+
+/* ================================
+   UTILIDADES ESPECÍFICAS TICKETS
+   ================================ */
+.tickets-estado-cerrado .ui-form__input:not([readonly]),
+.tickets-estado-cerrado .ui-form__textarea:not([readonly]),
+.tickets-estado-cerrado .ui-form__select:not([readonly]) {
+    background-color: #f9fafb;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.tickets-estado-cerrado .ui-button:not(.ui-button--ghost) {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* ================================
+   ANIMACIONES Y TRANSICIONES
+   ================================ */
+.tickets-formulario__grid,
+.tickets-metricas,
+.ui-tabla__row {
+    transition: opacity 0.2s ease-in-out;
+}
+
+.ui-form__input:focus,
+.ui-form__textarea:focus,
+.ui-form__select:focus {
+    transform: none;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* ================================
+   ESTADOS DE CARGA
+   ================================ */
+.tickets-cargando .ui-button {
+    position: relative;
+    pointer-events: none;
+}
+
+.tickets-cargando .ui-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: tickets-spin 1s linear infinite;
+}
+
+@keyframes tickets-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ================================
+   VALIDACIÓN Y FEEDBACK
+   ================================ */
+.ui-form-group.has-error .ui-form__input,
+.ui-form-group.has-error .ui-form__textarea,
+.ui-form-group.has-error .ui-form__select {
+    border-color: var(--ui-color-error);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.ui-form-group.has-success .ui-form__input,
+.ui-form-group.has-success .ui-form__textarea,
+.ui-form-group.has-success .ui-form__select {
+    border-color: var(--ui-color-exito);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* Mensajes: usar estilos globales de componentes.css */
+
+/* ================================
+   ACCESIBILIDAD
+   ================================ */
+.ui-button:focus-visible,
+.ui-form__input:focus-visible,
+.ui-form__textarea:focus-visible,
+.ui-form__select:focus-visible {
+    outline: 2px solid var(--ui-color-primario);
+    outline-offset: 2px;
+}
+
+/* Reducir movimiento para usuarios que lo prefieren */
+@media (prefers-reduced-motion: reduce) {
+    .tickets-formulario__grid,
+    .tickets-metricas,
+    .ui-tabla__row,
+    .ui-form__input,
+    .ui-form__textarea,
+    .ui-form__select {
+        transition: none;
+    }
+    
+    @keyframes tickets-spin {
+        0% { transform: none; }
+        100% { transform: none; }
+    }
+}
+
+/* ================================
+   IMPRESIÓN
+   ================================ */
+@media print {
+    .ui-sidebar,
+    .ui-breadcrumbs,
+    .tickets-buscador,
+    .ui-filters,
+    .ui-actions,
+    .ui-paginacion,
+    .ui-modal-overlay {
+        display: none !important;
+    }
+    
+    .ui-layout__main {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .ui-card {
+        box-shadow: none;
+        border: none;
+    }
+    
+    .ui-tabla {
+        font-size: 12px;
+    }
+    
+    .ui-tabla__col:last-child {
+        display: none;
+    }
+    
+    .ui-tabla__cell:last-child {
+        display: none;
+    }
+}
+
+.td-fecha, .td-ultima-actualizacion {
+  white-space: nowrap;
+  font-size: 0.95rem;
+  color: var(--ui-color-text-muted, #556);
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+}
+
+/* Asegurar que las acciones estén alineadas y sin romper layout */
+.ui-tabla__cell--acciones {
+  white-space: nowrap;
+  text-align: right;
+}

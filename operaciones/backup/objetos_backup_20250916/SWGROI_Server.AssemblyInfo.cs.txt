@@ -1,0 +1,10 @@
+// Backup del archivo de ensamblado generado por MSBuild.
+// Se movió aquí para limpieza del repo.
+// Contenido original:
+// [assembly: System.Reflection.AssemblyCompanyAttribute("SWGROI_Server")]
+// [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+// [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+// [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ca259242a5f945e23445f311d783f6f32ff316a")]
+// [assembly: System.Reflection.AssemblyProductAttribute("SWGROI_Server")]
+// [assembly: System.Reflection.AssemblyTitleAttribute("SWGROI_Server")]
+// [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

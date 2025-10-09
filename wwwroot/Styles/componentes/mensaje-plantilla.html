@@ -1,0 +1,66 @@
+<!-- 
+SWGROI - Plantilla de Mensaje Unificado
+Usar esta estructura en todos los módulos para mantener consistencia
+-->
+
+<!-- Contenedor de mensaje estándar (sin afectar layout) -->
+<div class="ui-message-container">
+    <div id="mensaje" 
+         class="ui-message" 
+         style="display:none" 
+         role="alert" 
+         aria-live="polite">
+        <span class="ui-message__icon" aria-hidden="true"></span>
+        <span class="ui-message__text"></span>
+    </div>
+</div>
+
+<!-- VARIANTES POR MÓDULO -->
+
+<!-- Para módulos que usan "leyenda" como ID -->
+<div class="ui-message-container">
+    <div id="leyenda" 
+         class="ui-message" 
+         style="display:none" 
+         role="alert" 
+         aria-live="polite">
+        <span class="ui-message__icon" aria-hidden="true"></span>
+        <span class="ui-message__text"></span>
+    </div>
+</div>
+
+<!-- Para mensajes específicos en modales -->
+<div class="ui-message-container">
+    <div id="mv-msg" 
+         class="ui-message" 
+         style="display:none" 
+         role="alert" 
+         aria-live="polite">
+        <span class="ui-message__icon" aria-hidden="true"></span>
+        <span class="ui-message__text"></span>
+    </div>
+</div>
+
+<!-- INSTRUCCIONES DE USO:
+
+1. Copiar el contenedor apropiado según el módulo
+2. Cambiar el ID si es necesario (mensaje, leyenda, etc.)
+3. Incluir el script ui-utils.js en el HTML
+4. Usar las funciones: 
+   - SWGROI.UI.mostrarMensaje('texto', 'tipo')
+   - mostrarMensaje('texto', 'tipo') // Compatibilidad
+
+TIPOS DISPONIBLES: success, error, warning, info
+
+EJEMPLO DE IMPLEMENTACIÓN:
+<script src="Scripts/ui-utils.js" defer></script>
+<script>
+    // Mostrar mensaje
+    mostrarMensaje('Operación exitosa', 'success');
+    
+    // Mostrar error 
+    mostrarMensaje('Error en la operación', 'error');
+    
+    // Los mensajes se ocultan automáticamente en 4 segundos
+</script>
+-->

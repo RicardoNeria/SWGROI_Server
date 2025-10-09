@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestión de Avisos - SWGROI</title>
+    <link rel="stylesheet" href="Styles/componentes/componentes.css">
+    <link rel="stylesheet" href="Styles/avisos.css">
+    <script src="Scripts/ui-utils.js" defer></script>
+    <script src="Scripts/seguridad.js" defer></script>
+    <script src="Scripts/ui.js" defer></script>
+    <script src="Scripts/icon-loader.js" defer></script>
+</head>
+<body class="ui-layout ui-layout--no-topbar">
+
+    <!-- SIDEBAR UNIFICADO -->
+    <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
+        <div class="ui-sidebar__header">
+            <h2 class="ui-sidebar__title">SWGROI</h2>
+            <div class="ui-sidebar__logo">
+                <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Logo Central de Alarmas" class="ui-sidebar__logo-img">
+            </div>
+        </div>
+        <nav class="ui-sidebar__nav">
+            <ul class="ui-sidebar__menu">
+                <li class="ui-sidebar__item">
+                    <a href="menu.html" class="ui-sidebar__link"><span class="ui-button__icon" data-icon="home" aria-hidden="true"></span> Menú principal</a>
+                </li>
+                <li class="ui-sidebar__item">
+                    <a href="avisos.html" class="ui-sidebar__link ui-sidebar__link--active" aria-current="page">
+                        <span class="ui-button__icon" data-icon="megaphone" aria-hidden="true"></span> Avisos  y Comunicados
+                    </a>
+                </li>
+                <li class="ui-sidebar__item">
+                    <a href="logout" class="ui-sidebar__link ui-sidebar__link--logout"><span class="ui-button__icon" data-icon="logout" aria-hidden="true"></span> Cerrar sesión</a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="ui-layout__main">
+        <div class="ui-card ui-card--module documentos-container">
+            
+            <!-- BREADCRUMBS -->
+            <nav class="ui-breadcrumbs" aria-label="Rastro de navegación">
+                <ol class="ui-breadcrumbs__list">
+                    <li class="ui-breadcrumbs__item">
+                        <a href="menu.html" class="ui-breadcrumbs__link">Inicio</a>
+                    </li>
+                    <li class="ui-breadcrumbs__item ui-breadcrumbs__item--active" aria-current="page">
+                        <span class="ui-breadcrumbs__separator">/</span>
+                        <span class="ui-breadcrumbs__current">Gestión de Avisos</span>
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- TÍTULO PRINCIPAL -->
+            <h2 class="ui-card__title"><span class="ui-button__icon" data-icon="megaphone" aria-hidden="true"></span> Gestión de Avisos  y Comunicados</h2>
+
+            <!-- KPIs/MÉTRICAS DEL MÓDULO -->
+            <section class="ui-metrics" aria-label="Indicadores principales">
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Total Avisos</div>
+                    <div id="kpiTotal" class="ui-metrics__value">0</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Hoy</div>
+                    <div id="kpiHoy" class="ui-metrics__value">0</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Esta Semana</div>
+                    <div id="kpiSemana" class="ui-metrics__value">0</div>
+                </div>
+            </section>
+
+            <!-- FORMULARIO CREAR/EDITAR AVISO -->
+            <section class="ui-card ui-card--form" aria-label="Formulario de avisos">
+                <h3 class="ui-card__title">Crear Nuevo Aviso</h3>
+                <form id="formAviso" class="ui-form" role="form">
+                    <input type="hidden" id="avisoId" />
+                    
+                    <div class="ui-form-group">
+                        <label for="asunto" class="ui-form__label">Asunto:</label>
+                        <div class="ui-form__field">
+                            <input id="asunto" name="asunto" type="text" class="ui-form__input" 
+                                   placeholder="Asunto del aviso" required maxlength="255"
+                                   aria-describedby="asuntoFeedback">
+                        </div>
+                        <div id="asuntoFeedback" class="ui-form__feedback" aria-live="polite"></div>
+                    </div>
+
+                    <div class="ui-form-group">
+                        <label for="mensaje" class="ui-form__label">Mensaje:</label>
+                        <div class="ui-form__field">
+                            <textarea id="mensaje" name="mensaje" rows="4" 
+                                      class="ui-form__input" placeholder="Contenido del aviso" 
+                                      required maxlength="2000" aria-describedby="mensajeFeedback"></textarea>
+                        </div>
+                        <div id="mensajeFeedback" class="ui-form__feedback" aria-live="polite"></div>
+                        <small id="contadorMensaje" class="ui-form__counter">0/2000</small>
+                    </div>
+
+                    <div class="ui-form__actions">
+                        <button type="submit" id="btnGuardar" class="ui-button ui-button--primary">
+                            <span class="ui-button__icon" data-icon="save" aria-hidden="true"></span>Guardar Aviso
+                        </button>
+                        <button type="button" id="btnLimpiar" class="ui-button ui-button--secondary">
+                            <span class="ui-button__icon" data-icon="clear" aria-hidden="true"></span>Limpiar
+                        </button>
+                        <button type="button" id="btnCancelarEdicion" class="ui-button ui-button--ghost" style="display:none">
+                            <span class="ui-button__icon" data-icon="cancel" aria-hidden="true"></span>Cancelar Edición
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- FILTROS Y ACCIONES PRINCIPALES -->
+            <div class="ui-filters">
+                <form id="formFiltros" class="ui-filters__form" role="search" aria-label="Filtros de búsqueda">
+                    <input type="text" id="filtroAsunto" class="ui-filters__input" 
+                           placeholder="Buscar por asunto..." aria-label="Buscar avisos por asunto">
+                    
+                    <input type="date" id="filtroDesde" class="ui-filters__input" 
+                           aria-label="Fecha desde">
+                    
+                    <input type="date" id="filtroHasta" class="ui-filters__input" 
+                           aria-label="Fecha hasta">
+
+                    <button type="button" id="btnBuscar" class="ui-button ui-button--primary" 
+                            aria-controls="tablaAvisos">
+                        <span class="ui-button__icon" data-icon="search" aria-hidden="true"></span>Buscar
+                    </button>
+                    <button type="button" id="btnLimpiarFiltros" class="ui-button ui-button--secondary">
+                        <span class="ui-button__icon" data-icon="clear" aria-hidden="true"></span>Limpiar
+                    </button>
+                </form>
+
+                <div class="ui-actions">
+                    <button class="ui-button ui-button--ghost" id="btnExportar">
+                        <span class="ui-button__icon" data-icon="export" aria-hidden="true"></span>Exportar CSV
+                    </button>
+                    <button class="ui-button ui-button--secondary" id="btnRefrescar">
+                        <span class="ui-button__icon" data-icon="refresh" aria-hidden="true"></span>Actualizar
+                    </button>
+                </div>
+            </div>
+
+            <!-- MENSAJE DE ESTADO GLOBAL -->
+            <div class="ui-message-container">
+                <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
+                    <span class="ui-message__icon" aria-hidden="true"></span>
+                    <span class="ui-message__text"></span>
+                </div>
+            </div>
+
+            <!-- CONTROLES DE TABLA -->
+            <div class="ui-table-controls">
+                <div class="ui-table-controls__left">
+                    <label for="selPageSize" class="ui-table-controls__label">Mostrar:</label>
+                    <select id="selPageSize" class="ui-table-controls__select">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    <span class="ui-table-controls__label">elementos por página</span>
+                </div>
+                
+                <div class="ui-table-controls__right">
+                    <label for="selSort" class="ui-table-controls__label">Ordenar por:</label>
+                    <select id="selSort" class="ui-table-controls__select">
+                        <option value="Fecha">Fecha</option>
+                        <option value="Asunto">Asunto</option>
+                        <option value="IdAviso">ID</option>
+                    </select>
+                    <select id="selDir" class="ui-table-controls__select">
+                        <option value="DESC">Descendente</option>
+                        <option value="ASC">Ascendente</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- TABLA DE AVISOS -->
+            <section class="ui-card ui-card--report" aria-label="Listado de avisos">
+                <div class="ui-tabla-wrap ui-desplazable">
+                    <table class="ui-tabla" role="table" aria-describedby="leyenda">
+                        <thead class="ui-tabla__head">
+                            <tr role="row">
+                                <th scope="col" class="ui-tabla__col">Acciones</th>
+                                <th scope="col" class="ui-tabla__col">ID</th>
+                                <th scope="col" class="ui-tabla__col">Fecha</th>
+                                <th scope="col" class="ui-tabla__col">Asunto</th>
+                                <th scope="col" class="ui-tabla__col">Mensaje</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaAvisos" class="ui-tabla__body">
+                            <!-- Contenido dinámico generado por avisos.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINACIÓN UNIFICADA -->
+                <div class="ui-paginacion" role="navigation" aria-label="Paginación de resultados">
+                    <span id="paginacionInfo" class="ui-paginacion__info">Mostrando 0-0 de 0 avisos</span>
+                    <div class="ui-paginacion__controles">
+            <button id="btnPrev" class="ui-button ui-button--ghost ui-button--sm ui-paginacion__btn" 
+                type="button" aria-label="Página anterior" aria-controls="tablaAvisos" disabled>
+                            <span class="ui-button__icon" data-icon="prev" aria-hidden="true"></span>Anterior
+                        </button>
+                        <span id="paginacionPages" class="ui-paginacion__pages"></span>
+            <button id="btnNext" class="ui-button ui-button--ghost ui-button--sm ui-paginacion__btn" 
+                type="button" aria-label="Página siguiente" aria-controls="tablaAvisos" disabled>
+                            Siguiente<span class="ui-button__icon" data-icon="next" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL VER AVISO -->
+    <div class="ui-modal-overlay" id="modalAviso" role="dialog" aria-modal="true" 
+         aria-labelledby="modalTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalTitulo" class="ui-modal__title">Detalle del Aviso</h3>
+                <button class="ui-button ui-button--ghost ui-modal__close" 
+                        aria-label="Cerrar modal" id="btnCerrarModal">
+                    <span class="ui-button__icon" data-icon="close" aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <div class="ui-modal__body">
+                <div class="ui-form">
+                    <div class="ui-form-group">
+                        <label class="ui-form__label">ID:</label>
+                        <div id="modalAvisoId" class="ui-form__value"></div>
+                    </div>
+                    <div class="ui-form-group">
+                        <label class="ui-form__label">Fecha:</label>
+                        <div id="modalFecha" class="ui-form__value"></div>
+                    </div>
+                    <div class="ui-form-group">
+                        <label class="ui-form__label">Asunto:</label>
+                        <div id="modalAsunto" class="ui-form__value"></div>
+                    </div>
+                    <div class="ui-form-group">
+                        <label class="ui-form__label">Mensaje:</label>
+                        <div id="modalMensaje" class="ui-form__value ui-form__value--multiline"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-modal__actions">
+                <button class="ui-button ui-button--secondary" id="btnCerrarDetalle">
+                    <span class="ui-button__icon" data-icon="close" aria-hidden="true"></span>Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LEER MÁS (para mensajes largos en la tabla) -->
+    <div class="ui-modal-overlay" id="modalLeerMasAviso" role="dialog" aria-modal="true" 
+         aria-labelledby="modalLeerMasAvisoTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalLeerMasAvisoTitulo" class="ui-modal__title">Leer más</h3>
+                <button type="button" class="ui-button ui-button--ghost ui-button--sm" aria-label="Cerrar" id="btnCerrarLeerMasAviso"><span class="ui-button__icon" data-icon="close" aria-hidden="true"></span></button>
+            </div>
+
+            <div class="ui-modal__body">
+                <div id="modalLeerMasAvisoContenido" class="ui-form__value ui-form__value--multiline" aria-live="polite"></div>
+            </div>
+
+            <div class="ui-modal__actions">
+                <button type="button" id="btnCerrarLeerMasAvisoFooter" class="ui-button ui-button--primary">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN ELIMINACIÓN -->
+    <div class="ui-modal-overlay" id="modalEliminar" role="dialog" aria-modal="true" 
+         aria-labelledby="eliminarTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="eliminarTitulo" class="ui-modal__title">Confirmar eliminación</h3>
+                <button class="ui-button ui-button--ghost ui-modal__close" 
+                        aria-label="Cerrar modal" id="btnCerrarEliminar">
+                    <span class="ui-button__icon" data-icon="close" aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <div class="ui-modal__body">
+                <p>¿Está seguro de que desea eliminar este aviso? Esta acción no se puede deshacer.</p>
+                <div class="ui-form">
+                    <div class="ui-form-group">
+                        <label class="ui-form__label">Asunto:</label>
+                        <div id="eliminarAsunto" class="ui-form__value"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-modal__actions">
+                <button class="ui-button ui-button--secondary" id="btnCancelarEliminar">
+                    <span class="ui-button__icon" data-icon="cancel" aria-hidden="true"></span>Cancelar
+                </button>
+                <button class="ui-button ui-button--danger" id="btnConfirmarEliminar">
+                    <span class="ui-button__icon" data-icon="delete" aria-hidden="true"></span>Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="Scripts/avisos.js"></script>
+</body>
+</html>
