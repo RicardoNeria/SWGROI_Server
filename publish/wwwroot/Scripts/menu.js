@@ -406,6 +406,10 @@ class MenuDataManager {
             if (!resp.ok) {
                 console.warn('No se pudo cargar actividad reciente, status:', resp.status);
                 MenuState.recentActivities = [];
+                // Asegurar métricas por defecto para que los widgets puedan renderizar fallback
+                if (!MenuState.metrics || !MenuState.metrics.data) {
+                    MenuState.metrics = { data: { tickets: 0, avisos: 0, cotizaciones: 0 }, lastUpdate: new Date() };
+                }
                 await this.updateActivityWidget();
                 return;
             }
@@ -446,10 +450,17 @@ class MenuDataManager {
                     console.warn('Fallback tickets fetch falló:', e);
                 }
             }
+            // Asegurar métricas por defecto antes de actualizar widgets si aún no existen
+            if (!MenuState.metrics || !MenuState.metrics.data) {
+                MenuState.metrics = { data: { tickets: 0, avisos: 0, cotizaciones: 0 }, lastUpdate: new Date() };
+            }
             await this.updateActivityWidget();
         } catch (e) {
             console.error('Error cargando actividad reciente:', e);
             MenuState.recentActivities = [];
+            if (!MenuState.metrics || !MenuState.metrics.data) {
+                MenuState.metrics = { data: { tickets: 0, avisos: 0, cotizaciones: 0 }, lastUpdate: new Date() };
+            }
             await this.updateActivityWidget();
         }
     }

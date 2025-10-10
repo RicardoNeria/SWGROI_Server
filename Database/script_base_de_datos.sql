@@ -271,8 +271,9 @@ LEFT JOIN documentos dm ON d.DocumentoMaestro = dm.DocumentoID
 ORDER BY d.FechaModificacion DESC;
 
 -- Procedimiento para búsqueda avanzada de documentos
+DROP PROCEDURE IF EXISTS BuscarDocumentos;
 DELIMITER $$
-CREATE OR REPLACE PROCEDURE BuscarDocumentos(
+CREATE PROCEDURE BuscarDocumentos(
     IN p_texto_busqueda VARCHAR(300),
     IN p_categoria_id INT,
     IN p_estado VARCHAR(20),
@@ -335,9 +336,12 @@ BEGIN
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
 END$$
+DELIMITER ;
 
 -- Procedimiento para crear nueva versión de documento
-CREATE OR REPLACE PROCEDURE CrearVersionDocumento(
+DROP PROCEDURE IF EXISTS CrearVersionDocumento;
+DELIMITER $$
+CREATE PROCEDURE CrearVersionDocumento(
     IN p_documento_maestro INT,
     IN p_nuevo_archivo VARCHAR(255),
     IN p_titulo VARCHAR(300),
@@ -382,9 +386,12 @@ BEGIN
     INSERT INTO auditoria_documentos (DocumentoID, UsuarioID, Accion, DetalleAccion)
     VALUES (p_nuevo_documento_id, p_usuario_id, 'Subida', CONCAT('Nueva versión ', v_siguiente_version, ' del documento'));
 END$$
+DELIMITER ;
 
 -- Procedimiento para auditoría de acciones
-CREATE OR REPLACE PROCEDURE RegistrarAccionDocumento(
+DROP PROCEDURE IF EXISTS RegistrarAccionDocumento;
+DELIMITER $$
+CREATE PROCEDURE RegistrarAccionDocumento(
     IN p_documento_id INT,
     IN p_usuario_id INT,
     IN p_accion VARCHAR(20),
@@ -424,6 +431,54 @@ CREATE TABLE IF NOT EXISTS metricas (
   TicketsCerrados INT NOT NULL DEFAULT 0,
   PRIMARY KEY (Id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Tabla de avisos (módulo de comunicaciones)
+CREATE TABLE IF NOT EXISTS avisos (
+  Id INT NOT NULL AUTO_INCREMENT,
+  Fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  Asunto VARCHAR(255) NOT NULL,
+  Mensaje TEXT NOT NULL,
+  Activo BOOLEAN NOT NULL DEFAULT TRUE,
+  FechaCreacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FechaActualizacion DATETIME NULL,
+  PRIMARY KEY (Id),
+  KEY ix_avisos_fecha (Fecha),
+  KEY ix_avisos_activo (Activo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Avisos y comunicados públicos o internos';
+
+-- Asegurar reestructuración idempotente si la tabla ya existía con otro esquema (compatible con MySQL que no soporta IF NOT EXISTS en ADD COLUMN)
+SET @c := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'avisos' AND COLUMN_NAME = 'Fecha');
+SET @sql := IF(@c = 0, 'ALTER TABLE avisos ADD COLUMN Fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP', 'SELECT 1');
+PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
+
+SET @c := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'avisos' AND COLUMN_NAME = 'Asunto');
+SET @sql := IF(@c = 0, 'ALTER TABLE avisos ADD COLUMN Asunto VARCHAR(255) NOT NULL', 'SELECT 1');
+PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
+
+SET @c := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'avisos' AND COLUMN_NAME = 'Mensaje');
+SET @sql := IF(@c = 0, 'ALTER TABLE avisos ADD COLUMN Mensaje TEXT NOT NULL', 'SELECT 1');
+PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
+
+SET @c := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'avisos' AND COLUMN_NAME = 'Activo');
+SET @sql := IF(@c = 0, 'ALTER TABLE avisos ADD COLUMN Activo BOOLEAN NOT NULL DEFAULT TRUE', 'SELECT 1');
+PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
+
+SET @c := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'avisos' AND COLUMN_NAME = 'FechaCreacion');
+SET @sql := IF(@c = 0, 'ALTER TABLE avisos ADD COLUMN FechaCreacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP', 'SELECT 1');
+PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
+
+SET @c := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'avisos' AND COLUMN_NAME = 'FechaActualizacion');
+SET @sql := IF(@c = 0, 'ALTER TABLE avisos ADD COLUMN FechaActualizacion DATETIME NULL', 'SELECT 1');
+PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
+
+-- Índices idempotentes para consultas frecuentes
+SET @has_idx_fecha := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'avisos' AND INDEX_NAME = 'ix_avisos_fecha');
+SET @sql_idx_fecha := IF(@has_idx_fecha = 0, 'CREATE INDEX ix_avisos_fecha ON avisos (Fecha)', 'SELECT 1');
+PREPARE s1 FROM @sql_idx_fecha; EXECUTE s1; DEALLOCATE PREPARE s1;
+
+SET @has_idx_activo := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'avisos' AND INDEX_NAME = 'ix_avisos_activo');
+SET @sql_idx_activo := IF(@has_idx_activo = 0, 'CREATE INDEX ix_avisos_activo ON avisos (Activo)', 'SELECT 1');
+PREPARE s2 FROM @sql_idx_activo; EXECUTE s2; DEALLOCATE PREPARE s2;
 
 -- ========================
 -- MÓDULO CCC - RETROALIMENTACIÓN
@@ -494,6 +549,64 @@ LEFT JOIN estadoscotizacion ec ON c.EstadoCotizacionID = ec.EstadoCotizacionID
 JOIN ventasdetalle vd          ON vd.OVSR3 = o.OVSR3
 LEFT JOIN tickets t            ON t.Id = c.TicketID;
 
+-- ========================
+-- Índices y optimizaciones recomendadas
+-- ========================
+-- Añadir índices compuestos que mejoran consultas frecuentes (si no existen)
+SET @has_idx := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ventasdetalle' AND INDEX_NAME = 'ix_vd_cuenta_fecha');
+SET @sql := IF(@has_idx = 0, 'CREATE INDEX ix_vd_cuenta_fecha ON ventasdetalle (Cuenta, Fecha)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @has_idx := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tickets' AND INDEX_NAME = 'ix_tickets_estado_fecha');
+SET @sql := IF(@has_idx = 0, 'CREATE INDEX ix_tickets_estado_fecha ON tickets (Estado, FechaRegistro)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- ========================
+-- Procedimientos auxiliares (si no existen)
+-- ========================
+DROP PROCEDURE IF EXISTS ObtenerResumenVentas;
+DELIMITER $$
+CREATE PROCEDURE ObtenerResumenVentas(IN p_fecha DATE)
+BEGIN
+  SELECT COUNT(*) AS TotalVentas, SUM(Monto) AS TotalMonto, SUM(Iva) AS TotalIva
+  FROM ventasdetalle
+  WHERE Fecha = p_fecha;
+END$$
+DELIMITER ;
+
+-- Procedimiento seguro para crear índices en tiempo de ejecución (evita errores si ya existen)
+DROP PROCEDURE IF EXISTS EnsureIndexExists;
+DELIMITER $$
+CREATE PROCEDURE EnsureIndexExists(IN p_table VARCHAR(64), IN p_index VARCHAR(64), IN p_definition TEXT)
+BEGIN
+  SET @exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = p_table AND INDEX_NAME = p_index);
+  IF @exists = 0 THEN
+    SET @s := CONCAT('CREATE INDEX ', p_index, ' ON ', p_table, ' ', p_definition);
+    PREPARE s FROM @s; EXECUTE s; DEALLOCATE PREPARE s;
+  END IF;
+END$$
+DELIMITER ;
+
+-- ========================
+-- Datos de ejemplo / Seeds finales
+-- ========================
+-- Asegurarse de tener al menos un rol/usuario administrador
+INSERT IGNORE INTO usuarios (NombreCompleto, Usuario, Contrasena, Rol)
+VALUES ('Administrador General', 'admin', 'admin123', 'Administrador');
+
+-- ========================
+-- Notas de ejecución y rollback
+-- ========================
+-- Recomendaciones:
+-- 1) Hacer backup de la BD antes de ejecutar este script:
+--    mysqldump -u root -p --single-transaction --routines --triggers swgroi_db > swgroi_db_backup.sql
+-- 2) Ejecutar en un entorno de staging/test con MySQL 8.0 antes de producción.
+-- 3) Ejecutar este script completo desde un cliente como mysql CLI:
+--    mysql -u root -p swgroi_db < script_base_de_datos.sql
+-- 4) Para rollback parcial, revisar las secciones con DROP TABLE IF EXISTS / DROP PROCEDURE IF EXISTS.
+
+-- FIN DEL SCRIPT UNIFICADO - SWGROI
+
 -- Datos iniciales
 INSERT IGNORE INTO estadoscotizacion (Nombre) VALUES
 ('ENVIADO'),('DECLINADA'),('ALMACEN'),
@@ -501,6 +614,11 @@ INSERT IGNORE INTO estadoscotizacion (Nombre) VALUES
 
 INSERT IGNORE INTO usuarios (NombreCompleto, Usuario, Contrasena, Rol)
 VALUES ('Administrador General', 'admin', 'admin123', 'Administrador');
+
+-- Insertar avisos de ejemplo para testing
+INSERT IGNORE INTO avisos (Id, Fecha, Asunto, Mensaje, Activo, FechaCreacion) VALUES
+(1, NOW(), 'Bienvenido al Sistema SWGROI', 'Sistema de gestión integral operativo. Todos los módulos funcionando correctamente.', 1, NOW()),
+(2, NOW(), 'Mantenimiento programado', 'Se realizará mantenimiento preventivo el próximo fin de semana.', 1, NOW());
 
 -- ========================
 -- Retroalimentación CCC - Respuestas
@@ -576,18 +694,55 @@ LEFT JOIN usuarios u ON r.UsuarioID = u.IdUsuario
 ORDER BY r.FechaCreacion DESC;
 
 -- Migración idempotente para instalaciones previas
-ALTER TABLE retroalimentacion 
+-- Migración idempotente para instalaciones previas
 
--- Agregar columna EstadoOVSR3 en ventasdetalle si no existe (idempotente)
-ALTER TABLE ventasdetalle ADD COLUMN IF NOT EXISTS EstadoOVSR3 VARCHAR(100);
-  ADD COLUMN IF NOT EXISTS TicketID INT NULL AFTER UsuarioID,
-  ADD COLUMN IF NOT EXISTS FechaCreacion DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER TicketID,
-  ADD COLUMN IF NOT EXISTS Estado ENUM('Pendiente', 'Contestada', 'Expirada') DEFAULT 'Pendiente' AFTER FechaCreacion,
-  ADD UNIQUE KEY IF NOT EXISTS uq_retro_ticket (TicketID),
-  ADD KEY IF NOT EXISTS idx_retro_fecha (FechaCreacion),
-  ADD KEY IF NOT EXISTS idx_retro_estado (Estado);
+-- NOTA: MySQL no permite sentencias IF...END IF a nivel top-level fuera de un
+-- procedimiento sin usar DELIMITER. Usamos un patrón seguro: calcular una
+-- condición y luego ejecutar un ALTER TABLE dinámico con PREPARE si es necesario.
 
--- Agregar FK si no existe (TicketID)
+-- Agregar columnas en ventasdetalle si no existen (idempotente)
+SET @cnt := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ventasdetalle' AND COLUMN_NAME = 'EstadoOVSR3');
+SET @sql := IF(@cnt = 0, 'ALTER TABLE ventasdetalle ADD COLUMN EstadoOVSR3 VARCHAR(100)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @cnt := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ventasdetalle' AND COLUMN_NAME = 'TicketID');
+SET @has_usuario := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ventasdetalle' AND COLUMN_NAME = 'UsuarioID');
+SET @sql := IF(@cnt = 0,
+  'ALTER TABLE ventasdetalle ADD COLUMN TicketID INT NULL',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @cnt := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ventasdetalle' AND COLUMN_NAME = 'FechaCreacion');
+SET @has_ticket := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ventasdetalle' AND COLUMN_NAME = 'TicketID');
+SET @sql := IF(@cnt = 0,
+  'ALTER TABLE ventasdetalle ADD COLUMN FechaCreacion DATETIME NULL DEFAULT CURRENT_TIMESTAMP',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @cnt := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ventasdetalle' AND COLUMN_NAME = 'Estado');
+SET @has_fecha := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ventasdetalle' AND COLUMN_NAME = 'FechaCreacion');
+SET @sql := IF(@cnt = 0,
+  "ALTER TABLE ventasdetalle ADD COLUMN Estado ENUM('Pendiente','Contestada','Expirada') DEFAULT 'Pendiente'",
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Agregar índices si no existen
+SET @has_idx := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ventasdetalle' AND INDEX_NAME = 'uq_retro_ticket');
+SET @sql := IF(@has_idx = 0, 'ALTER TABLE ventasdetalle ADD UNIQUE KEY uq_retro_ticket (TicketID)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @has_idx := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ventasdetalle' AND INDEX_NAME = 'idx_retro_fecha');
+SET @sql := IF(@has_idx = 0, 'ALTER TABLE ventasdetalle ADD KEY idx_retro_fecha (FechaCreacion)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @has_idx := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ventasdetalle' AND INDEX_NAME = 'idx_retro_estado');
+SET @sql := IF(@has_idx = 0, 'ALTER TABLE ventasdetalle ADD KEY idx_retro_estado (Estado)', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Agregar FK retroalimentacion -> tickets si no existe (TicketID)
 SET @has_fk_retro_t := (
   SELECT COUNT(*) FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS 
   WHERE CONSTRAINT_SCHEMA = DATABASE() AND CONSTRAINT_NAME = 'retroalimentacion_ibfk_2'
@@ -598,8 +753,9 @@ SET @sql_retro_t := IF(@has_fk_retro_t=0,
 PREPARE s2 FROM @sql_retro_t; EXECUTE s2; DEALLOCATE PREPARE s2;
 
 -- Procedimiento para actualizar métricas diarias (ejecutar con CRON)
+DROP PROCEDURE IF EXISTS ActualizarMetricasCCC;
 DELIMITER $$
-CREATE OR REPLACE PROCEDURE ActualizarMetricasCCC(IN fecha_calculo DATE)
+CREATE PROCEDURE ActualizarMetricasCCC(IN fecha_calculo DATE)
 BEGIN
   DECLARE total_generadas INT DEFAULT 0;
   DECLARE total_contestadas INT DEFAULT 0;

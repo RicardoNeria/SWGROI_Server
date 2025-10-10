@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="Styles/componentes/componentes.css">
     <script src="Scripts/icon-loader.js" defer></script>
     <script src="Scripts/seguridad.js" defer></script>
+    <script src="Scripts/navegacion-optimizada.js" defer></script>
     <!-- SheetJS para exportar .xlsx en cliente -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js" defer></script>
     <style>
@@ -450,7 +451,7 @@
             </div>
             <button id="btnCsv" class="btn gray"><span class="ui-button__icon" data-icon="csv"></span> Exportar CSV</button>
             <button id="btnXls" class="btn gray"><span class="ui-button__icon" data-icon="xls"></span> Exportar Excel</button>
-            <a href="menu.html" class="btn gray" style="text-decoration:none;display:inline-flex;align-items:center"><span class="ui-button__icon" data-icon="menu"></span> Menú principal</a>
+            <a href="/menu.html" id="btnMenuBack" class="btn gray" style="text-decoration:none;display:inline-flex;align-items:center"><span class="ui-button__icon" data-icon="menu"></span> Menú principal</a>
             <a href="logout" class="btn gray" style="text-decoration:none;display:inline-flex;align-items:center"><span class="ui-button__icon" data-icon="logout"></span> Cerrar sesión</a>
         </div>
 
@@ -1003,7 +1004,9 @@
             if (FILTER_OVSR3) qp.set('ovsr3', FILTER_OVSR3);
             if (FILTER_DIV) qp.set('div', FILTER_DIV);
 
-            fetch('/ventas/listar?' + qp.toString())
+            const controller = new AbortController();
+            window.__ventasReporteController = controller;
+            fetch('/ventas/listar?' + qp.toString(), { signal: controller.signal })
                 .then(r => r.json())
                 .then(resp => {
                     LIST_CACHE = Array.isArray(resp.items) ? resp.items : (Array.isArray(resp) ? resp : []);
@@ -1018,7 +1021,10 @@
                     setMode(MODE_FULL);
                     if (AUTOPRINT) setTimeout(() => window.print(), 250);
                 })
-                .catch(() => { LIST_CACHE = []; renderHead(); renderTable([]); });
+                .catch((err) => {
+                    if (err && (err.name === 'AbortError' || String(err).includes('aborted'))) return;
+                    LIST_CACHE = []; renderHead(); renderTable([]);
+                });
         }
 
         // Cambiar modo sin recargar
@@ -1221,6 +1227,14 @@
     // Render print checkboxes once (lista completa de columnas)
     renderPrintCheckboxes();
     loadData();
+
+    // Abortar la solicitud activa al regresar al menú para evitar errores de navegación
+    try {
+        const backEl = document.getElementById('btnMenuBack');
+        if (backEl) backEl.addEventListener('click', () => {
+            try { window.__ventasReporteController && window.__ventasReporteController.abort(); } catch (_) { }
+        });
+    } catch (_) { }
     </script>
 </body>
 </html>
