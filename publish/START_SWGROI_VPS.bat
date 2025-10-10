@@ -1,10 +1,10 @@
 @echo off
 echo ==========================================
-echo   SWGROI Server VPS - Contabo (Final)
+echo   SWGROI Server VPS - Contabo (FORZADO)
 echo ==========================================
 echo.
 
-:: Cambiar al directorio correcto
+:: Cambiar al directorio correcto del VPS
 cd /d "C:\SWGROI\SWGROI_Despliegue_Web\publish"
 
 :: Verificar archivos esenciales
@@ -32,8 +32,10 @@ if %ERRORLEVEL% equ 0 (
 )
 
 :: Mostrar información
-echo ✅ Archivos OK - Iniciando servidor...
+echo ✅ Archivos OK - Iniciando servidor VPS...
+echo 🎯 Modo: PRODUCCIÓN FORZADA (VPS)
 echo 🌐 URL: http://75.119.128.78:8891/login.html
+echo 🌍 Accesible desde internet
 echo 📅 %date% %time%
 echo ⚡ Presiona Ctrl+C para detener
 echo ═══════════════════════════════════════════
