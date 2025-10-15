@@ -1,0 +1,133 @@
+/* ================================================
+   ADMIN.CSS - Estilos específicos para Administración de Usuarios
+   Metodología BEM + Componentes SWGROI
+   ================================================ */
+
+/* ================================
+   ESTILOS ESPECÍFICOS DEL MÓDULO
+   ================================ */
+
+/* Texto de ayuda en formularios (usado en contraseña) */
+.ui-form__help {
+    font-size: var(--ui-font-size-sm);
+    color: var(--ui-color-texto-muted);
+    margin-top: var(--ui-gap-4);
+    display: block;
+}
+
+/* Valores de solo lectura en modales (Detalle de Usuario) */
+.ui-form__value {
+    padding: var(--ui-gap-8);
+    background-color: var(--ui-color-fondo-alt);
+    border-radius: var(--ui-radius-sm);
+    font-weight: 500;
+}
+
+/* ================================
+   Controles de acción modernos - Solo Admin
+   ================================ */
+/* Botones dentro del listado de usuarios: modernos con gradientes */
+#tablaUsuarios .ui-button {
+    padding: var(--ui-gap-8);
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Botón Ver - Azul */
+#tablaUsuarios .ui-button:nth-child(1) {
+    background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+    color: white;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+#tablaUsuarios .ui-button:nth-child(1):hover {
+    background: linear-gradient(135deg, #2563EB, #1E40AF);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Botón Editar - Verde */
+#tablaUsuarios .ui-button:nth-child(2) {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+#tablaUsuarios .ui-button:nth-child(2):hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+/* Botón Eliminar - Rojo */
+#tablaUsuarios .ui-button:nth-child(3),
+#tablaUsuarios .ui-button--danger {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: white;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+#tablaUsuarios .ui-button:nth-child(3):hover,
+#tablaUsuarios .ui-button--danger:hover {
+    background: linear-gradient(135deg, #DC2626, #B91C1C);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Efecto de pulso en hover */
+#tablaUsuarios .ui-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+#tablaUsuarios .ui-button:hover::before {
+    width: 100%;
+    height: 100%;
+}
+
+/* Separación entre botones consecutivos */
+#tablaUsuarios .ui-button + .ui-button {
+    margin-left: var(--ui-gap-6);
+}
+
+/* Use absolute pixel sizing for icons so parent font-size:0 doesn't hide them */
+#tablaUsuarios .ui-button__icon {
+    margin: 0;
+    font-size: 18px;
+    z-index: 1;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* En móviles: botones compactos pero manteniendo el estilo */
+@media (max-width: 768px) {
+    #tablaUsuarios .ui-button {
+        padding: var(--ui-gap-6);
+        min-width: 32px;
+        height: 32px;
+    }
+    /* mobile: keep icons slightly smaller but in px to avoid em inheritance issues */
+    #tablaUsuarios .ui-button__icon {
+        font-size: 16px;
+    }
+    /* Unificar espaciado con componentes (mismo que Documentos) */
+    #tablaUsuarios .ui-button + .ui-button { margin-left: var(--ui-gap-6); }
+}

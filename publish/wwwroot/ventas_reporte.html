@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Reporte de Ventas y Comisiones</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="Styles/componentes/componentes.css">
+    <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/seguridad.js" defer></script>
+    <!-- SheetJS para exportar .xlsx en cliente -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js" defer></script>
+    <style>
+        :root {
+            --ink: #0f172a;
+            --muted: #6b7280;
+            --line: #e5e7eb;
+            --bg: #f8fafc;
+            --chip: #f3f4f6;
+            --brand: #2563eb;
+            --ok: #16a34a
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html, body {
+            height: 100%
+        }
+
+        body {
+            font-family: Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+            margin: 0;
+            background: #fff;
+            color: var(--ink)
+        }
+
+        /* UI helpers */
+        .ui-report-wrap { max-width:1120px; margin:0 auto; padding:18px 20px 28px }
+
+        .wrap {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 18px 20px 28px
+        }
+
+        /* Encabezado centrado y logo más grande */
+        .header {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .header-left {
+            grid-column: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .top-meta {
+            grid-column: 3;
+            justify-self: end;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .logo {
+            height: 56px
+        }
+
+        @media print {
+            .logo {
+                height: 32px
+            }
+        }
+
+        .pill {
+            background: #f3f4f6;
+            border: 1px solid var(--line);
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            color: #111827
+        }
+
+        .acciones {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0 14px
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            box-shadow: 0 1px 0 rgba(0,0,0,.05)
+        }
+
+            .btn.gray {
+                background: #f3f4f6;
+                color: #111827
+            }
+
+            .btn.dark {
+                background: #111827;
+                color: #fff
+            }
+
+            .btn.blue {
+                background: #1d4ed8;
+                color: #fff
+            }
+
+            .btn.toggle.active {
+                box-shadow: inset 0 0 0 2px #1d4ed8;
+                background: #eef2ff
+            }
+
+        /* Botones pequeños para selección de modo de impresión */
+        .print-mode-btns { display: inline-flex; gap: 6px; align-items: center }
+        .print-mode-btns .btn { padding: 6px 8px; font-size: 12px; border-radius: 6px }
+        .print-mode-btns .btn.active { box-shadow: inset 0 0 0 2px #1d4ed8; background: #111827; color: #fff }
+
+        .table-wrap {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: auto;
+            background: #fff
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 980px;
+            table-layout: auto
+        }
+
+        thead th {
+            background: #0f172a;
+            color: #fff;
+            text-align: left;
+            padding: 8px 10px;
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            line-height: 1.1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Mejoras visuales: encabezado con sombra y separación más elegante */
+        table#tablaReporte thead th {
+            box-shadow: 0 2px 0 rgba(0,0,0,0.04) inset;
+            padding: 10px 12px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        /* Asegurar que el texto del encabezado de la tabla del reporte sea blanco (evitar overrides) */
+        table#tablaReporte thead th,
+        .ui-tabla__head th {
+            color: #fff !important;
+        }
+
+        tbody td, tfoot td {
+            border-top: 1px solid #eee;
+            padding: 12px 12px;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        /* Filas alternadas para mejor lectura */
+        .ui-tabla__row:nth-child(even) td { background: #fbfdff; }
+        .ui-tabla__row:nth-child(odd) td { background: #fff; }
+
+        /* Alineación y tamaño de badges dentro de celdas */
+        .ui-badge { vertical-align: middle; display: inline-block; margin: 0; }
+
+        /* Alinear badges al centro y columnas de estado más compactas */
+        .ui-tabla__cell { vertical-align: middle; }
+        /* Mantener truncamiento en pantalla para conservar el estilo visual del reporte completo.
+           En la impresión (PDF) se forzará wrapping para mostrar todo el contenido. */
+        .ui-tabla__cell--descripcion, .ui-tabla__cell--comentarios, .ui-tabla__cell--motivo-cancel {
+            max-width: 420px; /* mostrar más preview */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: help; /* indicamos que hay más texto (tooltip) */
+        }
+        th[data-key="StatusPago"], td.status-cell { text-align: center; width: 110px; }
+        th[data-key="Estado"], td.estado-cell, th[data-key="EstadoOVSR3"], td.estadoovsr3-cell { text-align: center; width: 120px; }
+        /* Anchuras para columnas de cancelación (solo en reporte completo) */
+        th[data-key="FechaCancelacion"], td[data-key="FechaCancelacion"], th[data-key="MotivoCancelacion"], td[data-key="MotivoCancelacion"], th[data-key="UsuarioCancelacion"], td[data-key="UsuarioCancelacion"] {
+            text-align: center; width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* Reglas específicas para impresión/PDF: asegurar que las celdas largas se muestren completas */
+        @media print {
+            /* Página en horizontal y márgenes reducidos para aprovechar ancho */
+            @page { size: landscape; margin: 8mm; }
+
+            /* Forzar ajuste de tabla para impresión: usar anchura completa y layout fijo para columnas
+               esto ayuda a que las columnas mantengan proporción y que el contenido encaje mejor */
+            table { width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; min-width: 0 !important; }
+
+            /* Repetir encabezado en cada página impresa */
+            thead { display: table-header-group; }
+            tfoot { display: table-row-group; }
+
+            /* Mostrar bordes en impresión para delimitar columnas claramente */
+            thead th, tbody td { border: 1px solid #cfcfcf !important; background-clip: padding-box; }
+
+            /* Asegurar que sticky headers no interfieran y que el header se pinte correctamente */
+            thead th { position: static !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+            /* Permitir que las celdas largas hagan wrap y se muestren completas en PDF */
+            .ui-tabla__cell--descripcion, .ui-tabla__cell--comentarios, .ui-tabla__cell--motivo-cancel,
+            th[data-key="MotivoCancelacion"], td[data-key="MotivoCancelacion"],
+            th[data-key="UsuarioCancelacion"], td[data-key="UsuarioCancelacion"] {
+                max-width: none !important;
+                white-space: normal !important;
+                overflow: visible !important;
+                text-overflow: clip !important;
+                word-break: break-word !important;
+                hyphens: auto !important;
+            }
+
+            /* Reducir paddings y fuente para que quepa más contenido, pero mantener legibilidad */
+            th, td { padding: 4px 6px !important; font-size: 9.2px !important; line-height: 1.08 !important; }
+
+            /* Evitar que una fila se divida entre páginas cuando sea posible */
+            tr, tbody tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+
+            /* Evitar overflow en el contenedor y eliminar bordes extra que rompan el layout */
+            .table-wrap { overflow: visible; border: none; }
+
+            /* Forzar que el header tenga fondo oscuro y se imprima correctamente */
+            thead th { background: #111 !important; color: #fff !important; }
+
+            /* Asegurar contraste y fuente básica para impresoras */
+            body { color: #111 !important; font-family: Arial, Helvetica, sans-serif !important; }
+        }
+
+        .num {
+            text-align: right;
+            white-space: nowrap
+        }
+
+        /* Modo pantalla: reporte completo (envolver descripciones) */
+        .modo-completo .ui-tabla__cell--descripcion,
+        .modo-completo .ui-tabla__cell--comentarios,
+        .modo-completo .ui-tabla__cell--motivo-cancel {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            word-break: break-word;
+            max-width: 520px;
+        }
+
+        /* Clase que aplicaremos a columnas para ocultarlas en impresión cuando el usuario lo solicite */
+        .print-hidden { display: none !important; }
+
+        .nowrap {
+            white-space: nowrap
+        }
+
+        .row-cancelado {
+            opacity: .7
+        }
+
+            .row-cancelado td {
+                text-decoration: line-through
+            }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700
+        }
+
+        .badge-cancel {
+            background: #fee2e2;
+            color: #991b1b
+        }
+
+        tfoot td {
+            font-weight: 800;
+            background: #f8fafc
+        }
+
+        /* Resumen debajo de la tabla */
+        .resumenBar {
+            display: none;
+            margin-top: 10px;
+            border: 1px solid var(--line);
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 8px;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .chip {
+            background: var(--chip);
+            border: 1px solid var(--line);
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 12px
+        }
+
+            .chip.brand {
+                background: #eef2ff;
+                color: #1e3a8a;
+                border-color: #c7d2fe
+            }
+
+        .divider {
+            width: 1px;
+            height: 22px;
+            background: var(--line);
+            margin: 0 8px
+        }
+
+        /* PRINT: reglas adicionales para impresión en PDF (compactas y legibles) */
+        @media print {
+            @page { size: landscape; margin: 8mm; }
+
+            /* Esconder elementos UI que no aportan al PDF */
+            .acciones, .modal-overlay { display: none !important; }
+
+            .wrap { max-width: none; padding: 0 6mm; }
+
+            /* Reglas de tabla y celdas (coherentes con el bloque anterior)
+               Estas reglas refuerzan bordes, tamaño y wrapping para la impresión */
+            table { width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; min-width: 0 !important; }
+            thead { display: table-header-group; }
+            tfoot { display: table-row-group; }
+            thead th, tbody td { border: 1px solid #cfcfcf !important; background-clip: padding-box; }
+            thead th { position: static !important; background: #111 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            th, td { padding: 4px 6px !important; font-size: 9.2px !important; line-height: 1.08 !important; }
+            td, th { white-space: normal !important; word-break: break-word !important; hyphens: auto !important; }
+
+            /* Ocultar columnas no críticas por defecto: UsuarioCancelacion, AgenteResponsable, Descripcion */
+            th[data-key="UsuarioCancelacion"], td[data-key="UsuarioCancelacion"],
+            th[data-key="AgenteResponsable"], td[data-key="AgenteResponsable"],
+            th[data-key="Descripcion"], td[data-key="Descripcion"] { display: none !important; }
+
+            /* Evitar que una fila se divida entre páginas cuando sea posible */
+            tr, tbody tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+
+            .table-wrap { overflow: visible; border: none; }
+            .resumenBar { break-inside: avoid; page-break-inside: avoid; margin-top: 8px }
+        }
+
+        /* Modos de impresión: compact (más contenido por página) o legible (fuente mayor)
+           Estas clases se colocan en <body> y sus reglas se activan solo en @media print. */
+        @media print {
+            body.print-mode-compact th, body.print-mode-compact td { padding: 2px 4px !important; font-size: 8.2px !important; }
+            body.print-mode-legible th, body.print-mode-legible td { padding: 6px 8px !important; font-size: 10.5px !important; }
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 9999
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,.25);
+            overflow: hidden
+        }
+
+            .modal header {
+                padding: 12px 16px;
+                background: #0f172a;
+                color: #fff;
+                font-weight: 800
+            }
+
+            .modal .body {
+                padding: 16px;
+                color: #111827;
+                line-height: 1.45
+            }
+
+            .modal .foot {
+                padding: 12px 16px;
+                display: flex;
+                gap: 8px;
+                justify-content: flex-end;
+                background: #f9fafb
+            }
+    </style>
+</head>
+<body>
+    <div class="wrap ui-card">
+        <div class="header">
+            <div class="header-left">
+                <img class="logo" src="Imagenes/central_alarmas.png" alt="Central de Alarmas">
+                <h1 class="title">Reporte de Ventas y Comisiones</h1>
+            </div>
+            <div class="top-meta">
+                <span>Generado:</span><span id="fechaCorte" class="pill">—</span>
+                <span>Usuario:</span><span id="usuarioCorte" class="pill">—</span>
+            </div>
+        </div>
+
+        <div class="acciones">
+            <button id="btnRep" class="btn gray toggle"><span class="ui-button__icon" data-icon="report"></span> Reporte</button>
+            <button id="btnRepFull" class="btn gray toggle"><span class="ui-button__icon" data-icon="report"></span> Reporte completo</button>
+            <button id="btnPrint" class="btn dark"><span class="ui-button__icon" data-icon="print"></span> Imprimir / Exportar PDF</button>
+            <div id="printOptions" style="display:inline-flex;align-items:center;gap:8px;margin-left:8px">
+                <label style="font-size:12px;color:var(--ui-color-texto-muted);margin-right:6px">Ocultar al imprimir:</label>
+                <div id="printCheckboxes" style="display:inline-flex;gap:8px;flex-wrap:wrap;align-items:center"></div>
+                <button id="btnRestoreDefaults" class="btn gray" title="Restaurar preferencias por defecto" style="margin-left:8px;font-size:12px;padding:6px 8px;">Restaurar valores por defecto</button>
+            </div>
+            <div class="print-mode-btns" style="margin-left:12px;">
+                <span style="font-size:12px;color:var(--muted);margin-right:6px">Modo impresión:</span>
+                <button id="btnPrintCompact" class="btn gray" title="Compacto (más contenido por página)">Compacto</button>
+                <button id="btnPrintLegible" class="btn gray" title="Legible (fuente mayor)">Legible</button>
+            </div>
+            <button id="btnCsv" class="btn gray"><span class="ui-button__icon" data-icon="csv"></span> Exportar CSV</button>
+            <button id="btnXls" class="btn gray"><span class="ui-button__icon" data-icon="xls"></span> Exportar Excel</button>
+            <a href="menu.html" class="btn gray" style="text-decoration:none;display:inline-flex;align-items:center"><span class="ui-button__icon" data-icon="menu"></span> Menú principal</a>
+            <a href="logout" class="btn gray" style="text-decoration:none;display:inline-flex;align-items:center"><span class="ui-button__icon" data-icon="logout"></span> Cerrar sesión</a>
+        </div>
+
+        
+
+        <div class="table-wrap">
+            <table id="tablaReporte" class="tabla-crud ui-tabla">
+                <thead class="ui-tabla__head"><tr id="theadRow"></tr></thead>
+                <tbody id="tbodyRows" class="ui-tabla__body"></tbody>
+                <tfoot>
+                    <tr id="tfootRow">
+                        <td class="nowrap" colspan="2"><strong>Totales</strong></td>
+                        <td id="tMonto" class="num">$ 0.00</td>
+                        <td id="tIva" class="num">$ 0.00</td>
+                        <td id="tComIva" class="num">$ 0.00</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Resumen debajo de la tabla -->
+        <div id="resumenBar" class="resumenBar">
+            <span class="chip" id="rReg">Registros: 0</span>
+            <span class="chip" id="rMonto">Σ Monto: $ 0.00</span>
+            <span class="chip" id="rIva">Σ c/IVA: $ 0.00</span>
+            <span class="chip" id="rIvaCom">Σ c/IVA+Com.: $ 0.00</span>
+            <span class="chip brand" id="rComSI">Σ Comisión s/IVA: $ 0.00</span>
+            <span class="divider"></span>
+            <span id="rDivisor" class="chip">÷ 1</span>
+            <span id="rPorPersona" class="chip">= $ 0.00 por cada uno</span>
+        </div>
+    </div>
+
+    <!-- Modal enviar -->
+    <div id="modalConfirm" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+        <div class="modal">
+            <header id="mTitle">Confirmar envío</header>
+            <div class="body">
+                <p><strong>Se enviará este reporte a Administración</strong> y se abrirá el submódulo <em>Cotizaciones</em> con los filtros correspondientes (OVSR3 y Folios del reporte). Los <u>estados no se modificarán</u>.</p>
+                <p style="margin-top:10px">¿Deseas continuar?</p>
+            </div>
+            <div class="foot">
+                <button class="btn gray" type="button" onclick="cerrarModal()">Cancelar</button>
+                <button id="btnConfirmEnviar" class="btn blue" type="button">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Utilidades
+        const fmtN = n => Number(n || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        const ISOd = v => { if (!v) return ''; try { const d = new Date(v); if (!isNaN(d)) return d.toISOString().slice(0, 10); } catch { } return String(v).slice(0, 10); };
+        const getUser = () => { const c = document.cookie.split('; ').find(x => x.startsWith('usuario=')); return c ? decodeURIComponent(c.split('=')[1]) : '—'; };
+
+    // Parámetros
+    const QP = new URLSearchParams(location.search);
+    let MODE_FULL = QP.get('full') === '1';
+    const AUTOPRINT = QP.get('autoprint') === '1';
+    // Filtros aceptados desde la página de Ventas: div (divisor), estado, folio, ovsr3
+    const FILTER_DIV = QP.get('div');
+    const FILTER_ESTADO = QP.get('estado');
+    const FILTER_FOLIO = QP.get('folio');
+    const FILTER_OVSR3 = QP.get('ovsr3');
+
+        // MISMO divisor que en Ventas con fallback al formulario abierto (misma ORIGEN)
+        function resolveDivisor() {
+            const fromQS = Number(QP.get('div'));
+            if (Number.isFinite(fromQS) && fromQS > 0) return Math.floor(fromQS);
+            try {
+                const v = Number(window.opener?.document?.getElementById('divisorCom')?.value);
+                if (Number.isFinite(v) && v > 0) return Math.floor(v);
+            } catch { }
+            return 1;
+        }
+        const DIV = resolveDivisor();
+
+        // muestra el divisor de inmediato (antes de que carguen los datos)
+        document.addEventListener('DOMContentLoaded', () => {
+            const chip = document.getElementById('rDivisor');
+            if (chip) chip.textContent = '÷ ' + DIV;
+        });
+
+
+        // Definición de columnas: orden exacto de ventas.html
+        // COLS_BASE contiene las columnas del reporte corto (hasta StatusPago)
+        const COLS_BASE = [
+            { k: 'OVSR3', th: 'OVSR3', td: v => esc(v.OVSR3 || '') },
+            { k: 'Folio', th: 'Folio', td: v => esc(v.Folio || v.FolioTicket || '') },
+            { k: 'Monto', th: 'Monto Base', td: v => '$ ' + fmtN(v.Monto || v.MontoBase || 0), cls: 'num' },
+            { k: 'IVA', th: 'Total c/IVA', td: v => '$ ' + fmtN((v.Monto || v.MontoBase || 0) * 1.16), cls: 'num' },
+            { k: 'COMIVA', th: 'Total c/IVA+Com', td: v => '$ ' + fmtN((v.Monto || v.MontoBase || 0) * 1.16 * 1.03), cls: 'num' },
+            { k: 'FechaAtencion', th: 'Fecha Atención', td: v => esc(ISOd(v.FechaAtencion || v.Fecha)) },
+            { k: 'Cuenta', th: 'Cuenta', td: v => esc(v.Cuenta || '') },
+            { k: 'RazonSocial', th: 'Razón Social', td: v => esc(v.RazonSocial || '') },
+            { k: 'AgenteResponsable', th: 'Agente', td: v => esc(v.AgenteResponsable || v.Agente || '') },
+            { k: 'Estado', th: 'Estado Ticket', td: v => {
+                // Estado debe mostrar explícitamente el estado del ticket (EstadoTicket)
+                const estadoTicket = v.EstadoTicket || '';
+                return badgeEstadoTicket(estadoTicket);
+            } },
+            { k: 'EstadoOVSR3', th: 'Estado OVSR3', td: v => {
+                // EstadoOVSR3 muestra el estado de la cotización (si existe EstadoCotizacion usamos ese)
+                const estadoCot = v.EstadoCotizacion || getEstado(v);
+                return badgeEstado(estadoCot);
+            } },
+            { k: 'Descripcion', th: 'Descripción', td: v => esc(v.Descripcion || '') },
+            { k: 'ComentariosCotizacion', th: 'Comentarios', td: v => esc(v.ComentariosCotizacion || v.Comentarios || '') },
+            { k: 'StatusPago', th: 'Status Pago', td: v => esc(v.StatusPago || '') }
+        ];
+        
+        // Columnas extra que se muestran solo en "Reporte completo"
+        const COLS_EXTRA = [
+            { k: 'FechaCancelacion', th: 'Fecha Cancelación', td: v => v.FechaCancelacion ? new Date(v.FechaCancelacion).toLocaleDateString('es-MX') : '' },
+            { k: 'MotivoCancelacion', th: 'Motivo Cancelación', td: v => esc(v.MotivoCancelacion || '') },
+            { k: 'UsuarioCancelacion', th: 'Usuario Cancelación', td: v => {
+                const backend = String(getUsuarioCancelacionObj(v) || '').trim();
+                const sesion = String(getUsuarioSesion() || '').trim();
+                let out = '';
+                if (backend && sesion) {
+                    if (backend.toLowerCase() !== sesion.toLowerCase()) out = `${esc(backend)} — ${esc(sesion)}`;
+                    else out = esc(sesion);
+                } else if (backend) out = esc(backend);
+                else if (sesion) out = esc(sesion);
+                const full = getUsuarioCancelacionFullObj(v) || 'Usuario que canceló el registro (si aplica). Si aparecen dos nombres, el segundo indica el usuario de la sesión.';
+                return out ? `<span title="${esc(full)}">${out}</span>` : '';
+            } }
+        ];
+        
+        // Función para obtener columnas activas según el modo
+        const getCols = () => MODE_FULL ? COLS_BASE.concat(COLS_EXTRA) : COLS_BASE;
+
+    // Columnas que por defecto sugerimos ocultar al imprimir (solo estas tres)
+    // UsuarioCancelacion, AgenteResponsable (Agente) y Descripcion
+    const DEFAULT_HIDDEN_ON_PRINT = ['UsuarioCancelacion', 'AgenteResponsable', 'Descripcion'];
+
+    // Columnas que NO pueden ocultarse (siempre visibles)
+    const NON_HIDABLE_COLS = ['Folio', 'Monto', 'FechaAtencion'];
+
+        // LocalStorage key para persistir preferencias de columnas ocultas
+        const LS_KEY_HIDDEN_COLS = 'ventas_report_hidden_cols_v1';
+            const LS_KEY_PRINT_MODE = 'ventas_report_print_mode_v1';
+
+        // Generar checkboxes dinámicamente a partir de la lista completa de columnas
+        function renderPrintCheckboxes() {
+            const container = document.getElementById('printCheckboxes');
+            if (!container) return;
+            container.innerHTML = '';
+            // Usar la lista completa (modo completo) para exponer todas las columnas disponibles
+            const allCols = COLS_BASE.concat(COLS_EXTRA);
+
+            // Leer estado guardado
+            let saved = [];
+            try { saved = JSON.parse(localStorage.getItem(LS_KEY_HIDDEN_COLS) || '[]'); } catch (e) { saved = []; }
+
+            allCols.forEach(c => {
+                const key = c.k || c.th || '';
+                if (!key) return;
+                const id = 'cbHideCol_' + key;
+                const label = document.createElement('label');
+                label.style.fontSize = '12px';
+                label.style.display = 'inline-flex';
+                label.style.alignItems = 'center';
+                label.style.gap = '6px';
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.id = id;
+                input.dataset.colKey = key;
+                // pre-chequear según saved o DEFAULT_HIDDEN_ON_PRINT
+                const preChecked = Array.isArray(saved) && saved.includes(key) ? true : DEFAULT_HIDDEN_ON_PRINT.includes(key);
+                input.checked = !!preChecked;
+                // guardar al cambiar
+                input.addEventListener('change', () => {
+                    persistHiddenColsFromUI();
+                });
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(' ' + (c.th || key)));
+                container.appendChild(label);
+            });
+        }
+
+        // Restaurar a los valores por defecto
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('btnRestoreDefaults');
+            if (btn) btn.addEventListener('click', () => {
+                try { localStorage.removeItem(LS_KEY_HIDDEN_COLS); } catch (e) { }
+                renderPrintCheckboxes();
+                applyPrintOptions();
+            });
+
+            // Inicializar botones de modo de impresión
+            const btnCompact = document.getElementById('btnPrintCompact');
+            const btnLegible = document.getElementById('btnPrintLegible');
+            function setPrintMode(mode) {
+                try { localStorage.setItem(LS_KEY_PRINT_MODE, mode); } catch (e) {}
+                document.body.classList.remove('print-mode-compact', 'print-mode-legible');
+                if (mode === 'compact') document.body.classList.add('print-mode-compact');
+                if (mode === 'legible') document.body.classList.add('print-mode-legible');
+                if (btnCompact) btnCompact.classList.toggle('active', mode === 'compact');
+                if (btnLegible) btnLegible.classList.toggle('active', mode === 'legible');
+            }
+
+            function loadPrintMode() {
+                try {
+                    const m = localStorage.getItem(LS_KEY_PRINT_MODE) || 'compact';
+                    setPrintMode(m);
+                } catch (e) { setPrintMode('compact'); }
+            }
+
+            if (btnCompact) btnCompact.addEventListener('click', () => setPrintMode('compact'));
+            if (btnLegible) btnLegible.addEventListener('click', () => setPrintMode('legible'));
+            // Cargar preferencia
+            loadPrintMode();
+        });
+
+        // Persistir estado de checkboxes en localStorage
+        function persistHiddenColsFromUI() {
+            const hidden = [];
+            document.querySelectorAll('#printCheckboxes input[type=checkbox]').forEach(cb => {
+                try { if (cb.checked && cb.dataset && cb.dataset.colKey) hidden.push(cb.dataset.colKey); } catch (e) { }
+            });
+            try { localStorage.setItem(LS_KEY_HIDDEN_COLS, JSON.stringify(hidden)); } catch (e) { }
+        }
+
+        // Obtener set de columnas marcadas como ocultas
+        function getHiddenColsSet() {
+            const set = new Set();
+            document.querySelectorAll('#printCheckboxes input[type=checkbox]').forEach(cb => {
+                try { if (cb.checked && cb.dataset && cb.dataset.colKey) set.add(cb.dataset.colKey); } catch (e) { }
+            });
+            return set;
+        }
+
+        // Catálogo de estados (igual que en ventas.js)
+        const ESTADO_ID_TO_NAME = {
+            1: 'Enviado',
+            2: 'Declinada',
+            3: 'Almacén',
+            4: 'Operaciones',
+            5: 'Cobranza',
+            6: 'Facturación',
+            7: 'Finalizado'
+        };
+        const ESTADO_UPPER_TO_TITLE = Object.values(ESTADO_ID_TO_NAME).reduce((m, v) => {
+            if (v && typeof v === 'string') m[v.toUpperCase()] = v;
+            return m;
+        }, {});
+
+        // Helper local: Title Case
+        function toTitleCase(s) {
+            if (!s) return '';
+            return String(s).toLowerCase().split(/\s+/).map(w => w ? (w[0].toUpperCase() + w.slice(1)) : '').join(' ');
+        }
+
+        // Intentar obtener nombre completo del usuario de cancelación
+        function getUsuarioCancelacionFullObj(v) {
+            if (!v || typeof v !== 'object') return '';
+            const candidates = ['UsuarioCancelacionNombre', 'UsuarioCancelacionNombreCompleto', 'UsuarioCancelacionFull', 'UsuarioCancelacionDisplayName', 'NombreCompleto', 'Nombre', 'nombre', 'displayName', 'fullName'];
+            for (const k of candidates) {
+                if (k in v && v[k]) return String(v[k]).trim();
+            }
+            const nested = v.Usuario || v.User || v.usuario || v.user;
+            if (nested && typeof nested === 'object') {
+                for (const k of ['nombre', 'Nombre', 'fullName', 'displayName']) {
+                    if (k in nested && nested[k]) return String(nested[k]).trim();
+                }
+            }
+            // Intentar buscar en la cache de Administración si existe
+            try {
+                const username = String(getUsuarioCancelacionObj(v) || '').trim();
+                if (username && window.AdminModule && Array.isArray(window.AdminModule.usuarios)) {
+                    const uname = username.toLowerCase();
+                    for (const u of window.AdminModule.usuarios) {
+                        if (!u) continue;
+                        const candidateUser = String(u.Usuario || u.UsuarioLogin || u.UsuarioNombre || u.user || u.User || '').trim();
+                        if (candidateUser && candidateUser.toLowerCase() === uname) {
+                            const full = String(u.NombreCompleto || u.Nombre || u.NombreCompletoUsuario || u.displayName || u.FullName || u.fullName || '').trim();
+                            if (full) return full;
+                        }
+                    }
+                }
+            } catch (e) {
+                // noop
+            }
+            return '';
+        }
+
+        // Obtener usuario de sesión desde cookie (igual que en ventas.js)
+        function getUsuarioSesion() {
+            const c = document.cookie.split('; ').find(x => x.startsWith('usuario='));
+            return c ? decodeURIComponent(c.split('=')[1]) : '';
+        }
+
+        // Intentar obtener nombre completo del usuario de sesión buscando en AdminModule
+        function getUsuarioSesionFull() {
+            const sessionUser = String(getUsuarioSesion() || '').trim();
+            if (!sessionUser) return '';
+            try {
+                if (window.AdminModule && Array.isArray(window.AdminModule.usuarios)) {
+                    const uname = sessionUser.toLowerCase();
+                    for (const u of window.AdminModule.usuarios) {
+                        if (!u) continue;
+                        const candidateUser = String(u.Usuario || u.UsuarioLogin || u.UsuarioNombre || u.user || u.User || '').trim();
+                        if (candidateUser && candidateUser.toLowerCase() === uname) {
+                            const full = String(u.NombreCompleto || u.Nombre || u.NombreCompletoUsuario || u.displayName || u.FullName || u.fullName || '').trim();
+                            if (full) return full;
+                        }
+                    }
+                }
+            } catch (e) {
+                // noop
+            }
+            return sessionUser;
+        }
+
+        // getEstado: función simplificada para obtener estado del ticket
+        function getEstado(obj) {
+            if (!obj || typeof obj !== 'object') return '';
+
+            // El controlador envía el estado directamente en el campo 'Estado' (desde ec.Nombre)
+            if (obj.Estado && typeof obj.Estado === 'string') {
+                const estado = obj.Estado.trim();
+                return estado || '';
+            }
+
+            // Fallback: buscar por ID si existe
+            const idCandidates = [
+                'EstadoCotizacionID', 'estadoCotizacionID', 'EstadoCotizacionId', 'estadoCotizacionId',
+                'IdEstadoCotizacion', 'idEstadoCotizacion', 'EstadoID', 'estadoID', 'EstadoId', 'estadoId'
+            ];
+            
+            for (const k of idCandidates) {
+                if (k in obj && obj[k] != null) {
+                    const id = parseInt(obj[k]);
+                    if (!isNaN(id) && ESTADO_ID_TO_NAME[id]) {
+                        return ESTADO_ID_TO_NAME[id];
+                    }
+                }
+            }
+
+            // Fallback: buscar por texto en otros campos
+            const textCandidates = [
+                'Nombre', 'nombre', 'NombreNorm', 'nombreNorm',
+                'estado', 'EstadoCotizacion', 'estadoCotizacion',
+                'StatusCotizacion', 'statusCotizacion', 'Estatus', 'estatus',
+                'EstadoVenta', 'estadoVenta'
+            ];
+            
+            for (const k of textCandidates) {
+                if (k in obj && typeof obj[k] === 'string') {
+                    const raw = obj[k].trim();
+                    if (raw) return raw;
+                }
+            }
+
+            return '';
+        }
+
+        // badgeEstado: renderiza badges de estado idénticos a ventas.js
+        function badgeEstado(val) {
+            const raw = String(val ?? '').trim();
+            if (!raw) return '<span class="ui-badge ui-badge--proceso">En Proceso</span>';
+            
+            const map = {
+                DECLINADA: 'declinada',
+                ENVIADO: 'enviado',
+                ALMACEN: 'almacen',
+                OPERACIONES: 'operaciones',
+                COBRANZA: 'cobranza',
+                FACTURACION: 'facturacion',
+                FINALIZADO: 'finalizado'
+            };
+            const DISPLAY_BY_KEY = {
+                DECLINADA: 'Declinada',
+                ENVIADO: 'Enviado',
+                ALMACEN: 'Almacén',
+                OPERACIONES: 'Operaciones',
+                COBRANZA: 'Cobranza',
+                FACTURACION: 'Facturación',
+                FINALIZADO: 'Finalizado'
+            };
+            
+            const key = raw.toString().toUpperCase();
+            const clase = map[key] || 'almacen';
+            const label = DISPLAY_BY_KEY[key] || ESTADO_UPPER_TO_TITLE[key] || toTitleCase(raw);
+            return `<span class="ui-badge ui-badge--${clase}" title="${esc(raw)}">${esc(label)}</span>`;
+        }
+
+        // badgeEstadoTicket: renderiza badges de estado idénticos a tickets.js
+        function badgeEstadoTicket(estado) {
+            const raw = String(estado ?? '').trim();
+            if (!raw) return '<span class="ui-badge ui-badge--default">Sin Estado</span>';
+            
+            const estadoLower = raw.toLowerCase();
+            let clase = 'default';
+            
+            switch (estadoLower) {
+                case 'almacén':
+                case 'almacen':
+                    clase = 'almacen';
+                    break;
+                case 'capturado':
+                    clase = 'capturado';
+                    break;
+                case 'programado/asignado':
+                case 'programado':
+                    clase = 'programado';
+                    break;
+                case 'abierto':
+                    clase = 'abierto';
+                    break;
+                case 'en proceso':
+                case 'proceso':
+                    clase = 'proceso';
+                    break;
+                case 'cerrado':
+                    clase = 'cerrado';
+                    break;
+                default:
+                    clase = 'default';
+            }
+            
+            // Formatear estado siempre en mayúsculas (igual que tickets.js)
+            const estadoFormateado = raw.toUpperCase();
+            return `<span class="ui-badge ui-badge--${clase}" title="${esc(raw)}">${esc(estadoFormateado)}</span>`;
+        }
+
+            // Helper: obtener usuario de cancelación con distintos nombres de campo
+            function getUsuarioCancelacionObj(v) {
+                if (!v || typeof v !== 'object') return '';
+                return String(v.UsuarioCancelacion || v.UsuarioCancel || v.UsuarioCancelado || v.UsuarioCancela || v.UsuarioCancelador || v.Usuario || v.UserCancelacion || v.userCancelacion || '').trim();
+            }
+
+        let LIST_CACHE = [];
+
+        // Encabezado
+        function renderHead() {
+            const cols = getCols();
+            const tr = document.getElementById('theadRow');
+            tr.innerHTML = '';
+            cols.forEach(c => {
+                const th = document.createElement('th');
+                th.textContent = c.th;
+                // marcar la cabecera con la llave de columna para estilos específicos
+                if (c.k) th.setAttribute('data-key', c.k);
+                if (c.th.startsWith('Total')) th.classList.add('nowrap');
+                tr.appendChild(th);
+            });
+            // "Totales" justo antes de Monto
+            const iMonto = Math.max(0, cols.findIndex(c => c.k === 'Monto'));
+            document.getElementById('tfootRow').children[0].colSpan = Math.max(1, iMonto);
+        }
+
+                // Tabla + resumen
+                function renderTable(list) {
+                    const tb = document.getElementById('tbodyRows');
+                    if (!tb) return;
+                    tb.innerHTML = '';
+
+                    // Aceptar varias formas de lista: {items:[]}, {ventas:[]}, o array directo
+                    let rows = [];
+                    if (!list) rows = [];
+                    else if (Array.isArray(list)) rows = list;
+                    else if (Array.isArray(list.items)) rows = list.items;
+                    else if (Array.isArray(list.ventas)) rows = list.ventas;
+                    else rows = [];
+
+                    const cols = getCols();
+
+                    if (rows.length === 0) {
+                        const colspan = cols.length || 1;
+                        tb.innerHTML = `<tr class="ui-tabla__row tabla-vacia"><td colspan="${colspan}" class="tabla-vacia">No se encontraron ventas</td></tr>`;
+                        // ocultar resumen
+                        document.getElementById('resumenBar').style.display = 'none';
+                        return;
+                    }
+
+                    let sumMonto = 0, sumIva = 0, sumComIva = 0;
+
+                    rows.forEach(v => {
+                        const montoVal = Number(v.Monto || v.MontoBase || 0);
+                        const totalIVA = montoVal * 1.16;
+                        const totalIVACom = totalIVA * 1.03;
+
+                        sumMonto += montoVal;
+                        sumIva += totalIVA;
+                        sumComIva += totalIVACom;
+
+                        // Construir celdas según las columnas activas
+                        const cells = cols.map(c => {
+                            const key = c.k || '';
+                            const classes = ['ui-tabla__cell'];
+                            if (c.cls) classes.push(c.cls);
+                            if (key === 'StatusPago') classes.push('status-cell');
+                            if (key === 'Estado') classes.push('estado-cell');
+                            if (key === 'EstadoOVSR3') classes.push('estadoovsr3-cell');
+                            if (key === 'Descripcion') classes.push('ui-tabla__cell--descripcion', 'js-leer-mas');
+                            if (key === 'ComentariosCotizacion') classes.push('ui-tabla__cell--comentarios', 'js-leer-mas');
+                            if (key === 'MotivoCancelacion') classes.push('ui-tabla__cell--motivo-cancel', 'js-leer-mas');
+
+                            let inner = '';
+                            try {
+                                inner = typeof c.td === 'function' ? c.td(v) : esc(v[key] || '');
+                            } catch (e) {
+                                inner = esc(v[key] || '');
+                            }
+                            // incluir data-key para permitir ocultar columnas en impresión
+                            const dataAttr = key ? ` data-key="${esc(key)}"` : '';
+                            return `<td class="${classes.join(' ')}"${dataAttr}>${inner}</td>`;
+                        }).join('');
+
+                        const fila = `<tr class="ui-tabla__row">${cells}</tr>`;
+                        tb.insertAdjacentHTML('beforeend', fila);
+                    });
+
+                    // Después de insertar filas, añadir title a celdas truncadas (js-leer-mas)
+                    document.querySelectorAll('#tbodyRows .js-leer-mas').forEach(td => {
+                        try {
+                            const text = td.textContent || td.innerText || '';
+                            if (text && text.length > 0) td.title = text.trim();
+                        } catch (e) { }
+                    });
+
+                    // Totales alineados a sus columnas
+                    document.getElementById('tMonto').textContent = '$ ' + fmtN(sumMonto);
+                    document.getElementById('tIva').textContent = '$ ' + fmtN(sumIva);
+                    document.getElementById('tComIva').textContent = '$ ' + fmtN(sumComIva);
+
+                    // Resumen inferior
+                    document.getElementById('rReg').textContent = 'Registros: ' + (rows.length || 0);
+                    document.getElementById('rMonto').textContent = 'Σ Monto: $ ' + fmtN(sumMonto);
+                    document.getElementById('rIva').textContent = 'Σ c/IVA: $ ' + fmtN(sumIva);
+                    document.getElementById('rIvaCom').textContent = 'Σ c/IVA+Com.: $ ' + fmtN(sumIva * 1.03);
+                    const comSI = sumIva * 0.03;
+                    document.getElementById('rComSI').textContent = 'Σ Comisión s/IVA: $ ' + fmtN(comSI);
+                    document.getElementById('rDivisor').textContent = '÷ ' + DIV;
+                    document.getElementById('rPorPersona').textContent = '= $ ' + fmtN(comSI / DIV) + ' por cada uno';
+                    document.getElementById('resumenBar').style.display = 'flex';
+                }
+
+        // Cargar datos
+        function loadData() {
+            document.getElementById('usuarioCorte').textContent = getUser();
+            document.getElementById('fechaCorte').textContent = new Date().toLocaleString('es-MX');
+
+            const qp = new URLSearchParams({ page: '1', pageSize: '10000' });
+            // Aplicar filtros recibidos en la query string
+            if (FILTER_ESTADO) qp.set('estado', FILTER_ESTADO);
+            if (FILTER_FOLIO) qp.set('folio', FILTER_FOLIO);
+            if (FILTER_OVSR3) qp.set('ovsr3', FILTER_OVSR3);
+            if (FILTER_DIV) qp.set('div', FILTER_DIV);
+
+            fetch('/ventas/listar?' + qp.toString())
+                .then(r => r.json())
+                .then(resp => {
+                    LIST_CACHE = Array.isArray(resp.items) ? resp.items : (Array.isArray(resp) ? resp : []);
+                    
+                    // Debug: inspeccionar estructura de datos del primer elemento
+                    if (LIST_CACHE.length > 0) {
+                        console.log('DEBUG - Primer elemento de datos:', LIST_CACHE[0]);
+                        console.log('DEBUG - Campos Estado:', LIST_CACHE[0].Estado);
+                        console.log('DEBUG - Campos EstadoOVSR3:', LIST_CACHE[0].EstadoOVSR3);
+                    }
+                    
+                    setMode(MODE_FULL);
+                    if (AUTOPRINT) setTimeout(() => window.print(), 250);
+                })
+                .catch(() => { LIST_CACHE = []; renderHead(); renderTable([]); });
+        }
+
+        // Cambiar modo sin recargar
+        // REPORTE_USE_COMPLETO_STYLE: si es true, el estilo visual (envolver descripciones) se aplica también
+        // al modo 'Reporte' (corto). Esto hace que ambas vistas compartan la misma apariencia en pantalla.
+        const REPORTE_USE_COMPLETO_STYLE = true;
+        function setMode(full) {
+            MODE_FULL = !!full;
+            document.getElementById('btnRep').classList.toggle('active', !MODE_FULL);
+            document.getElementById('btnRepFull').classList.toggle('active', MODE_FULL);
+            // aplicar clase visual para modo completo (envolver descripciones en pantalla)
+            const container = document.querySelector('.wrap');
+            const applyVisual = MODE_FULL || REPORTE_USE_COMPLETO_STYLE;
+            if (container) container.classList.toggle('modo-completo', !!applyVisual);
+            renderHead();
+            renderTable(LIST_CACHE);
+        }
+
+        // Botones
+        document.getElementById('btnRep').onclick = () => setMode(false);
+        document.getElementById('btnRepFull').onclick = () => setMode(true);
+        // Manejo de impresión con opciones: ocultar columnas seleccionadas
+        function applyPrintOptions() {
+            // limpiar antes
+            clearPrintOptions();
+            const hidden = getHiddenColsSet();
+
+            hidden.forEach(k => {
+                // ocultar cabeceras
+                document.querySelectorAll(`th[data-key="${k}"]`).forEach(el => el.classList.add('print-hidden'));
+                // ocultar celdas
+                document.querySelectorAll(`td[data-key="${k}"]`).forEach(el => el.classList.add('print-hidden'));
+            });
+        }
+
+        function clearPrintOptions() {
+            document.querySelectorAll('.print-hidden').forEach(el => el.classList.remove('print-hidden'));
+        }
+
+        function handlePrintClick() {
+            // Asegurar que las preferencias están cargadas y persistidas
+            try { loadPrintMode(); } catch (e) { }
+            persistHiddenColsFromUI();
+            applyPrintOptions();
+            // Escuchar afterprint para limpiar
+            const cleanup = () => { clearPrintOptions(); window.removeEventListener('afterprint', cleanup); };
+            window.addEventListener('afterprint', cleanup);
+            // Invocar impresión
+            window.print();
+            // Fallback cleanup por si afterprint no se dispara
+            setTimeout(() => { clearPrintOptions(); window.removeEventListener('afterprint', cleanup); }, 1500);
+        }
+
+        document.getElementById('btnPrint').onclick = handlePrintClick;
+        // Export en cliente respetando las columnas visibles (ocultas por impresión)
+        function exportDataAsCSV(filename) {
+            const hidden = getHiddenColsSet();
+            const rows = LIST_CACHE || [];
+
+            // Use server-like headers depending on full/compact
+            const headers = MODE_FULL
+                ? ["Folio","OVSR3","EstadoOVSR3","Estado","Monto","TotalIVA","TotalIVA+Comision","Total+Comision","Cuenta","RazonSocial","Domicilio","FechaAtencion","Agente","Descripcion","Comentarios","StatusPago","FechaCancelacion","MotivoCancelacion","UsuarioCancelacion"]
+                : ["Folio","OVSR3","EstadoOVSR3","Estado","Monto","IVA","IVA+Comision","Cuenta","RazonSocial","Agente","StatusPago","FechaCancelacion","MotivoCancelacion","UsuarioCancelacion"];
+
+            // Build CSV rows respecting hidden columns
+            const visibleHeaders = headers.filter(h => !hidden.has(h));
+            const csvRows = [];
+            csvRows.push(visibleHeaders.map(h => '"' + String(h).replace(/"/g, '""') + '"').join(','));
+
+            rows.forEach(r => {
+                const monto = Number(r.Monto || r.MontoBase || 0) || 0;
+                const iva = monto * 1.16;
+                const ivac = iva * 1.03;
+                const com3 = monto * 1.03;
+                const rowVals = visibleHeaders.map(h => {
+                    try {
+                        switch (h) {
+                            case 'Monto': return monto.toString();
+                            case 'IVA': return iva.toFixed(2);
+                            case 'IVA+Comision': return ivac.toFixed(2);
+                            case 'TotalIVA': return iva.toFixed(2);
+                            case 'TotalIVA+Comision': return ivac.toFixed(2);
+                            case 'Total+Comision': return com3.toFixed(2);
+                            case 'FechaAtencion': return r.FechaAtencion ? ISOd(r.FechaAtencion) : '';
+                            case 'FechaCancelacion': return r.FechaCancelacion ? (new Date(r.FechaCancelacion)).toISOString().slice(0,10) : '';
+                            default:
+                                // try to pull from object with common keys
+                                let v = r[h] || r[h.replace(/\s+/g,'')] || r[h.replace(/\+/g,'')] || '';
+                                if (!v && typeof v === 'object') v = '';
+                                if (typeof v === 'string') v = v.replace(/<[^>]*>/g, '');
+                                return '"' + String(v ?? '').replace(/"/g, '""') + '"';
+                        }
+                    } catch (e) { return '""'; }
+                });
+                csvRows.push(rowVals.join(','));
+            });
+
+            // Prepend BOM for Windows Excel
+            const utf8Bom = new Uint8Array([0xEF,0xBB,0xBF]);
+            const csvContent = csvRows.join('\n');
+            const encoder = new TextEncoder();
+            const encoded = encoder.encode(csvContent);
+            const combined = new Uint8Array(utf8Bom.length + encoded.length);
+            combined.set(utf8Bom, 0);
+            combined.set(encoded, utf8Bom.length);
+
+            const blob = new Blob([combined], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        document.getElementById('btnCsv').onclick = () => {
+            exportDataAsCSV('reporte_ventas.csv');
+        };
+
+        document.getElementById('btnXls').onclick = async () => {
+            // Mostrar notificación pequeña
+            const notify = (msg, ok = true) => {
+                const el = document.createElement('div');
+                el.textContent = msg;
+                el.style.position = 'fixed';
+                el.style.right = '16px';
+                el.style.top = '16px';
+                el.style.zIndex = 99999;
+                el.style.padding = '8px 12px';
+                el.style.borderRadius = '8px';
+                el.style.background = ok ? '#ecfdf5' : '#fff1f2';
+                el.style.color = ok ? '#065f46' : '#7f1d1d';
+                el.style.boxShadow = '0 6px 18px rgba(0,0,0,0.08)';
+                document.body.appendChild(el);
+                setTimeout(() => { el.remove(); }, 3500);
+            };
+
+            try {
+                const qp = new URLSearchParams();
+                if (FILTER_ESTADO) qp.set('estado', FILTER_ESTADO);
+                if (FILTER_FOLIO) qp.set('folio', FILTER_FOLIO);
+                if (FILTER_OVSR3) qp.set('ovsr3', FILTER_OVSR3);
+                if (FILTER_DIV) qp.set('div', FILTER_DIV);
+                qp.set('format', 'xlsx');
+                qp.set('full', MODE_FULL ? '1' : '0');
+                const url = '/ventas/exportar-excel?' + qp.toString();
+
+                notify('Iniciando descarga de Excel…', true);
+
+                // Preflight HEAD para verificar que el servidor responde con el content-type esperado
+                let ok = false;
+                try {
+                    const headResp = await fetch(url, { method: 'HEAD' });
+                    if (headResp && headResp.ok) {
+                        const ct = headResp.headers.get('Content-Type') || '';
+                        if (ct.indexOf('spreadsheet') >= 0 || ct.indexOf('excel') >= 0 || ct.indexOf('openxml') >= 0) ok = true;
+                    }
+                } catch (e) { ok = false; }
+
+                if (ok) {
+                    // Redirigir para iniciar la descarga
+                    window.location.href = url;
+                    return;
+                } else {
+                    notify('No fue posible iniciar la descarga desde el servidor, usando CSV como fallback.', false);
+                }
+            } catch (e) {
+                // ignored
+            }
+
+            // Fallback: generar CSV cliente
+            exportDataAsCSV('reporte_ventas.xls');
+        };
+
+        
+        
+            // Enlace seguro para el botón de enviar (puede haber sido removido)
+            const btnSendEl = document.getElementById('btnSend');
+            if (btnSendEl) btnSendEl.onclick = abrirModalEnviar;
+
+        // Modal Enviar
+        function abrirModalEnviar() {
+            const m = document.getElementById('modalConfirm');
+            const btn = document.getElementById('btnConfirmEnviar');
+            const fresh = btn.cloneNode(true);
+            btn.parentNode.replaceChild(fresh, btn);
+            fresh.addEventListener('click', confirmarEnvio);
+            m.style.display = 'flex';
+        }
+        function cerrarModal() { document.getElementById('modalConfirm').style.display = 'none'; }
+        function confirmarEnvio() {
+            fetch('/ventas/enviar-reporte', { method: 'POST' }).catch(() => { }).finally(() => { cerrarModal(); window.focus(); });
+        }
+    // botón 'btnSend' ya se enlaza de forma segura arriba si existe
+
+        // Init
+    // Render print checkboxes once (lista completa de columnas)
+    renderPrintCheckboxes();
+    loadData();
+    </script>
+</body>
+</html>

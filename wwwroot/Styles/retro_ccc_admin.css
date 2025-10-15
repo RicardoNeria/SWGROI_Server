@@ -1,0 +1,49 @@
+/* Retro CCC Admin - estilos específicos, alineados con componentes/plantilla */
+
+/* Contenedor de módulo: utilice también la clase documentos-container para tamaño/espaciado */
+
+/* Tipografía auxiliar */
+.retro-admin .small-muted { color: var(--ui-color-texto-muted); font-size: .95rem; }
+
+/* Código/enlaces generados */
+.retro-admin .result-code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; white-space: nowrap; overflow:auto }
+.retro-admin .link-actions { display:flex; gap: var(--ui-gap-8); align-items:center }
+
+/* Estados de filas del historial */
+.retro-admin .history-empty { padding: var(--ui-gap-12); background:var(--ui-color-fondo); border:1px dashed var(--ui-color-borde); border-radius: var(--ui-radius-base); }
+.retro-admin .history-completed { background: rgba(16,185,129,0.06); }
+.retro-admin .history-pending { background: rgba(245,158,11,0.03); }
+
+/* Semáforo */
+.retro-admin #kpiSemaforo { cursor: help; }
+.retro-admin .retro-semaforo-col { width:120px; text-align:center; }
+.retro-admin .retro-semaforo { width:46px; height:46px; border-radius:999px; margin:0 auto; background:#d1d5db; border:4px solid rgba(0,0,0,0.04); }
+.retro-admin .retro-legend { margin-top: var(--ui-gap-8); display:flex; flex-direction:column; gap: var(--ui-gap-4); font-size:0.75rem; text-align:left; }
+.retro-admin .retro-legend__title { font-size:0.75rem; margin-top: var(--ui-gap-8); color: var(--ui-color-texto-muted); text-align:center; }
+.retro-admin .retro-legend__dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+.retro-admin .retro-legend__dot--bad { background:#ef4444; }
+.retro-admin .retro-legend__dot--mid { background:#f59e0b; }
+.retro-admin .retro-legend__dot--good { background:#10b981; }
+
+/* Métricas */
+.retro-admin .retro-metrics { margin-top: var(--ui-gap-12); }
+.retro-admin .retro-metrics .ui-metrics__item--wide { grid-column: span 2; display:flex; flex-direction:column; justify-content:center; }
+@media (max-width:768px){ .retro-admin .retro-metrics .ui-metrics__item--wide { grid-column: span 1; } }
+.retro-admin .retro-metrics__row { display:flex; align-items:center; gap: var(--ui-gap-12); }
+.retro-admin .retro-metrics__col { flex:1; }
+.retro-admin #kpiSugerencia { margin-top: var(--ui-gap-8); }
+
+/* Secciones y tarjetas */
+.retro-admin .retro-actions { margin-top: var(--ui-gap-8); }
+.retro-admin .retro-section { margin-top: var(--ui-gap-16); }
+.retro-admin .retro-result { margin-top: var(--ui-gap-16); }
+.retro-admin .retro-card { padding: var(--ui-gap-16); }
+.retro-admin .retro-history-title { font-size: var(--ui-font-size-base); margin-bottom: var(--ui-gap-8); }
+
+/* Áreas con visibilidad controlada por JS (default oculto) */
+.retro-admin #leyenda { display:none; margin-top: var(--ui-gap-12); }
+/* Compatibilidad: aplicar las mismas reglas cuando se use la nueva convención .ui-message */
+.retro-admin .ui-message { display:none; margin-top: var(--ui-gap-12); }
+.retro-admin #generatedArea { display:none; margin-top: var(--ui-gap-12); }
+.retro-admin #responseDetail { display:none; }
+.retro-admin #historyTableWrap { display:none; }
