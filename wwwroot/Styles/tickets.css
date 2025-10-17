@@ -373,3 +373,36 @@
     text-decoration: underline;
     background-color: rgba(0, 123, 255, 0.05);
 }
+
+/* ================================
+   DESCRIPCIÓN INLINE EXPANDIBLE
+   ================================ */
+.tickets-desc { display: inline; }
+.tickets-desc__texto {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.ui-link.ui-link--toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-left: 0.25rem;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    color: var(--ui-color-primario, #0d6efd);
+    font: inherit;
+    font-size: 0.875rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.ui-link.ui-link--toggle:hover {
+    text-decoration: none;
+    color: color-mix(in oklab, var(--ui-color-primario, #0d6efd) 85%, black);
+}
+.ui-link.ui-link--toggle:focus-visible {
+    outline: 2px solid var(--ui-color-primario, #0d6efd);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
