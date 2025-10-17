@@ -34,3 +34,5 @@ jobs:
         with:
           files: artifacts/deploy.zip
 
+# Nota: comentario agregado automáticamente para forzar un nuevo commit del workflow
+
