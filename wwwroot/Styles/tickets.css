@@ -346,7 +346,7 @@
 }
 
 /* ================================
-   COMPONENTE: MODAL LEER MÁS
+   COMPONENTE: MODAL LEER MÁS (Patrón ventas)
    ================================ */
 .tickets-modal-contenido {
     max-height: 60vh;
@@ -363,33 +363,13 @@
     color: var(--ui-color-text);
 }
 
-.tickets-leer-mas {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--ui-gap-4);
-    font-size: 0.875rem;
-    color: var(--ui-color-primary);
-    text-decoration: none;
-    font-weight: 500;
+/* Estilo para celdas clickeables "Leer más" - Patrón ventas */
+.js-leer-mas {
     cursor: pointer;
-    border: none;
-    background: none;
-    padding: var(--ui-gap-4) var(--ui-gap-8);
-    border-radius: var(--ui-radius-sm);
     transition: all 0.2s ease;
 }
 
-.tickets-leer-mas:hover {
-    background-color: var(--ui-color-primary-light, rgba(0, 123, 255, 0.1));
+.js-leer-mas:hover {
     text-decoration: underline;
-}
-
-.tickets-leer-mas:focus {
-    outline: 2px solid var(--ui-color-primary);
-    outline-offset: 2px;
-}
-
-.tickets-texto-truncado {
-    position: relative;
-    display: inline;
+    background-color: rgba(0, 123, 255, 0.05);
 }
