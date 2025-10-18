@@ -1,14 +1,16 @@
--- schema_unificado.sql
--- Script unificado idempotente para crear la estructura de la base de datos SWGROI
--- Este archivo NO incluye procedimientos almacenados que requieren DELIMITER;
--- Ejecuta `procedures.sql` por separado en un cliente que soporte DELIMITER (mysql CLI, Workbench, phpMyAdmin moderno).
+-- ===============================================
+-- SWGROI_DB_COMPLETO_UNIFICADO.sql
+-- Esquema completo que integra TODA la funcionalidad del sistema
+-- Incluye: tipo_asunto + todas las tablas del backend + nuevos módulos
+-- Version: 2.0 (17 de octubre de 2025)
+-- ===============================================
 
 -- 1) Crear base de datos y usarla
 CREATE DATABASE IF NOT EXISTS swgroi_db CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE swgroi_db;
 
 -- -----------------------
--- TABLAS PRINCIPALES
+-- TABLAS PRINCIPALES CORE
 -- -----------------------
 
 CREATE TABLE IF NOT EXISTS usuarios (
@@ -17,13 +19,17 @@ CREATE TABLE IF NOT EXISTS usuarios (
   Usuario VARCHAR(50) NOT NULL,
   Contrasena VARCHAR(200) NOT NULL,
   Rol VARCHAR(50) NOT NULL,
+  FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (IdUsuario),
-  UNIQUE KEY uq_usuarios_usuario (Usuario)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY uq_usuarios_usuario (Usuario),
+  KEY ix_usuarios_rol (Rol)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Usuarios del sistema con autenticación';
 
+-- TABLA TICKETS - VERSIÓN COMPLETA CON TIPO_ASUNTO
 CREATE TABLE IF NOT EXISTS tickets (
   Id INT NOT NULL AUTO_INCREMENT,
   Folio VARCHAR(20) NOT NULL,
+  tipo_asunto VARCHAR(100) NOT NULL DEFAULT 'Mant. Correctivo Panel',
   Descripcion VARCHAR(500) NOT NULL,
   Estado VARCHAR(50) NOT NULL,
   Responsable VARCHAR(100) NOT NULL,
@@ -45,14 +51,21 @@ CREATE TABLE IF NOT EXISTS tickets (
   PRIMARY KEY (Id),
   UNIQUE KEY uq_tickets_folio (Folio),
   KEY ix_tickets_estado (Estado),
-  KEY ix_tickets_fecha (FechaRegistro)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY ix_tickets_fecha (FechaRegistro),
+  KEY ix_tickets_tipo_asunto (tipo_asunto),
+  KEY ix_tickets_responsable (Responsable),
+  KEY ix_tickets_tecnico (Tecnico)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Tickets principales del sistema con tipificación';
 
 CREATE TABLE IF NOT EXISTS tecnicos (
   IdTecnico INT NOT NULL AUTO_INCREMENT,
   Nombre VARCHAR(100) NOT NULL,
-  PRIMARY KEY (IdTecnico)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  Activo BOOLEAN DEFAULT TRUE,
+  Especialidad VARCHAR(100),
+  FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (IdTecnico),
+  KEY ix_tecnicos_activo (Activo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Catálogo de técnicos';
 
 CREATE TABLE IF NOT EXISTS asignaciones (
   AsignacionID INT NOT NULL AUTO_INCREMENT,
@@ -60,20 +73,30 @@ CREATE TABLE IF NOT EXISTS asignaciones (
   TecnicoID INT NOT NULL,
   FechaServicio DATE NOT NULL,
   HoraServicio TIME,
+  FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  Estado ENUM('Programada', 'En_Proceso', 'Completada', 'Cancelada') DEFAULT 'Programada',
   PRIMARY KEY (AsignacionID),
-  KEY (TicketID),
-  KEY (TecnicoID),
-  CONSTRAINT asignaciones_ibfk_1 FOREIGN KEY (TicketID) REFERENCES tickets (Id),
+  KEY ix_asignaciones_ticket (TicketID),
+  KEY ix_asignaciones_tecnico (TecnicoID),
+  KEY ix_asignaciones_fecha (FechaServicio),
+  CONSTRAINT asignaciones_ibfk_1 FOREIGN KEY (TicketID) REFERENCES tickets (Id) ON DELETE CASCADE,
   CONSTRAINT asignaciones_ibfk_2 FOREIGN KEY (TecnicoID) REFERENCES tecnicos (IdTecnico)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Asignaciones de técnicos a tickets';
+
+-- -----------------------
+-- MÓDULO DE COTIZACIONES Y VENTAS
+-- -----------------------
 
 CREATE TABLE IF NOT EXISTS estadoscotizacion (
   EstadoCotizacionID INT NOT NULL AUTO_INCREMENT,
   Nombre VARCHAR(50) NOT NULL,
   NombreNorm VARCHAR(50) GENERATED ALWAYS AS (UPPER(TRIM(Nombre))) STORED,
+  Descripcion VARCHAR(200),
+  Activo BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (EstadoCotizacionID),
-  UNIQUE KEY uq_estadoscotizacion_n (NombreNorm)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY uq_estadoscotizacion_n (NombreNorm),
+  KEY ix_estadoscotizacion_activo (Activo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Estados de cotizaciones';
 
 CREATE TABLE IF NOT EXISTS cotizaciones (
   CotizacionID INT NOT NULL AUTO_INCREMENT,
@@ -82,21 +105,27 @@ CREATE TABLE IF NOT EXISTS cotizaciones (
   FechaEnvio DATE,
   Monto DECIMAL(12,2),
   Comentarios VARCHAR(1000),
+  FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (CotizacionID),
-  KEY (TicketID),
-  KEY (EstadoCotizacionID),
-  CONSTRAINT cotizaciones_ibfk_1 FOREIGN KEY (TicketID) REFERENCES tickets (Id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY ix_cotizaciones_ticket (TicketID),
+  KEY ix_cotizaciones_estado (EstadoCotizacionID),
+  KEY ix_cotizaciones_fecha (FechaEnvio),
+  CONSTRAINT cotizaciones_ibfk_1 FOREIGN KEY (TicketID) REFERENCES tickets (Id) ON DELETE CASCADE,
+  CONSTRAINT cotizaciones_ibfk_2 FOREIGN KEY (EstadoCotizacionID) REFERENCES estadoscotizacion (EstadoCotizacionID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Cotizaciones asociadas a tickets';
 
 CREATE TABLE IF NOT EXISTS ordenesventa (
   OVSR3 VARCHAR(50) NOT NULL,
   CotizacionID INT,
   FechaVenta DATE,
   Comision DECIMAL(12,2),
+  FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (OVSR3),
-  KEY (CotizacionID),
-  CONSTRAINT ordenesventa_ibfk_1 FOREIGN KEY (CotizacionID) REFERENCES cotizaciones (CotizacionID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY ix_ordenesventa_cotizacion (CotizacionID),
+  KEY ix_ordenesventa_fecha (FechaVenta),
+  CONSTRAINT ordenesventa_ibfk_1 FOREIGN KEY (CotizacionID) REFERENCES cotizaciones (CotizacionID) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Órdenes de venta';
 
 CREATE TABLE IF NOT EXISTS ventasdetalle (
   DetalleID INT NOT NULL AUTO_INCREMENT,
@@ -123,11 +152,12 @@ CREATE TABLE IF NOT EXISTS ventasdetalle (
   EstadoOVSR3 VARCHAR(100),
   PRIMARY KEY (DetalleID),
   UNIQUE KEY uq_ventasdetalle_ovsr3 (OVSR3),
-  KEY (CotizacionID),
-  KEY ix_ventasdetalle_statuspago (StatusPago),
-  CONSTRAINT ventasdetalle_ibfk_1 FOREIGN KEY (CotizacionID) REFERENCES cotizaciones (CotizacionID),
-  CONSTRAINT ventasdetalle_ibfk_2 FOREIGN KEY (OVSR3) REFERENCES ordenesventa (OVSR3)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY ix_ventasdetalle_cotizacion (CotizacionID),
+  KEY ix_ventasdetalle_status (StatusPago),
+  KEY ix_ventasdetalle_fecha (Fecha),
+  CONSTRAINT ventasdetalle_ibfk_1 FOREIGN KEY (CotizacionID) REFERENCES cotizaciones (CotizacionID) ON DELETE SET NULL,
+  CONSTRAINT ventasdetalle_ibfk_2 FOREIGN KEY (OVSR3) REFERENCES ordenesventa (OVSR3) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Detalle completo de ventas';
 
 -- -----------------------
 -- MÓDULO DE GESTIÓN DOCUMENTAL
@@ -140,10 +170,12 @@ CREATE TABLE IF NOT EXISTS categorias_documento (
   CategoriaPadre INT NULL,
   IconoCSS VARCHAR(50) DEFAULT 'fas fa-folder',
   Color VARCHAR(7) DEFAULT '#3B82F6',
+  Activo BOOLEAN DEFAULT TRUE,
   FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (CategoriaID),
   UNIQUE KEY uq_categoria_nombre (NombreCategoria),
   KEY idx_categoria_padre (CategoriaPadre),
+  KEY idx_categoria_activo (Activo),
   CONSTRAINT categorias_documento_ibfk_1 FOREIGN KEY (CategoriaPadre) REFERENCES categorias_documento (CategoriaID) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Categorías jerárquicas para clasificación documental';
 
@@ -228,6 +260,108 @@ CREATE TABLE IF NOT EXISTS favoritos_documento (
   CONSTRAINT favoritos_documento_ibfk_2 FOREIGN KEY (UsuarioID) REFERENCES usuarios (IdUsuario) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Documentos marcados como favoritos por usuarios';
 
+-- -----------------------
+-- TABLA DE AVISOS (MENSAJES / COMUNICADOS)
+-- -----------------------
+CREATE TABLE IF NOT EXISTS avisos (
+  Id INT NOT NULL AUTO_INCREMENT,
+  Fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  Asunto VARCHAR(255) NOT NULL,
+  Mensaje TEXT NOT NULL,
+  Activo BOOLEAN NOT NULL DEFAULT TRUE,
+  FechaCreacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FechaActualizacion DATETIME,
+  PRIMARY KEY (Id),
+  KEY ix_avisos_fecha (Fecha),
+  KEY ix_avisos_activo (Activo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Mensajes y comunicados del sistema';
+
+-- -----------------------
+-- MÓDULO CCC - RETROALIMENTACIÓN
+-- -----------------------
+
+CREATE TABLE IF NOT EXISTS retroalimentacion (
+  RetroID INT NOT NULL AUTO_INCREMENT,
+  Cliente VARCHAR(100) NOT NULL,
+  EnlaceUnico VARCHAR(255) NOT NULL,
+  UsuarioID INT,
+  TicketID INT,
+  FechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  Estado ENUM('Pendiente', 'Contestada', 'Expirada') DEFAULT 'Pendiente',
+  FechaExpiracion DATETIME,
+  PRIMARY KEY (RetroID),
+  UNIQUE KEY uq_retro_enlace (EnlaceUnico),
+  UNIQUE KEY uq_retro_ticket (TicketID),
+  KEY idx_retro_usuario (UsuarioID),
+  KEY idx_retro_fecha (FechaCreacion),
+  KEY idx_retro_estado (Estado),
+  CONSTRAINT retroalimentacion_ibfk_1 FOREIGN KEY (UsuarioID) REFERENCES usuarios (IdUsuario),
+  CONSTRAINT retroalimentacion_ibfk_2 FOREIGN KEY (TicketID) REFERENCES tickets (Id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Enlaces de retroalimentación de clientes';
+
+CREATE TABLE IF NOT EXISTS respuestas_retroalimentacion (
+  RetroID INT NOT NULL,
+  Pregunta1_Atencion_Operador VARCHAR(1000) NOT NULL,
+  Pregunta2_Tiempo_Respuesta VARCHAR(1000) NOT NULL,
+  Pregunta3_Solucion_Brindada VARCHAR(1000) NOT NULL,
+  Pregunta4_Recomendacion VARCHAR(1000) NOT NULL,
+  Pregunta5_Comentarios VARCHAR(1000),
+  FechaRespuesta DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  DireccionIP VARCHAR(45),
+  UserAgent VARCHAR(500),
+  TiempoCompletado INT,
+  PRIMARY KEY (RetroID),
+  KEY idx_rr_fecha (FechaRespuesta),
+  CONSTRAINT respuestas_retroalimentacion_ibfk_1 FOREIGN KEY (RetroID) REFERENCES retroalimentacion (RetroID) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Respuestas de encuestas de satisfacción';
+
+CREATE TABLE IF NOT EXISTS metricas_retroalimentacion (
+  MetricaID INT NOT NULL AUTO_INCREMENT,
+  Periodo DATE NOT NULL,
+  TotalEncuestasGeneradas INT DEFAULT 0,
+  TotalEncuestasContestadas INT DEFAULT 0,
+  PromedioSatisfaccion DECIMAL(3,2) DEFAULT 0.00,
+  PromedioAtencionOperador DECIMAL(3,2) DEFAULT 0.00,
+  PromedioTiempoRespuesta DECIMAL(3,2) DEFAULT 0.00,
+  PromedioSolucion DECIMAL(3,2) DEFAULT 0.00,
+  PromedioRecomendacion DECIMAL(3,2) DEFAULT 0.00,
+  TicketsConEncuesta INT DEFAULT 0,
+  TicketsSinEncuesta INT DEFAULT 0,
+  FechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (MetricaID),
+  UNIQUE KEY uq_metrica_periodo (Periodo),
+  KEY idx_metrica_fecha (FechaActualizacion)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Métricas consolidadas de retroalimentación';
+
+-- -----------------------
+-- AUDITORÍA GENERAL
+-- -----------------------
+
+CREATE TABLE IF NOT EXISTS auditoria (
+  IdAudit BIGINT AUTO_INCREMENT PRIMARY KEY,
+  IdUsuario INT NULL,
+  Metodo VARCHAR(10) NOT NULL,
+  Endpoint VARCHAR(200) NOT NULL,
+  Entidad VARCHAR(100) NULL,
+  Accion VARCHAR(50) NOT NULL,
+  ClaveEntidad VARCHAR(100) NULL,
+  IpCliente VARCHAR(45) NULL,
+  UserAgent VARCHAR(255) NULL,
+  Resultado VARCHAR(20) NOT NULL,
+  Mensaje TEXT NULL,
+  Fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX ix_auditoria_endpoint (Endpoint), 
+  INDEX ix_auditoria_entidad (Entidad), 
+  INDEX ix_auditoria_accion (Accion), 
+  INDEX ix_auditoria_fecha (Fecha),
+  INDEX ix_auditoria_usuario (IdUsuario),
+  CONSTRAINT auditoria_ibfk_1 FOREIGN KEY (IdUsuario) REFERENCES usuarios (IdUsuario) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Auditoría general del sistema';
+
+-- -----------------------
+-- VISTAS ÚTILES
+-- -----------------------
+
 -- Vista central de documentos
 CREATE OR REPLACE VIEW vista_documentos_completa AS
 SELECT 
@@ -264,104 +398,44 @@ LEFT JOIN usuarios u ON d.UsuarioID = u.IdUsuario
 LEFT JOIN documentos dm ON d.DocumentoMaestro = dm.DocumentoID
 ORDER BY d.FechaModificacion DESC;
 
--- -----------------------
--- TABLA DE AVISOS (MENSAJES / COMUNICADOS)
--- -----------------------
-CREATE TABLE IF NOT EXISTS avisos (
-  Id INT NOT NULL AUTO_INCREMENT,
-  Fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  Asunto VARCHAR(255) NOT NULL,
-  Mensaje TEXT NOT NULL,
-  Activo BOOLEAN NOT NULL DEFAULT TRUE,
-  FechaCreacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FechaActualizacion DATETIME,
-  PRIMARY KEY (Id),
-  KEY ix_avisos_fecha (Fecha),
-  KEY ix_avisos_activo (Activo)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Mensajes y comunicados del sistema';
-
--- -----------------------
--- MÓDULO CCC - RETROALIMENTACIÓN
--- -----------------------
-
-CREATE TABLE IF NOT EXISTS retroalimentacion (
-  RetroID INT NOT NULL AUTO_INCREMENT,
-  Cliente VARCHAR(100) NOT NULL,
-  EnlaceUnico VARCHAR(255) NOT NULL,
-  UsuarioID INT,
-  TicketID INT,
-  FechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-  Estado ENUM('Pendiente', 'Contestada', 'Expirada') DEFAULT 'Pendiente',
-  PRIMARY KEY (RetroID),
-  UNIQUE KEY uq_retro_enlace (EnlaceUnico),
-  UNIQUE KEY uq_retro_ticket (TicketID),
-  KEY idx_retro_usuario (UsuarioID),
-  KEY idx_retro_fecha (FechaCreacion),
-  KEY idx_retro_estado (Estado),
-  CONSTRAINT retroalimentacion_ibfk_1 FOREIGN KEY (UsuarioID) REFERENCES usuarios (IdUsuario),
-  CONSTRAINT retroalimentacion_ibfk_2 FOREIGN KEY (TicketID) REFERENCES tickets (Id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE IF NOT EXISTS respuestas_retroalimentacion (
-  RetroID INT NOT NULL,
-  Pregunta1_Atencion_Operador VARCHAR(1000) NOT NULL,
-  Pregunta2_Tiempo_Respuesta VARCHAR(1000) NOT NULL,
-  Pregunta3_Solucion_Brindada VARCHAR(1000) NOT NULL,
-  Pregunta4_Recomendacion VARCHAR(1000) NOT NULL,
-  Pregunta5_Comentarios VARCHAR(1000),
-  FechaRespuesta DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  DireccionIP VARCHAR(45),
-  UserAgent VARCHAR(500),
-  TiempoCompletado INT,
-  PRIMARY KEY (RetroID),
-  KEY idx_rr_fecha (FechaRespuesta),
-  CONSTRAINT respuestas_retroalimentacion_ibfk_1 FOREIGN KEY (RetroID) REFERENCES retroalimentacion (RetroID) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE IF NOT EXISTS metricas_retroalimentacion (
-  MetricaID INT NOT NULL AUTO_INCREMENT,
-  Periodo DATE NOT NULL,
-  TotalEncuestasGeneradas INT DEFAULT 0,
-  TotalEncuestasContestadas INT DEFAULT 0,
-  PromedioSatisfaccion DECIMAL(3,2) DEFAULT 0.00,
-  PromedioAtencionOperador DECIMAL(3,2) DEFAULT 0.00,
-  PromedioTiempoRespuesta DECIMAL(3,2) DEFAULT 0.00,
-  PromedioSolucion DECIMAL(3,2) DEFAULT 0.00,
-  PromedioRecomendacion DECIMAL(3,2) DEFAULT 0.00,
-  TicketsConEncuesta INT DEFAULT 0,
-  TicketsSinEncuesta INT DEFAULT 0,
-  FechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (MetricaID),
-  UNIQUE KEY uq_metrica_periodo (Periodo),
-  KEY idx_metrica_fecha (FechaActualizacion)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- -----------------------
--- AUDITORÍA GENERAL
--- -----------------------
-
-CREATE TABLE IF NOT EXISTS auditoria (
-  IdAudit BIGINT AUTO_INCREMENT PRIMARY KEY,
-  IdUsuario INT NULL,
-  Metodo VARCHAR(10) NOT NULL,
-  Endpoint VARCHAR(200) NOT NULL,
-  Entidad VARCHAR(100) NULL,
-  Accion VARCHAR(50) NOT NULL,
-  ClaveEntidad VARCHAR(100) NULL,
-  IpCliente VARCHAR(45) NULL,
-  UserAgent VARCHAR(255) NULL,
-  Resultado VARCHAR(20) NOT NULL,
-  Mensaje TEXT NULL,
-  Fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  INDEX (Endpoint), INDEX (Entidad), INDEX (Accion), INDEX (Fecha)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- Vista resumen de tickets
+CREATE OR REPLACE VIEW vista_tickets_resumen AS
+SELECT 
+    t.Id,
+    t.Folio,
+    t.tipo_asunto,
+    t.Descripcion,
+    t.Estado,
+    t.Responsable,
+    t.Tecnico,
+    t.FechaRegistro,
+    t.FechaActualizacion,
+    c.CotizacionID,
+    c.Monto AS MontoCotizacion,
+    ec.Nombre AS EstadoCotizacion,
+    CASE 
+        WHEN t.Estado = 'Cerrado' THEN 'Completado'
+        WHEN c.CotizacionID IS NOT NULL THEN 'Con_Cotizacion'
+        WHEN t.Tecnico IS NOT NULL THEN 'Asignado'
+        ELSE 'Pendiente'
+    END AS EstadoCompleto
+FROM tickets t
+LEFT JOIN cotizaciones c ON t.Id = c.TicketID
+LEFT JOIN estadoscotizacion ec ON c.EstadoCotizacionID = ec.EstadoCotizacionID
+ORDER BY t.FechaRegistro DESC;
 
 -- -----------------------
 -- DATOS INICIALES (idempotentes)
 -- -----------------------
 
-INSERT IGNORE INTO estadoscotizacion (Nombre) VALUES
-('ENVIADO'),('DECLINADA'),('ALMACEN'),('OPERACIONES'),('COBRANZA'),('FACTURACION'),('FINALIZADO');
+INSERT IGNORE INTO estadoscotizacion (Nombre, Descripcion) VALUES
+('ENVIADO', 'Cotización enviada al cliente'),
+('DECLINADA', 'Cliente rechazó la cotización'),
+('ALMACEN', 'En proceso de almacén'),
+('OPERACIONES', 'En operaciones'),
+('COBRANZA', 'En proceso de cobranza'),
+('FACTURACION', 'En facturación'),
+('FINALIZADO', 'Proceso completado');
 
 INSERT IGNORE INTO usuarios (NombreCompleto, Usuario, Contrasena, Rol)
 VALUES ('Administrador General', 'admin', 'admin123', 'Administrador');
@@ -375,46 +449,61 @@ INSERT IGNORE INTO categorias_documento (NombreCategoria, Descripcion, IconoCSS,
 ('Archivo General', 'Documentos de archivo y respaldo', 'fas fa-archive', '#6B7280');
 
 -- -----------------------
--- MIGRACIONES IDÉNTICAS / FK condicionales
+-- VERIFICACIONES FINALES
 -- -----------------------
 
--- Agregar FK para documentos -> usuarios si no existe
-SET @fk_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
-                   WHERE CONSTRAINT_SCHEMA = DATABASE() 
-                   AND TABLE_NAME = 'documentos' 
-                   AND CONSTRAINT_NAME = 'documentos_ibfk_1');
-SET @sql_fk1 := IF(@fk_exists = 0 AND 
-                   (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES 
-                    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios') > 0,
-                   'ALTER TABLE documentos ADD CONSTRAINT documentos_ibfk_1 FOREIGN KEY (UsuarioID) REFERENCES usuarios (IdUsuario)',
-                   'SELECT 1');
-PREPARE stmt_fk1 FROM @sql_fk1; EXECUTE stmt_fk1; DEALLOCATE PREPARE stmt_fk1;
+-- Mostrar resumen de tablas creadas
+SELECT 
+    'TABLAS CREADAS' AS tipo,
+    COUNT(*) AS cantidad
+FROM INFORMATION_SCHEMA.TABLES 
+WHERE TABLE_SCHEMA = DATABASE();
 
--- Agregar FK para retroalimentacion -> usuarios si no existe
-SET @fk_exists2 := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
-                    WHERE CONSTRAINT_SCHEMA = DATABASE() 
-                    AND TABLE_NAME = 'retroalimentacion' 
-                    AND CONSTRAINT_NAME = 'retroalimentacion_ibfk_1');
-SET @sql_fk2 := IF(@fk_exists2 = 0 AND 
-                   (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES 
-                    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'usuarios') > 0,
-                   'ALTER TABLE retroalimentacion ADD CONSTRAINT retroalimentacion_ibfk_1 FOREIGN KEY (UsuarioID) REFERENCES usuarios (IdUsuario)',
-                   'SELECT 1');
-PREPARE stmt_fk2 FROM @sql_fk2; EXECUTE stmt_fk2; DEALLOCATE PREPARE stmt_fk2;
+-- Verificar tabla tickets con tipo_asunto
+SELECT 
+    'COLUMNA TIPO_ASUNTO' AS verificacion,
+    CASE WHEN COUNT(*) > 0 THEN 'OK' ELSE 'ERROR' END AS estado
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_SCHEMA = DATABASE() 
+  AND TABLE_NAME = 'tickets' 
+  AND COLUMN_NAME = 'tipo_asunto';
+
+-- Mostrar estructura de tickets
+DESCRIBE tickets;
 
 -- -----------------------
 -- NOTAS FINALES
 -- -----------------------
 
--- 1) Los procedimientos almacenados se encuentran en `BaseDatos/procedures.sql`.
---    Ejecuta ese archivo con un cliente que soporte la directiva DELIMITER.
+/*
+ESQUEMA COMPLETO Y UNIFICADO - VERSION 2.0
 
--- 2) Para aplicar localmente o en VPS:
---    a) Hacer backup de la base actual (mysqldump)
---    b) Ejecutar: mysql -u <user> -p < schema_unificado.sql
---    c) Ejecutar: mysql -u <user> -p < procedures.sql
+✅ INCLUYE:
+- Columna tipo_asunto en tickets (CRÍTICA)
+- Todas las tablas usadas por controladores
+- Módulos de documentos, retroalimentación, auditoría
+- Índices optimizados para rendimiento
+- Claves foráneas con integridad referencial
+- Vistas útiles para consultas complejas
 
--- 3) Verificaciones rápidas:
---    SELECT COUNT(*) FROM avisos;
---    DESCRIBE avisos;
---    SELECT COUNT(*) FROM documentos;
+🔧 PARA APLICAR:
+1. Respaldar BD actual: mysqldump -u root -p swgroi_db > backup_$(date +%Y%m%d).sql
+2. Ejecutar: mysql -u root -p < SWGROI_DB_COMPLETO_UNIFICADO.sql
+3. Verificar: SELECT COUNT(*) FROM tickets; DESCRIBE tickets;
+
+📋 COMPATIBLE CON:
+- TicketsController.cs (tipo_asunto)
+- TecnicosController.cs (tickets + tipo_asunto)
+- VentasController.cs (cotizaciones, ventasdetalle)
+- DocumentosController.cs (categorias, documentos)
+- RetroalimentacionController.cs (retroalimentacion)
+- AuditoriaController.cs (auditoria)
+
+✨ NUEVAS FUNCIONALIDADES:
+- Gestión documental completa
+- Sistema de retroalimentación CCC
+- Auditoría detallada
+- Métricas y reportes avanzados
+
+🚀 LISTO PARA PRODUCCIÓN
+*/

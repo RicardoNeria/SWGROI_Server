@@ -1,0 +1,225 @@
+SWGROI Server v3.0 - INSTRUCCIONES PARA VPS
+
+Este archivo contiene las instrucciones completas para desplegar
+la versión 3.0 de SWGROI Server en tu VPS con Windows.
+
+IMPORTANTE: Esta versión incluye cambios significativos que requieren
+actualización de la base de datos y configuración específica.
+
+═══════════════════════════════════════════════════════════════════════════
+CAMBIOS EN ESTA VERSIÓN v3.0 (17 octubre 2025)
+═══════════════════════════════════════════════════════════════════════════
+
+✓ REFACTORIZACIÓN COMPLETA:
+  • tickets.js: Helpers de seguridad, DEBUG, TextUtils, TipoAsunto
+  • tecnicos.js: Misma refactorización aplicada, integración TipoAsunto
+
+✓ NUEVA FUNCIONALIDAD - TIPO DE ASUNTO:
+  • Columna "Tipo de Asunto" en tabla de Tickets
+  • Columna "Tipo de Asunto" en tabla de Técnicos  
+  • Modal de seguimiento técnico: 3 columnas (Folio | Tipo Asunto | Estado)
+  • Conversores automáticos: "Mant. Correctivo Panel" ↔ "Mant. Correctivo"
+
+✓ BACKEND ACTUALIZADO:
+  • TecnicosController.cs: Campo TipoAsunto en todas las consultas SQL
+  • Consultas con fallback para compatibilidad con esquemas antiguos
+  • Variables de entorno para configuración MySQL
+
+✓ BASE DE DATOS UNIFICADA:
+  • Columna 'TipoAsunto' VARCHAR(100) en tabla 'tickets'
+  • Script completo SWGROI_DB_COMPLETO.sql (crea BD desde cero)
+  • Script parche VERIFICAR_Y_PARCHAR_BD.sql (agrega columna si falta)
+  • Procedimientos almacenados y vistas optimizadas
+
+═══════════════════════════════════════════════════════════════════════════
+PASOS PARA DESPLIEGUE EN VPS
+═══════════════════════════════════════════════════════════════════════════
+
+1️⃣ DETENER SERVICIO ACTUAL
+   Abrir CMD como Administrador:
+   nssm stop SWGROI_Server
+
+2️⃣ RESPALDAR DATOS ACTUALES (RECOMENDADO)
+   mysqldump -u root -p swgroi_db > backup_antes_v3_$(date +%Y%m%d).sql
+
+3️⃣ COPIAR ARCHIVOS NUEVOS
+   • Copiar TODO el contenido de esta carpeta publish a:
+     C:\SWGROI\SWGROI_Despliegue_Web\publish
+   • Sobrescribir TODOS los archivos existentes
+   • Total: 209 archivos, 25.86 MB
+
+4️⃣ CONFIGURAR BASE DE DATOS
+
+   🔥 IMPORTANTE: Elegir UNA de estas opciones:
+
+   📋 OPCIÓN A - BASE DE DATOS NUEVA (Recomendado para instalación limpia):
+   mysql -u root -p < C:\SWGROI\SWGROI_Despliegue_Web\publish\BaseDatos\SWGROI_DB_COMPLETO.sql
+   
+   📋 OPCIÓN B - PARCHAR BASE DE DATOS EXISTENTE (Para mantener datos):
+   mysql -u root -p < C:\SWGROI\SWGROI_Despliegue_Web\publish\BaseDatos\VERIFICAR_Y_PARCHAR_BD.sql
+
+5️⃣ CONFIGURAR SISTEMA Y EJECUTAR
+   Ejecutar como Administrador:
+   C:\SWGROI\SWGROI_Despliegue_Web\publish\liberar_8891_y_iniciar_SWGROI.bat
+
+   ⚙️ Este script configura automáticamente:
+   • Libera puerto 8891 de IIS/HTTP.SYS
+   • Configura variables MySQL (DB_HOST, DB_USER, DB_PASSWORD)
+   • Configura variables aplicación (SWGROI_ENV=PROD, SWGROI_PORT=8891)
+   • Abre reglas de firewall para puerto 8891
+   • Inicia el servidor en ventana separada
+
+6️⃣ VERIFICAR CON NSSM (OPCIONAL)
+   Si usas NSSM como servicio:
+   nssm start SWGROI_Server
+
+7️⃣ COMPROBAR FUNCIONAMIENTO
+   🌐 Abrir navegador en: http://localhost:8891/login.html
+   
+   ✅ Verificaciones obligatorias:
+   • Login funciona (usuario: admin, configurar password en BD)
+   • Módulo Tickets: debe mostrar columna "Tipo de Asunto"
+   • Módulo Técnicos: debe mostrar columna "Tipo de Asunto"
+   • Modal seguimiento técnico: 3 columnas (Folio | Tipo Asunto | Estado)
+   • Crear ticket nuevo: debe mostrar dropdown con tipos de asunto
+
+═══════════════════════════════════════════════════════════════════════════
+CONTENIDO DE LA CARPETA PUBLISH (209 archivos, 25.86 MB)
+═══════════════════════════════════════════════════════════════════════════
+
+📁 EJECUTABLES Y CONFIGURACIÓN:
+   • SWGROI_Server.exe (231.5 KB, compilado 17/10/2025 14:42:28)
+   • SWGROI_Server.exe.config - Configuración .NET Framework 4.8
+   • 67 archivos DLL (MySql.Data, ClosedXML, System.Text.Json, etc.)
+   • app.config, web.config
+
+📁 RECURSOS WEB COMPLETOS (wwwroot/):
+   • 23 archivos HTML (login.html, tickets.html, tecnicos.html, etc.)
+   • 28 archivos JavaScript (★ tickets.js y tecnicos.js refactorizados)
+   • 23 archivos CSS (incluyendo tecnicos.css con nuevo grid)
+
+📁 SCRIPTS BASE DE DATOS (BaseDatos/):
+   • SWGROI_DB_COMPLETO.sql - BD completa desde cero (recomendado)
+   • VERIFICAR_Y_PARCHAR_BD.sql - Solo agrega columna TipoAsunto
+
+📁 UTILIDADES DESPLIEGUE:
+   • liberar_8891_y_iniciar_SWGROI.bat - Configurador automático
+   • INSTRUCCIONES_VPS_COMPLETAS.txt - Este archivo de instrucciones
+
+═══════════════════════════════════════════════════════════════════════════
+DIAGNÓSTICO - PROBLEMA: "NO VEO LOS CAMBIOS EN EL VPS"
+═══════════════════════════════════════════════════════════════════════════
+
+Si después del despliegue NO VE la columna "Tipo de Asunto":
+
+🔍 PASO 1 - VERIFICAR BASE DE DATOS:
+   mysql -u root -p
+   USE swgroi_db;
+   DESCRIBE tickets;
+   
+   👀 Buscar: Campo 'TipoAsunto' VARCHAR(100)
+   ❌ Si no existe: ejecutar VERIFICAR_Y_PARCHAR_BD.sql
+   
+🔍 PASO 2 - VERIFICAR CONTENIDO:
+   SELECT COUNT(*) FROM tickets;
+   SELECT DISTINCT TipoAsunto, COUNT(*) FROM tickets GROUP BY TipoAsunto;
+   
+   👀 Buscar: Registros con TipoAsunto diferente de NULL
+
+🔍 PASO 3 - VERIFICAR VARIABLES ENTORNO:
+   echo %DB_HOST%        (debe ser: 127.0.0.1)
+   echo %DB_PASSWORD%     (debe ser: tu password MySQL)
+   echo %SWGROI_ENV%      (debe ser: PROD)
+   
+   ❌ Si vacías: re-ejecutar liberar_8891_y_iniciar_SWGROI.bat
+
+🔍 PASO 4 - VERIFICAR ARCHIVOS JAVASCRIPT:
+   dir C:\SWGROI\SWGROI_Despliegue_Web\publish\wwwroot\Scripts\tecnicos.js
+   
+   👀 Fecha: debe ser 17/10/2025 o posterior
+   ❌ Si antigua: volver a copiar carpeta wwwroot completa
+
+🔍 PASO 5 - LIMPIAR CACHÉ NAVEGADOR:
+   • Presionar Ctrl + F5 para recarga forzada
+   • O usar navegador incógnito/privado
+   • O borrar caché del sitio específico
+
+🔍 PASO 6 - VERIFICAR CONSOLA JAVASCRIPT:
+   • Presionar F12 en el navegador
+   • Ir a pestaña Console
+   • Buscar errores relacionados con TipoAsunto
+
+═══════════════════════════════════════════════════════════════════════════
+SOLUCIÓN DE PROBLEMAS COMUNES
+═══════════════════════════════════════════════════════════════════════════
+
+🔧 ERROR: "No se puede conectar a MySQL"
+   1. Verificar servicio: net start MySQL80
+   2. Probar conexión: mysql -h 127.0.0.1 -u root -p
+   3. Verificar puerto: netstat -ano | findstr :3306
+   4. Configurar password: setx DB_PASSWORD "tu_password"
+
+🔧 ERROR: "Puerto 8891 en uso"
+   1. Ejecutar como Admin: netsh http show urlacl
+   2. Eliminar conflictos: netsh http delete urlacl url=http://+:8891/
+   3. Re-ejecutar: liberar_8891_y_iniciar_SWGROI.bat
+
+🔧 ERROR: "TipoAsunto is undefined" en consola JavaScript
+   1. Verificar archivo: tecnicos.js línea ~60 (objeto TipoAsunto)
+   2. Limpiar caché navegador completamente
+   3. Verificar que wwwroot se copió completo
+
+🔧 PROBLEMA: "Modal técnicos sigue con 2 columnas en vez de 3"
+   1. Verificar archivo: tecnicos.html (debe tener tipoAsuntoVisual)
+   2. Verificar archivo: tecnicos.css (debe tener grid-header)
+   3. Limpiar caché CSS: Ctrl+F5
+
+🔧 PROBLEMA: "Servidor inicia pero página no carga"
+   1. Verificar ventana servidor muestra: "Listening on http://+:8891/"
+   2. Verificar firewall: regla SWGROI 8891 activa
+   3. Probar URLs alternativas: http://127.0.0.1:8891/login.html
+
+═══════════════════════════════════════════════════════════════════════════
+COMANDOS RÁPIDOS DIAGNÓSTICO
+═══════════════════════════════════════════════════════════════════════════
+
+# Verificar servicio
+nssm status SWGROI_Server
+
+# Verificar MySQL y BD
+net start MySQL80
+mysql -u root -p -e "SELECT VERSION(); USE swgroi_db; SHOW TABLES; DESCRIBE tickets;" 2>nul
+
+# Verificar variables entorno críticas
+echo DB: %DB_HOST%:%DB_PORT%/%DB_NAME% user=%DB_USER%
+echo APP: %SWGROI_ENV% puerto=%SWGROI_PORT%
+
+# Verificar puerto libre
+netstat -ano | findstr :8891
+
+# Verificar archivos key actualizados
+dir /TC C:\SWGROI\SWGROI_Despliegue_Web\publish\wwwroot\Scripts\tecnicos.js
+dir /TC C:\SWGROI\SWGROI_Despliegue_Web\publish\wwwroot\tecnicos.html
+
+# Verificar columna BD
+mysql -u root -p -e "USE swgroi_db; SHOW COLUMNS FROM tickets LIKE 'TipoAsunto';"
+
+═══════════════════════════════════════════════════════════════════════════
+INFORMACIÓN TÉCNICA
+═══════════════════════════════════════════════════════════════════════════
+
+📋 Versión: SWGROI Server v3.0
+📋 Fecha compilación: 17/10/2025 14:42:28  
+📋 Framework: .NET Framework 4.8
+📋 Base datos: MySQL 8.0+ (swgroi_db)
+📋 Puerto: 8891
+📋 Archivos: 209 (25.86 MB)
+
+🔑 Cambios críticos esta versión:
+   • Nueva columna: tickets.TipoAsunto VARCHAR(100)
+   • Variables entorno: DB_* para conexión MySQL
+   • Frontend: Refactorizado con helpers seguridad XSS
+   • Modal técnicos: Layout 3 columnas en vez de 2
+
+Si después de seguir TODOS estos pasos aún no ve los cambios,
+contacte soporte con la información de diagnóstico generada.

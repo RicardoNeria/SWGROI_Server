@@ -1,0 +1,121 @@
+═══════════════════════════════════════════════════════════════
+  INSTRUCCIONES PARA ACTUALIZAR EN EL VPS
+═══════════════════════════════════════════════════════════════
+
+FECHA DE COMPILACIÓN: 17/10/2025 14:42:28
+VERSIÓN: 1.0.0 Release
+
+───────────────────────────────────────────────────────────────
+PASOS PARA ACTUALIZAR:
+───────────────────────────────────────────────────────────────
+
+1. DETENER SERVICIO NSSM EN EL VPS
+   
+   nssm stop SWGROI_Server
+   
+   (Esperar a que el servicio se detenga completamente)
+
+2. HACER BACKUP DE LA CARPETA ACTUAL (OPCIONAL PERO RECOMENDADO)
+   
+   cd C:\SWGROI\SWGROI_Despliegue_Web
+   xcopy publish publish_backup_%date:~-4,4%%date:~-7,2%%date:~-10,2% /E /I
+   
+3. COPIAR NUEVOS ARCHIVOS
+   
+   Copiar TODO el contenido de:
+   C:\Users\andro\Documents\Visual Studio 2022\RESPALDOS_WEB\GITHUBweb\SWGROI_Server_VPS\publish
+   
+   A:
+   C:\SWGROI\SWGROI_Despliegue_Web\publish
+   
+   (Reemplazar todos los archivos cuando pregunte)
+
+4. VERIFICAR CONFIGURACIÓN
+   
+   Abrir: C:\SWGROI\SWGROI_Despliegue_Web\publish\SWGROI_Server.exe.config
+   
+   Verificar que la cadena de conexión a MySQL sea correcta:
+   - Server=localhost
+   - Database=swgroi
+   - Uid=root
+   - Pwd=[TU_CONTRASEÑA]
+
+5. INICIAR SERVICIO NSSM
+   
+   nssm start SWGROI_Server
+   
+6. VERIFICAR QUE EL SERVICIO ESTÉ CORRIENDO
+   
+   nssm status SWGROI_Server
+   
+   Debería mostrar: SERVICE_RUNNING
+
+7. PROBAR ACCESO WEB
+   
+   Abrir navegador en: http://localhost:8891/login.html
+   
+   O desde red: http://[IP-VPS]:8891/login.html
+
+───────────────────────────────────────────────────────────────
+ARCHIVOS INCLUIDOS EN ESTA PUBLICACIÓN:
+───────────────────────────────────────────────────────────────
+
+✓ SWGROI_Server.exe (231.5 KB) - Ejecutable principal
+✓ SWGROI_Server.exe.config - Configuración
+✓ app.config, web.config - Configuraciones auxiliares
+✓ 67 DLLs de dependencias (MySql.Data, ClosedXML, etc.)
+✓ wwwroot/ - Interfaz web completa (HTML, CSS, JS)
+  - 23 archivos HTML
+  - 28 scripts JavaScript
+  - 23 hojas de estilo CSS
+✓ BaseDatos/ - 10 scripts SQL
+
+Total: 209 archivos | 25.86 MB
+
+───────────────────────────────────────────────────────────────
+CAMBIOS PRINCIPALES EN ESTA VERSIÓN:
+───────────────────────────────────────────────────────────────
+
+✓ Refactorización completa de tickets.js
+  - Helpers de seguridad (escape XSS)
+  - Conversión automática UI ↔ Backend
+  - Límites UI centralizados
+
+✓ Módulo de técnicos actualizado
+  - Nueva columna "Tipo de Asunto" en tabla
+  - Campo visual en modal de seguimiento
+  - Layout reorganizado (3 columnas)
+
+✓ Backend mejorado
+  - TecnicosController con columna TipoAsunto
+  - Queries SQL actualizadas
+  - Validaciones mejoradas
+
+───────────────────────────────────────────────────────────────
+SOLUCIÓN DE PROBLEMAS:
+───────────────────────────────────────────────────────────────
+
+Si el servicio NO INICIA:
+1. Revisar logs del evento de Windows
+2. Verificar que MySQL esté corriendo
+3. Verificar puerto 8891 disponible
+4. Ejecutar manualmente: SWGROI_Server.exe (para ver errores)
+
+Si NO SE VEN LOS CAMBIOS:
+1. Limpiar caché del navegador (Ctrl + Shift + R)
+2. Verificar fecha del .exe sea 17/10/2025 14:42:28
+3. Verificar que wwwroot/Scripts/ tenga archivos actualizados
+
+───────────────────────────────────────────────────────────────
+COMANDOS ÚTILES NSSM:
+───────────────────────────────────────────────────────────────
+
+Ver estado:     nssm status SWGROI_Server
+Detener:        nssm stop SWGROI_Server
+Iniciar:        nssm start SWGROI_Server
+Reiniciar:      nssm restart SWGROI_Server
+Ver config:     nssm edit SWGROI_Server
+
+───────────────────────────────────────────────────────────────
+
+¡Listo! El servidor debería estar funcionando con los cambios.

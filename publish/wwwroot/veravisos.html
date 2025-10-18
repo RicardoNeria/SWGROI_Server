@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Avisos y Comunicados - SWGROI</title>
+    <link rel="stylesheet" href="Styles/componentes/componentes.css">
+    <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/ui-utils.js" defer></script>
+</head>
+<body class="ui-layout ui-layout--no-topbar">
+
+    <!-- SIDEBAR UNIFICADO -->
+    <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
+        <div class="ui-sidebar__header">
+            <h2 class="ui-sidebar__title">SWGROI</h2>
+            <div class="ui-sidebar__logo">
+                <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Logo Central de Alarmas" class="ui-sidebar__logo-img">
+            </div>
+        </div>
+        <nav class="ui-sidebar__nav">
+            <ul class="ui-sidebar__menu">
+                <li class="ui-sidebar__item">
+                    <a href="menu.html" class="ui-sidebar__link">
+                        <span class="ui-button__icon" data-icon="home"></span> Menú principal
+                    </a>
+                </li>
+                <li class="ui-sidebar__item">
+                    <a href="#" id="link-ver-avisos" data-test="link-ver-avisos" class="ui-sidebar__link ui-sidebar__link--active" aria-current="page">
+                        <span class="ui-button__icon" data-icon="megaphone"></span> Ver avisos y comunicados
+                    </a>
+                </li>
+                <li class="ui-sidebar__item">
+                    <a href="logout" class="ui-sidebar__link ui-sidebar__link--logout">
+                        <span class="ui-button__icon" data-icon="logout"></span> Cerrar sesión
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="ui-layout__main">
+    <div class="ui-card ui-card--module documentos-container" role="region" aria-label="Módulo Ver Avisos">
+            
+            <!-- BREADCRUMBS -->
+            <nav class="ui-breadcrumbs" aria-label="Rastro de navegación">
+                <ol class="ui-breadcrumbs__list">
+                    <li class="ui-breadcrumbs__item">
+                        <a href="menu.html" class="ui-breadcrumbs__link">Inicio</a>
+                    </li>
+                    <li class="ui-breadcrumbs__item ui-breadcrumbs__item--active" aria-current="page">
+                        <span class="ui-breadcrumbs__separator">/</span>
+                        <span class="ui-breadcrumbs__current">Ver Avisos</span>
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- TÍTULO PRINCIPAL -->
+            <h2 class="ui-card__title">Ver Avisos y Comunicados</h2>
+
+            <!-- FILTROS Y ACCIONES PRINCIPALES -->
+            <div class="ui-filters">
+                <form id="formFiltro" class="ui-filters__form" role="search" aria-label="Filtros de búsqueda">
+                    <div class="ui-filters__campo">
+                        <label for="filtroAsunto" class="ui-form__label">Asunto</label>
+                        <input type="text" id="filtroAsunto" class="ui-filters__input" 
+                               placeholder="Buscar por asunto..." aria-label="Filtrar por asunto">
+                    </div>
+                    
+                    <div class="ui-filters__campo">
+                        <label for="filtroDesde" class="ui-form__label">Desde</label>
+                        <input type="date" id="filtroDesde" class="ui-filters__input" 
+                               aria-label="Fecha desde">
+                    </div>
+
+                    <div class="ui-filters__campo">
+                        <label for="filtroHasta" class="ui-form__label">Hasta</label>
+                        <input type="date" id="filtroHasta" class="ui-filters__input" 
+                               aria-label="Fecha hasta">
+                    </div>
+
+                    <div class="ui-actions ui-filters__acciones">
+                        <button type="button" id="btnBuscar" class="ui-button ui-button--primary" 
+                                aria-controls="tablaAvisos">
+                            <span class="ui-button__icon" data-icon="search"></span>Buscar
+                        </button>
+                        <button type="button" id="btnLimpiar" class="ui-button ui-button--secondary">
+                            <span class="ui-button__icon" data-icon="clear"></span>Limpiar
+                        </button>
+                        <button class="ui-button ui-button--secondary" id="btnRefrescar">
+                            <span class="ui-button__icon" data-icon="refresh"></span>Actualizar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- MENSAJE DE ESTADO GLOBAL -->
+            <div class="ui-message-container">
+                <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
+                    <span class="ui-message__icon" aria-hidden="true"></span>
+                    <span class="ui-message__text"></span>
+                </div>
+            </div>
+
+            <!-- CONTROLES DE TABLA -->
+            <div class="veravisos-controles">
+                <div class="veravisos-controles__izquierda">
+                    <label for="selSort" class="ui-form__label">Ordenar por:</label>
+                    <select id="selSort" class="ui-filters__select" aria-label="Ordenar por campo">
+                        <option value="Fecha">Fecha</option>
+                        <option value="Asunto">Asunto</option>
+                        <option value="Id">ID</option>
+                    </select>
+                    <select id="selDir" class="ui-filters__select" aria-label="Dirección de ordenamiento">
+                        <option value="DESC">Descendente</option>
+                        <option value="ASC">Ascendente</option>
+                    </select>
+                </div>
+                <div class="veravisos-controles__derecha">
+                    <div id="tablaLoader" class="veravisos-loader" style="display:none" aria-label="Cargando datos">
+                        <span class="veravisos-loader__text">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLA DE AVISOS -->
+            <section class="ui-card ui-card--report" aria-label="Listado de avisos">
+                <div class="ui-tabla-wrap ui-desplazable">
+                    <table class="ui-tabla" role="table">
+                        <thead class="ui-tabla__head">
+                            <tr role="row">
+                                <th scope="col" class="ui-tabla__col">Fecha</th>
+                                <th scope="col" class="ui-tabla__col">Asunto</th>
+                                <th scope="col" class="ui-tabla__col">Mensaje</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaAvisos" class="ui-tabla__body">
+                            <!-- Contenido dinámico generado por JS -->
+                            <tr class="ui-tabla__row">
+                                <td class="ui-tabla__cell" colspan="3">
+                                    <div class="veravisos-mensaje-vacio">
+                                        Cargando avisos...
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINACIÓN UNIFICADA -->
+                <div class="ui-paginacion" role="navigation" aria-label="Paginación de avisos">
+                    <span id="paginacionInfo" class="ui-paginacion__info">Cargando...</span>
+                    <div id="paginacionPages" class="ui-paginacion__pages" aria-hidden="true"></div>
+                    <div class="ui-paginacion__controles">
+                        <button id="btnPrev" class="ui-button ui-button--ghost ui-paginacion__btn" 
+                                type="button" aria-label="Página anterior" disabled>
+                            <span class="ui-button__icon" data-icon="arrow-left"></span>Anterior
+                        </button>
+                        <button id="btnNext" class="ui-button ui-button--ghost ui-paginacion__btn" 
+                                type="button" aria-label="Página siguiente" disabled>
+                            Siguiente<span class="ui-button__icon" data-icon="arrow-right"></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>window.AVISOS_READONLY = true;</script>
+    <script src="Scripts/veravisos.js"></script>
+    <script src="Scripts/avisos.js"></script>
+    <!-- MODAL LEER MÁS (para mensajes largos en la tabla) -->
+    <div class="ui-modal-overlay" id="modalLeerMasAviso" role="dialog" aria-modal="true" 
+         aria-labelledby="modalLeerMasAvisoTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalLeerMasAvisoTitulo" class="ui-modal__title">Leer más</h3>
+                <button type="button" class="ui-button ui-button--ghost ui-button--sm" aria-label="Cerrar" id="btnCerrarLeerMasAviso"><span class="ui-button__icon" data-icon="close"></span></button>
+            </div>
+
+            <div class="ui-modal__body">
+                <div id="modalLeerMasAvisoContenido" class="ui-form__value ui-form__value--multiline" aria-live="polite"></div>
+            </div>
+
+            <div class="ui-modal__actions">
+                <button type="button" id="btnCerrarLeerMasAvisoFooter" class="ui-button ui-button--primary">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

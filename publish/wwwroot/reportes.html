@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Reportes - SWGROI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="Styles/componentes/componentes.css">
+
+    <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/seguridad.js" defer></script>
+    <script src="Scripts/ui-utils.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar-dark">
+        <h1 class="logo">SWGROI</h1>
+        <nav>
+            <a href="menu.html">Menú principal</a>
+            <a href="reportes.html" class="active">Reportes</a>
+            <a href="logout">Cerrar sesión</a>
+        </nav>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content ui-main">
+        <div class="admin-container ui-card">
+            <h2 class="titulo-dashboard">Panel de Reportes de Tickets</h2>
+
+            <!-- MENSAJE UNIFICADO -->
+            <div class="ui-message-container">
+                <span class="ui-message-icon"></span>
+                <span class="ui-message-text"></span>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="barra-superior-crud ui-filters ui-filters">
+                <div class="acciones-filtros">
+                    <form onsubmit="return false;" class="filtro-buscador ui-formulario ui-filters">
+                        <div class="field-with-feedback ui-filters__campo">
+                            <input class="form-control" type="text" id="filtroFolio" placeholder="Folio del Ticket">
+                            <span class="field-icon icon icon--sm" aria-hidden="true"></span>
+                        </div>
+                        <div id="filtroFolioFeedback" class="field-feedback" aria-live="polite"></div>
+                        <div class="field-with-feedback ui-filters__campo">
+                            <input class="form-control" type="date" id="filtroFecha">
+                            <span class="field-icon icon icon--sm" aria-hidden="true"></span>
+                        </div>
+                        <div id="filtroFechaFeedback" class="field-feedback" aria-live="polite"></div>
+                        <div class="field-with-feedback ui-filters__campo">
+                            <input class="form-control" type="text" id="filtroResponsable" placeholder="Responsable">
+                            <span class="field-icon icon icon--sm" aria-hidden="true"></span>
+                        </div>
+                        <div id="filtroResponsableFeedback" class="field-feedback" aria-live="polite"></div>
+                        <select id="filtroEstado" class="ui-filters__select">
+                            <option value="">-- Estado --</option>
+                            <option value="Almacén">Almacén</option>
+                            <option value="Capturado">Capturado</option>
+                            <option value="Asignado">Asignado</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Cerrado">Cerrado</option>
+                        </select>
+                    </form>
+                </div>
+
+                <div class="acciones-botones">
+                    <button onclick="buscarTickets()" class="ui-button ui-button--primary ui-filters__accion"><span class="ui-button__icon" data-icon="search"></span> Buscar</button>
+                    <button onclick="limpiarFiltros()" class="ui-button ui-button--secondary ui-filters__accion"><span class="ui-button__icon" data-icon="clear"></span> Limpiar</button>
+                </div>
+            </div>
+
+            <!-- TABLA DE RESULTADOS -->
+            <section class="card ui-card">
+                <table id="tablaReportes" class="tabla-crud ui-tabla ui-tabla">
+                    <thead class="ui-tabla__head">
+                        <tr>
+                            <th>Folio</th>
+                            <th>Estado Ticket</th>
+                            <th>Responsable</th>
+                            <th>Descripción</th>
+                            <th>Técnico</th>
+                            <th>Fecha Registro</th>
+                            <th>Fecha Asignada</th>
+                            <th>Hora Asignada</th>
+                            <th>Fecha Cierre</th>
+                            <th>Cotización</th>
+                        </tr>
+                    </thead>
+                    <tbody class="ui-tabla__body"></tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+
+    <script src="Scripts/reportes.js"></script>
+    <script src="Scripts/ui.js"></script>
+</body>
+</html>

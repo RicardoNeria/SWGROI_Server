@@ -1,0 +1,158 @@
+DIAGNÓSTICO MYSQL - SWGROI VPS
+Resolución del error: "Unknown database 'swgroi_db'"
+
+═══════════════════════════════════════════════════════════════════════════
+DIAGNÓSTICO PASO A PASO
+═══════════════════════════════════════════════════════════════════════════
+
+Si ve el error:
+[DB INIT] Error asegurando tablas: Authentication to host '127.0.0.1' for 
+user 'root' using method 'caching_sha2_password' failed with message: 
+Unknown database 'swgroi_db'
+
+SIGA ESTOS PASOS:
+
+1️⃣ VERIFICAR MYSQL EJECUTÁNDOSE
+═══════════════════════════════════
+
+Abrir CMD como Administrador y ejecutar:
+
+# Verificar servicio MySQL
+sc query MySQL80
+# O si es versión diferente:
+sc query MySQL
+
+# Si no está corriendo, iniciarlo:
+net start MySQL80
+# O:
+net start MySQL
+
+2️⃣ PROBAR CONEXIÓN MYSQL
+═══════════════════════════════════
+
+# Conectar a MySQL como root
+mysql -u root -p
+
+# Si funciona, deberá ver:
+mysql> 
+
+# Dentro de MySQL, ejecutar:
+SHOW DATABASES;
+
+# Buscar si aparece 'swgroi_db' en la lista
+# Si NO aparece, continúe al paso 3
+
+3️⃣ CREAR BASE DE DATOS MANUALMENTE
+═══════════════════════════════════
+
+Desde MySQL (mysql -u root -p):
+
+# Crear la base de datos
+CREATE DATABASE swgroi_db CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+# Verificar que se creó
+SHOW DATABASES;
+
+# Salir de MySQL
+EXIT;
+
+4️⃣ EJECUTAR SCRIPT INSTALACIÓN
+═══════════════════════════════════
+
+Desde CMD como Administrador:
+
+cd C:\SWGROI\SWGROI_Despliegue_Web\publish\BaseDatos
+
+# Opción A - Script completo (recomendado):
+mysql -u root -p < SWGROI_DB_COMPLETO.sql
+
+# Opción B - Script simple (si falla la A):
+mysql -u root -p < INSTALAR_BD_SIMPLE.sql
+
+5️⃣ VERIFICAR INSTALACIÓN
+═══════════════════════════════════
+
+mysql -u root -p
+USE swgroi_db;
+SHOW TABLES;
+DESCRIBE tickets;
+
+# Debe mostrar las tablas y la columna 'tipo_asunto' en tickets
+
+═══════════════════════════════════════════════════════════════════════════
+SOLUCIÓN AUTOMATIZADA
+═══════════════════════════════════════════════════════════════════════════
+
+El script liberar_8891_y_iniciar_SWGROI.bat ACTUALIZADO ahora hace todo esto
+automáticamente:
+
+1. Verifica que MySQL esté corriendo
+2. Prueba la conexión con las credenciales
+3. Verifica si existe swgroi_db
+4. Si no existe, ejecuta INSTALAR_BD_SIMPLE.sql automáticamente
+5. Verifica que la columna tipo_asunto exista
+6. Solo DESPUÉS inicia el servidor SWGROI
+
+PASOS SIMPLES AHORA:
+
+1️⃣ Copiar carpeta publish al VPS
+
+2️⃣ Ejecutar como Administrador:
+   C:\SWGROI\SWGROI_Despliegue_Web\publish\liberar_8891_y_iniciar_SWGROI.bat
+
+3️⃣ Cuando pida contraseña MySQL, ingresarla
+
+4️⃣ El script resuelve TODO automáticamente
+
+═══════════════════════════════════════════════════════════════════════════
+ERRORES COMUNES Y SOLUCIONES
+═══════════════════════════════════════════════════════════════════════════
+
+❌ ERROR: "Access denied for user 'root'@'localhost'"
+✅ SOLUCIÓN: 
+   - Verificar contraseña de root MySQL
+   - Resetear password: ALTER USER 'root'@'localhost' IDENTIFIED BY 'nueva_password';
+
+❌ ERROR: "Can't connect to MySQL server on '127.0.0.1'"
+✅ SOLUCIÓN:
+   - Verificar servicio MySQL corriendo: net start MySQL80
+   - Verificar puerto 3306: netstat -ano | findstr :3306
+
+❌ ERROR: "mysql: command not found"
+✅ SOLUCIÓN:
+   - Agregar MySQL a PATH del sistema
+   - O usar ruta completa: "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe"
+
+❌ ERROR: Script INSTALAR_BD_SIMPLE.sql no encontrado
+✅ SOLUCIÓN:
+   - Verificar que esté en BaseDatos\INSTALAR_BD_SIMPLE.sql
+   - Re-copiar carpeta publish completa
+
+═══════════════════════════════════════════════════════════════════════════
+COMANDOS ÚTILES DIAGNÓSTICO
+═══════════════════════════════════════════════════════════════════════════
+
+# Verificar versión MySQL
+mysql --version
+
+# Verificar servicios MySQL
+sc query | findstr MySQL
+
+# Verificar puerto 3306 ocupado
+netstat -ano | findstr :3306
+
+# Verificar variables entorno configuradas
+echo %DB_HOST%
+echo %DB_USER%
+echo %DB_PASSWORD%
+
+# Probar conexión específica
+mysql -h 127.0.0.1 -P 3306 -u root -p
+
+# Verificar BD y tablas rápido
+mysql -u root -p -e "SHOW DATABASES; USE swgroi_db; SHOW TABLES; DESCRIBE tickets;"
+
+═══════════════════════════════════════════════════════════════════════════
+
+Con el script actualizado, el error "Unknown database 'swgroi_db'" ya NO 
+debería aparecer, porque se crea automáticamente antes de iniciar SWGROI.

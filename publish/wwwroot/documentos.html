@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestión Documental - SWGROI</title>
+  <link rel="stylesheet" href="Styles/componentes/componentes.css">
+  <link rel="stylesheet" href="Styles/documentos.css">
+  <script src="Scripts/icon-loader.js" defer></script>
+  <script src="Scripts/ui.js" defer></script>
+  <script src="Scripts/ui-utils.js" defer></script>
+  <script src="Scripts/documentos.js" defer></script>
+</head>
+<body class="ui-layout ui-layout--no-topbar">
+
+  <!-- SIDEBAR UNIFICADO -->
+  <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
+    <div class="ui-sidebar__header">
+      <h2 class="ui-sidebar__title">SWGROI</h2>
+      <div class="ui-sidebar__logo">
+        <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Logo Central de Alarmas" class="ui-sidebar__logo-img">
+      </div>
+    </div>
+    <nav class="ui-sidebar__nav">
+      <ul class="ui-sidebar__menu">
+        <li class="ui-sidebar__item"><a href="menu.html" class="ui-sidebar__link"><span class="ui-button__icon" data-icon="home" aria-hidden="true"></span> Menú principal</a></li>
+        <li class="ui-sidebar__item"><a href="#" class="ui-sidebar__link ui-sidebar__link--active" aria-current="page"><span class="ui-button__icon" data-icon="folder" aria-hidden="true"></span> Documentos</a></li>
+        <li class="ui-sidebar__item"><a href="logout" class="ui-sidebar__link ui-sidebar__link--logout"><span class="ui-button__icon" data-icon="logout" aria-hidden="true"></span> Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="ui-layout__main">
+    <div class="ui-card ui-card--module documentos-container" role="region" aria-label="Módulo de gestión documental">
+
+      <!-- Rastro -->
+      <nav class="ui-breadcrumbs" aria-label="Rastro de navegación">
+        <ol class="ui-breadcrumbs__list">
+          <li class="ui-breadcrumbs__item"><a href="menu.html" class="ui-breadcrumbs__link">Inicio</a></li>
+          <li class="ui-breadcrumbs__item ui-breadcrumbs__item--active" aria-current="page">
+            <span class="ui-breadcrumbs__separator">/</span>
+            <span class="ui-breadcrumbs__current">Documentos</span>
+          </li>
+        </ol>
+      </nav>
+
+      <h2 class="ui-card__title"><span class="ui-button__icon" data-icon="folder" aria-hidden="true"></span> Gestión Documental</h2>
+
+      <!-- KPIs -->
+  <section class="ui-metrics" aria-label="Indicadores principales">
+        <div class="ui-metrics__item">
+          <div class="ui-metrics__title">Total</div>
+          <div id="kpiTotal" class="ui-metrics__value">0</div>
+        </div>
+        <div class="ui-metrics__item">
+          <div class="ui-metrics__title">Vigentes</div>
+          <div id="kpiVigentes" class="ui-metrics__value">0</div>
+        </div>
+        <div class="ui-metrics__item">
+          <div class="ui-metrics__title">Favoritos</div>
+          <div id="kpiFavoritos" class="ui-metrics__value">0</div>
+        </div>
+      </section>
+
+      <!-- Filtros y acciones -->
+  <div class="ui-filters documentos-filters" role="region" aria-label="Filtros y acciones">
+        <form id="formFiltro" class="ui-filters__form" role="search" aria-label="Filtros de búsqueda">
+          <input type="search" id="buscar-documentos" class="ui-filters__input documentos-search" placeholder="Buscar documentos..." aria-label="Buscar documentos">
+          <!-- filtro Tipo eliminado por solicitud del usuario -->
+          <select id="filtro-categoria" name="categoria" class="ui-filters__select" aria-label="Filtrar por categoría">
+            <option value="">Categoría: Todas</option>
+          </select>
+          <select id="filtro-estado" name="estado" class="ui-filters__select" aria-label="Filtrar por estado">
+            <option value="">Estado: Todos</option>
+            <option value="Vigente">Vigente</option>
+            <option value="Vencido">Vencido</option>
+            <option value="Borrador">Borrador</option>
+            <option value="mis_favoritos">Favoritos: Solo míos</option>
+          </select>
+          <button type="submit" id="btnBuscar" class="ui-button ui-button--primary" aria-controls="documentosGrid">
+          <span class="ui-button__icon" data-icon="search"></span> Buscar
+          </button>
+          <button type="button" id="btnLimpiar" class="ui-button ui-button--secondary">
+          <span class="ui-button__icon" data-icon="clear"></span> Limpiar
+          </button>
+        </form>
+
+        <div class="ui-actions">
+          <button class="ui-button ui-button--primary" id="btnSubirMostrar" aria-controls="modalSubida" onclick="documentosManager.mostrarModalSubida()">
+          <span class="ui-button__icon" data-icon="plus"></span> Subir documento
+          </button>
+          <button class="ui-button ui-button--secondary" id="btnRefrescar" onclick="documentosManager.obtenerDocumentos()">
+          <span class="ui-button__icon" data-icon="refresh"></span> Refrescar
+          </button>
+        </div>
+      </div>
+
+    <!-- Mensaje global unificado -->
+    <div class="ui-message-container">
+      <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
+        <span class="ui-message__icon" aria-hidden="true"></span>
+        <span class="ui-message__text"></span>
+      </div>
+    </div>
+
+      <!-- Tabla compacta -->
+      <section class="ui-card ui-card--report" aria-label="Listado de documentos">
+        <div class="ui-tabla-wrap ui-desplazable">
+          <table class="ui-tabla ui-tabla--compacta" role="table" aria-describedby="leyenda">
+            <thead class="ui-tabla__head">
+              <tr class="ui-tabla__row">
+                <th class="ui-tabla__col">Documento</th>
+                <th class="ui-tabla__col">Categoría</th>
+                <th class="ui-tabla__col">Vigencia</th>
+                <th class="ui-tabla__col">Tamaño</th>
+                <th class="ui-tabla__col ui-tabla__col--acciones">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="documentosGrid" class="ui-tabla__body">
+              <tr class="ui-tabla__row tabla-vacia"><td colspan="5" class="tabla-vacia">No hay documentos para mostrar</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginación -->
+        <div id="paginacionContainer" class="ui-paginacion" role="navigation" aria-label="Paginación de resultados"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- MODAL SUBIDA -->
+  <div class="ui-modal-overlay" id="modalSubida" role="dialog" aria-modal="true" aria-labelledby="modalSubidaTitulo" style="display:none">
+    <div class="ui-modal" role="document">
+      <div class="ui-modal__header">
+        <h3 id="modalSubidaTitulo" class="ui-modal__title">Subir documento</h3>
+        <button class="ui-button ui-button--ghost ui-modal__close" type="button" onclick="documentosManager.cerrarModalSubida()" aria-label="Cerrar">
+          <span class="ui-button__icon" data-icon="close" aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="ui-modal__body">
+        <form id="formSubida" class="ui-form documentos-upload-form" enctype="multipart/form-data">
+
+          <div class="ui-form-group">
+            <label for="archivoDocumento" class="ui-form__label">Archivo</label>
+            <div class="documentos-dropzone" id="dropzone" tabindex="0" aria-label="Zona de arrastre para subir archivos">
+              <div class="documentos-dropzone__icon"><span class="ui-button__icon" data-icon="upload" aria-hidden="true"></span></div>
+              <div class="documentos-dropzone__texto">Arrastra y suelta o haz clic para seleccionar un archivo</div>
+              <input type="file" id="archivoDocumento" name="archivo" class="documentos-dropzone__input" aria-label="Seleccionar archivo" />
+              <div id="archivoFeedback" class="ui-form__feedback" aria-live="polite"></div>
+            </div>
+            <small class="ui-form__help">Archivos permitidos: PDF, Office, imágenes, texto, comprimidos. Máximo 200MB.</small>
+          </div>
+
+          <div class="ui-form-group">
+            <label for="tituloDocumento" class="ui-form__label">Título</label>
+            <input type="text" id="tituloDocumento" name="titulo" class="ui-form__input" maxlength="250" placeholder="Nombre descriptivo" />
+            <small class="ui-form__help">Nombre descriptivo para identificar el documento</small>
+          </div>
+
+          <div class="ui-form-group">
+            <label for="descripcionDocumento" class="ui-form__label">Descripción</label>
+            <textarea id="descripcionDocumento" name="descripcion" class="ui-form__input" rows="3" placeholder="Breve descripción del contenido del documento (opcional)"></textarea>
+            <small class="ui-form__help">Una descripción corta para facilitar búsquedas y contexto.</small>
+          </div>
+
+          <div class="ui-form-group">
+            <label for="categoriaDocumento" class="ui-form__label">Categoría</label>
+            <select id="categoriaDocumento" name="categoria_id" class="ui-form__select">
+              <option value="">Seleccionar categoría</option>
+            </select>
+          </div>
+
+          <div class="ui-form-group">
+            <label for="estadoDocumento" class="ui-form__label">Estado inicial</label>
+            <select id="estadoDocumento" name="estado" class="ui-form__select">
+              <option value="Borrador">Borrador</option>
+              <option value="En_Revision">En revisión</option>
+              <option value="Vigente">Vigente</option>
+            </select>
+          </div>
+
+          <div class="ui-modal__actions">
+            <button type="button" class="ui-button ui-button--secondary" id="btnCancelarSubida" onclick="documentosManager.cerrarModalSubida()">Cancelar</button>
+            <button type="submit" class="ui-button ui-button--primary" id="btnGuardarDocumento">Subir documento</button>
+          </div>
+        </form>
+
+        <div class="documentos-progress" id="progresoSubida" style="display:none">
+          <div class="ui-progress">
+            <div class="ui-progress__bar" id="barraProgreso" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <div class="documentos-progress__info"><span id="porcentajeSubida">0%</span><span id="estadoSubida">Subiendo archivo...</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALLES -->
+  <div class="ui-modal-overlay" id="modalDetalles" role="dialog" aria-modal="true" aria-labelledby="modalDetallesTitulo" style="display:none">
+    <div class="ui-modal ui-modal__container--lg" role="document">
+      <div class="ui-modal__header">
+        <h3 id="modalDetallesTitulo" class="ui-modal__title">Detalles del documento</h3>
+        <button class="ui-button ui-button--ghost ui-modal__close" type="button" onclick="documentosManager.cerrarModalDetalles()" aria-label="Cerrar modal de detalles"><span class="ui-button__icon" data-icon="close" aria-hidden="true"></span></button>
+      </div>
+      <div class="ui-modal__body" id="contenidoDetalles">
+        <!-- contenido cargado dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMACIÓN ELIMINACIÓN DOCUMENTO -->
+  <div class="ui-modal-overlay" id="modalEliminarDocumento" role="dialog" aria-modal="true" aria-labelledby="modalEliminarTitulo" style="display:none">
+    <div class="ui-modal" role="document">
+      <div class="ui-modal__header">
+        <h3 id="modalEliminarTitulo" class="ui-modal__title">Confirmar eliminación</h3>
+        <button class="ui-button ui-button--ghost ui-modal__close" type="button" id="btnCerrarEliminar" aria-label="Cerrar modal de eliminación"><span class="ui-button__icon" data-icon="close" aria-hidden="true"></span></button>
+      </div>
+      <div class="ui-modal__body">
+        <p id="textoEliminar">¿Eliminar el documento seleccionado? Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="ui-modal__actions">
+        <button class="ui-button ui-button--secondary" id="btnCancelarEliminar"><span class="ui-button__icon" data-icon="cancel" aria-hidden="true"></span>Cancelar</button>
+        <button class="ui-button ui-button--danger" id="btnConfirmarEliminar"><span class="ui-button__icon" data-icon="delete"></span>Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="ui-toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    // Conexión ligera con el manager si está disponible
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.DocumentosManager) {
+        window.documentosManager = new window.DocumentosManager({
+          selectors: {
+            buscar: '#buscar-documentos',
+            tabla: '#documentosGrid',
+            paginacion: '#paginacionContainer',
+            modalSubida: '#modalSubida',
+            modalDetalles: '#modalDetalles',
+            dropzone: '#dropzone',
+            formSubida: '#formSubida',
+            categorias: '#categoriaDocumento'
+          }
+        });
+
+      }
+    });
+  </script>
+  
+
+</body>
+</html>
