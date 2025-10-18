@@ -11,6 +11,11 @@
 	<main class="ui-layout__main">
 		<!-- Contenedor público centrado -->
 		<div class="retro-wrap">
+			<!-- Branding -->
+			<div class="retro-brand" role="banner">
+				<img src="Imagenes/CENTRALDEALARMAS1.png" alt="Central de Alarmas" class="retro-brand__logo">
+				<span class="retro-brand__name">Central de Alarmas</span>
+			</div>
 			<!-- Leyenda global (mensajes) -->
 			<div class="ui-message-container">
 				<div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
@@ -76,6 +81,17 @@
 
 				<!-- Formulario -->
 				<form id="formRespuestas" class="ui-form retro-form ui-card--form" aria-describedby="retroNota" novalidate>
+					<!-- Leyenda fija de facturación colocada dentro del formulario (visible mientras se responden las preguntas) -->
+					<div id="leyendaFacturacion" class="ui-message ui-message--warning leyenda-facturacion" style="margin-top:.5rem" role="status" aria-live="polite" data-preserve="true">
+						<span class="ui-message__icon" aria-hidden="true">
+							<!-- Icono SVG inline para mejor control visual -->
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+								<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="#FFFBEB"/>
+								<path d="M11 7h2v6h-2V7zm0 8h2v2h-2v-2z" fill="#B45309"/>
+							</svg>
+						</span>
+						<span class="ui-message__text">Para completar el proceso de su servicio y poder emitir su factura, es necesario responder esta encuesta.</span>
+					</div>
 					<div id="preguntasContainer" class="retro-preguntas"></div>
 
 					<div class="retro-acciones">
@@ -95,10 +111,23 @@
 			</section>
 
 			<!-- Sección: Éxito -->
-			<section id="seccionExito" class="ui-card ui-card--module retro-card" style="display:none" aria-live="polite">
+			<section id="seccionExito" class="ui-card ui-card--module retro-card retro-card--center" style="display:none" aria-live="polite">
 				<h2 class="retro-exito__titulo">¡Gracias! Encuesta recibida</h2>
 				<p class="retro-exito__mensaje">Su opinión nos ayuda a mejorar.</p>
 			</section>
+
+			<!-- Modal de agradecimiento al enviar -->
+			<div id="modalGracias" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalGraciasTitulo" aria-describedby="modalGraciasDesc" style="display:none">
+				<div class="modal__dialog ui-card ui-card--module retro-card retro-card--center">
+					<h2 id="modalGraciasTitulo" class="ui-card__title">¡Gracias por su tiempo!</h2>
+					<p id="modalGraciasDesc" class="ui-content" style="margin:.5rem 0 1rem">Sus respuestas fueron registradas correctamente.</p>
+					<div class="retro-acciones" style="justify-content:center; margin-top:0">
+						<button id="btnModalCerrar" type="button" class="ui-button ui-button--primary">
+							<span class="ui-button__icon" data-icon="check"></span>Cerrar
+						</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	</main>
 

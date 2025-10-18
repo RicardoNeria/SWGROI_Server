@@ -15,20 +15,40 @@ body.ui-layout--survey {
 	background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
 }
 
+/* Eliminar espacio del antiguo sidebar y centrar la vista principal */
+.ui-layout--survey .ui-layout__main {
+	margin-left: 0 !important;
+	padding-left: 0;
+	padding-right: 0;
+}
+
 .retro-wrap {
 	max-width: var(--retro-max-width);
-	margin: 2.5rem auto;
+	margin: 4rem auto; /* más margen superior para centrar visualmente */
 	padding: 0 var(--retro-gap);
+}
+
+.retro-wrap--middle {
+	min-height: calc(100vh - 8rem);
+	display: grid;
+	align-content: center;
 }
 
 .retro-card {
 	background: var(--retro-card-bg);
 	border-radius: var(--retro-radius);
-	box-shadow: var(--retro-card-shadow);
+	box-shadow: 0 10px 25px rgba(0,0,0,.05), 0 2px 8px rgba(0,0,0,.04);
 	padding: var(--retro-gap-lg);
 }
 
 .retro-card--center { text-align: center; }
+
+/* Branding */
+.retro-brand { display:flex; align-items:center; gap:.6rem; margin-bottom: 1rem; justify-content:center; }
+.retro-brand__logo { height: 34px; width: auto; display:block; }
+.retro-brand__name { font-weight: 700; color: var(--ui-color-texto); }
+.retro-brand--small { justify-content:center; margin-bottom: .5rem; }
+.retro-brand--small .retro-brand__logo { height: 28px; }
 
 /* Header */
 .retro-header {
@@ -76,14 +96,14 @@ body.ui-layout--survey {
 .retro-pregunta { border: var(--retro-border); border-radius: 12px; padding: var(--retro-gap); background: #fff; }
 .retro-pregunta__header { display: flex; align-items: center; gap: var(--retro-gap); margin-bottom: .5rem; }
 .retro-pregunta__numero { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: #eef2ff; color: #3730a3; font-weight: 700; }
-.retro-pregunta__texto { color: var(--ui-color-texto); line-height: 1.35; }
+.retro-pregunta__texto { color: var(--ui-color-texto); line-height: 1.35; font-weight: 600; }
 
 .retro-respuesta { margin-top: .25rem; }
 
 /* Escala 1-5 */
 .retro-escala { display: grid; grid-template-columns: repeat(5, 1fr); gap: .5rem; }
 .retro-escala__opcion { display: grid; gap: .25rem; justify-items: center; }
-.retro-escala__label { font-size: .85rem; color: var(--ui-color-texto-muted); }
+.retro-escala__label { font-size: .85rem; color: var(--ui-color-texto-muted); font-weight: 500; }
 .retro-escala__radio { appearance: none; width: 22px; height: 22px; border: 2px solid #c7d2fe; border-radius: 999px; background: #fff; position: relative; cursor: pointer; transition: all .2s ease; }
 .retro-escala__radio:hover { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(99,102,241,.2); }
 .retro-escala__radio:checked { background: #3730a3; border-color: #3730a3; box-shadow: 0 0 0 3px rgba(55,48,163,.25); }
@@ -101,10 +121,51 @@ body.ui-layout--survey {
 .retro-exito__mensaje { margin-top: .25rem; color: var(--ui-color-texto-muted); }
 .retro-exito__meta { margin-top: .25rem; color: var(--ui-color-texto); }
 
+/* Mensajes y validaciones: alineados con componentes */
+.ui-message-container { margin-bottom: .75rem; display:flex; justify-content:center; }
+.ui-message { max-width: var(--retro-max-width); }
+
+/* Leyenda de facturación destacada */
+.leyenda-facturacion {
+	display: flex !important;
+	align-items: center;
+	gap: .6rem;
+	background: linear-gradient(90deg, #fff7ed, #fffaf0);
+	border: 1px solid #ffedd5;
+	color: #92400e; /* texto marrón oscuro para buen contraste */
+	padding: .6rem .75rem;
+	border-radius: 10px;
+	box-shadow: 0 6px 18px rgba(249, 115, 22, 0.06);
+	font-weight: 600;
+}
+.leyenda-facturacion .ui-message__icon { display: inline-flex; align-items:center; justify-content:center; }
+.leyenda-facturacion svg { width: 20px; height: 20px; flex: 0 0 20px; }
+.leyenda-facturacion .ui-message__text { color: #92400e; }
+
+@media (max-width: 520px) {
+	.leyenda-facturacion { font-size: .95rem; gap: .45rem; padding: .5rem; }
+	.leyenda-facturacion svg { width: 18px; height: 18px; }
+}
+.leyenda-facturacion .ui-message__text { color: #92400e; }
+
+
+/* Auto-ocultar helper: usaremos una clase para activar la animación */
+.ui-message--autohide { animation: fadeOutHide 0.5s ease forwards; animation-delay: 5s; }
+@keyframes fadeOutHide { to { opacity: 0; visibility: hidden; height: 0; margin: 0; padding: 0; } }
+
+/* Feedback de campo heredado del sistema con pequeño ajuste de margen */
+.ui-form__feedback { margin-top: .5rem; }
+.ui-form__feedback.ui-form__feedback--autohide { animation: fadeOutHide 0.5s ease forwards; animation-delay: 5s; }
+
 /* Loading */
 .retro-loading { display: grid; gap: .75rem; place-items: center; }
 .retro-spinner { width: 38px; height: 38px; border-radius: 999px; border: 3px solid #dbeafe; border-top-color: #2563eb; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Modal de agradecimiento */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+.modal--show { display: flex; }
+.modal__dialog { max-width: 520px; width: 100%; }
 
 /* Responsive */
 @media (max-width: 720px) {

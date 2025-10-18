@@ -175,7 +175,7 @@ echo [INFO] Configurando variables de entorno del sistema...
 :: Variables de aplicación
 setx SWGROI_PORT %PORT% >nul 2>&1
 setx SWGROI_ENV PROD >nul 2>&1
-setx SWGROI_VERSION "3.0" >nul 2>&1
+setx SWGROI_VERSION "1.0" >nul 2>&1
 setx SWGROI_WORKDIR "%WORK_DIR%" >nul 2>&1
 
 :: Variables de MySQL para conexión a base de datos

@@ -64,7 +64,9 @@
             preguntasContainer: document.getElementById('preguntasContainer'),
             btnEnviar: document.getElementById('btnEnviar'),
             btnCerrarFormulario: document.getElementById('btnCerrarFormulario'),
-            mensajeError: document.getElementById('mensajeError')
+            mensajeError: document.getElementById('mensajeError'),
+            modalGracias: document.getElementById('modalGracias'),
+            btnModalCerrar: document.getElementById('btnModalCerrar')
         };
     }
 
@@ -120,9 +122,7 @@
         if (badgeF) badgeF.textContent = estadoFormulario.folio || '—';
 
         if (estadoFormulario.contestada) {
-            // Si ya fue contestada, mostrar mensaje adecuado y ocultar notas de llamada a contestar
-            actualizarInfoCliente();
-            mostrarSeccion('seccionCliente');
+            // Si ya fue contestada, ir directo a la vista de éxito centrada
             mostrarEncuestaContestada();
             return;
         }
@@ -137,6 +137,7 @@
         updateProgressBar();
         // mostrar leyendas de obligatorio y nota
         mostrarLeyendaObligatoria(true);
+        mostrarLeyendaFacturacion(true);
         mostrarSeccion('seccionCliente');
     }
 
@@ -206,6 +207,20 @@
         if (nota) nota.style.display = mostrar ? 'block' : 'none';
     }
 
+    function mostrarLeyendaFacturacion(mostrar) {
+        const ley = document.getElementById('leyendaFacturacion');
+        if (!ley) return;
+        ley.style.display = mostrar ? 'flex' : 'none';
+        // Mantener visible hasta que se envíe (no auto-ocultar)
+        try {
+            // Asegurar accesibilidad y que no sea removida por autohide
+            ley.setAttribute('aria-live', 'polite');
+            ley.classList.remove('ui-message--autohide');
+            // Marcar como preservable para la rutina que elimina duplicados
+            ley.setAttribute('data-preserve', 'true');
+        } catch (e) { /* ignore */ }
+    }
+
     function mostrarEncuestaContestada() {
         // Eliminar leyendas duplicadas para evitar textos repetidos al consultar
         eliminarLeyendasDuplicadas();
@@ -213,47 +228,60 @@
         // ocultar leyenda de obligatorio/nota
         mostrarLeyendaObligatoria(false);
 
-        // Preferimos mostrar la sección de éxito con un diseño más rico
+        // Ocultar branding superior (logo fuera del contenedor) para esta vista
+        try {
+            const brand = document.querySelector('.retro-brand');
+            if (brand) brand.style.display = 'none';
+        } catch (e) { /* ignore */ }
+
+        // Mostrar solo la sección de éxito centrada
         const seccion = document.getElementById('seccionExito');
         const form = document.getElementById('formRespuestas');
         if (form) form.style.display = 'none';
+        const seccionCliente = document.getElementById('seccionCliente');
+        if (seccionCliente) seccionCliente.style.display = 'none';
         if (seccion) {
-            // Mostrar una sección de éxito minimal: sin imagen, sin barra de progreso y sin botones internos.
             seccion.style.display = 'block';
-            seccion.className = 'ui-card retro-exito retro-card-spacing';
+            seccion.className = 'ui-card ui-card--module retro-card retro-card--center';
 
             const cliente = estadoFormulario.cliente ? `<div class="retro-exito__meta">Cliente: <strong>${sanitizarTexto(estadoFormulario.cliente)}</strong></div>` : '';
             const folio = estadoFormulario.folio ? `<div class="retro-exito__meta">Folio: <strong>${sanitizarTexto(estadoFormulario.folio)}</strong></div>` : '';
 
             seccion.innerHTML = `
-                <div style="display:flex; gap:1rem; align-items:center;">
-                    <div style="flex:1">
-                        <h3 class="retro-exito__titulo">¡Gracias! Encuesta recibida</h3>
-                        <p class="retro-exito__mensaje">Hemos registrado su opinión correctamente. Su retroalimentación nos ayuda a mejorar el servicio.</p>
-                        ${cliente}
-                        ${folio}
-                    </div>
+                <div class="retro-brand retro-brand--small">
+                    <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Central de Alarmas" class="retro-brand__logo">
+                    <span class="retro-brand__name">Central de Alarmas</span>
                 </div>
+                <h3 class="retro-exito__titulo">¡Gracias! Encuesta recibida</h3>
+                <p class="retro-exito__mensaje">Hemos registrado su opinión correctamente. Su retroalimentación nos ayuda a mejorar el servicio.</p>
+                ${cliente}
+                ${folio}
             `;
 
-            // Ocultar elementos de la cabecera/información que no deben mostrarse cuando se consulta una encuesta ya contestada
+            // Ocultar elementos que no aplican en vista de consulta
             try {
-                    const info = document.getElementById('infoCliente'); if (info) info.style.display = 'none';
-                    // Ocultar badges/metadata (cliente/folio) que aparecen en la cabecera
-                    const meta = document.querySelector('.ui-card__meta'); if (meta) meta.style.display = 'none';
-                    const badgeC = document.getElementById('badgeCliente'); if (badgeC) badgeC.style.display = 'none';
-                    const badgeF = document.getElementById('badgeFolio'); if (badgeF) badgeF.style.display = 'none';
-                    const progressRow = document.querySelector('.retro-progress-row'); if (progressRow) progressRow.style.display = 'none';
-                    const progressContainer = document.getElementById('progressContainer'); if (progressContainer) progressContainer.style.display = 'none';
-                    const progressMeta = document.querySelector('.retro-progress__meta'); if (progressMeta) progressMeta.style.display = 'none';
-                    // Asegurar que el formulario y botones de envío no estén visibles
-                    const acciones = document.querySelector('.retro-acciones'); if (acciones) acciones.style.display = 'none';
-            // Ocultar el botón de cerrar del header en la vista de consulta
-            try { if (elementos.btnCerrarFormulario) elementos.btnCerrarFormulario.style.display = 'none'; } catch (e) { /* ignore */ }
-            } catch (e) { console.warn('No se pudieron ocultar algunos elementos de la UI al mostrar encuesta contestada', e); }
-        // Añadir un único botón de cierre funcional en la sección de éxito
-        try { agregarBotonCerrarEnExito(); } catch (e) { /* ignore */ }
+                const info = document.getElementById('infoCliente'); if (info) info.style.display = 'none';
+                const badgeC = document.getElementById('badgeCliente'); if (badgeC) badgeC.style.display = 'none';
+                const badgeF = document.getElementById('badgeFolio'); if (badgeF) badgeF.style.display = 'none';
+                const progressRow = document.querySelector('.retro-progress-row'); if (progressRow) progressRow.style.display = 'none';
+                const progressContainer = document.getElementById('progressContainer'); if (progressContainer) progressContainer.style.display = 'none';
+                const progressMeta = document.querySelector('.retro-progress__meta'); if (progressMeta) progressMeta.style.display = 'none';
+                const acciones = document.querySelector('.retro-acciones'); if (acciones) acciones.style.display = 'none';
+                if (elementos.btnCerrarFormulario) elementos.btnCerrarFormulario.style.display = 'none';
+            } catch (e) { /* ignore */ }
+
+            // Añadir botón de cierre
+            try { agregarBotonCerrarEnExito(); } catch (e) { /* ignore */ }
         }
+
+        // Centrar verticalmente el contenedor cuando solo queda la sección de éxito
+        try {
+            const wrap = document.querySelector('.retro-wrap');
+            if (wrap) wrap.classList.add('retro-wrap--middle');
+        } catch (e) { /* ignore */ }
+
+        // Hacer visible únicamente la sección de éxito
+        mostrarSeccion('seccionExito');
     }
 
     function eliminarLeyendasDuplicadas() {
@@ -263,6 +291,8 @@
             const candidates = document.querySelectorAll('.ui-message, .ui-card__subtitle');
             candidates.forEach(node => {
                 if (!node || !node.textContent) return;
+                // preservar la leyenda de facturación o elementos marcados
+                try { if (node.getAttribute && node.getAttribute('data-preserve') === 'true') return; } catch (e) {}
                 const txt = node.textContent.trim().replace(/\s+/g, ' ');
                 if (!txt) return;
                 if (seen.has(txt)) {
@@ -601,20 +631,11 @@
                 } catch (e) { /* ignore */ }
             }
 
-            // Mensaje breve de éxito (no redirección)
+            // Mensaje breve de éxito
             mostrarMensaje('Enviado', 'success');
 
-            // Intentar cerrar inmediatamente la ventana (sin redirección).
-            try { window.close && window.close(); } catch (e) { /* ignore */ }
-
-            // Si el navegador bloquea el cierre, mostramos la sección de éxito persistente
-            // y añadimos un botón para que el usuario cierre manualmente.
-            setTimeout(() => {
-                if (typeof window.closed === 'boolean' && !window.closed) {
-                    mostrarExito();
-                    agregarBotonCerrarEnExito();
-                }
-            }, 700);
+            // Mostrar modal de agradecimiento con botón Cerrar (no cerrar automáticamente)
+            mostrarExito();
             
         } catch (error) {
             console.error('Error enviando respuestas:', error);
@@ -677,12 +698,13 @@
         const radios = grupo.querySelectorAll('.retro-escala__radio');
         radios.forEach(radio => radio.classList.add('retro-escala__radio--error'));
 
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'ui-form__feedback';
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'ui-form__feedback ui-form__feedback--autohide';
         errorDiv.textContent = mensaje;
 
         const respuestaDiv = grupo.querySelector('.retro-respuesta');
-        respuestaDiv && respuestaDiv.appendChild(errorDiv);
+    respuestaDiv && respuestaDiv.appendChild(errorDiv);
+    try { setTimeout(() => { if (errorDiv && errorDiv.parentNode) errorDiv.parentNode.removeChild(errorDiv); }, 5000); } catch (e) { /* ignore */ }
     }
 
     function recopilarRespuestas() {
@@ -742,7 +764,8 @@
     function mostrarError(mensaje) {
         // Usar el sistema unificado si está disponible
         if (window.SWGROI && window.SWGROI.UI) {
-            window.SWGROI.UI.mostrarMensaje(mensaje, 'error', elementos.leyenda);
+            try { window.SWGROI.UI.mostrarMensaje(mensaje, 'error', elementos.leyenda); } catch (e) { /* ignore */ }
+            try { if (elementos.leyenda) { elementos.leyenda.classList.add('ui-message--autohide'); setTimeout(() => { if (elementos.leyenda) elementos.leyenda.style.display = 'none'; }, 5000); } } catch (e) { /* ignore */ }
         }
         
         // Fallback específico del módulo
@@ -753,22 +776,24 @@
     }
 
     function mostrarExito() {
-        // Mostrar la sección de éxito y aclarar que la ventana se cerrará inmediatamente
-        mostrarSeccion('seccionExito');
+        // Mostrar modal de agradecimiento con botón Cerrar
         try {
-            const seccion = elementos.seccionExito;
-            if (seccion) {
-                // Añadir nota informativa si no existe
-                if (!seccion.querySelector('.retro-exito__nota-cierre')) {
-                    const nota = document.createElement('div');
-                    nota.className = 'retro-exito__nota-cierre';
-                    nota.style.marginTop = '0.5rem';
-                    nota.style.color = 'var(--ui-color-texto-muted)';
-                    nota.textContent = 'La ventana se cerrará.';
-                    seccion.appendChild(nota);
+            if (elementos.modalGracias) {
+                // Ocultar leyenda de facturación al mostrar modal
+                try { const lf = document.getElementById('leyendaFacturacion'); if (lf) lf.style.display = 'none'; } catch (e) {}
+                elementos.modalGracias.style.display = 'flex';
+                elementos.modalGracias.classList.add('modal--show');
+                if (elementos.btnModalCerrar) {
+                    elementos.btnModalCerrar.focus();
+                    elementos.btnModalCerrar.onclick = () => { closeWindowImmediate(); };
                 }
+            } else {
+                // Fallback: sección de éxito
+                mostrarSeccion('seccionExito');
             }
-        } catch (e) { /* ignore */ }
+        } catch (e) {
+            mostrarSeccion('seccionExito');
+        }
     }
 
     // Intenta cerrar la ventana de forma inmediata con fallbacks (recurso compartido)
@@ -825,15 +850,18 @@
     function mostrarMensaje(mensaje, tipo = 'info') {
         // Usar el sistema unificado si está disponible
         if (window.SWGROI && window.SWGROI.UI) {
-            return window.SWGROI.UI.mostrarMensaje(mensaje, tipo, elementos.leyenda);
+            try { window.SWGROI.UI.mostrarMensaje(mensaje, tipo, elementos.leyenda); } catch (e) { /* ignore */ }
+            try { if (elementos.leyenda) { elementos.leyenda.classList.add('ui-message--autohide'); setTimeout(() => { if (elementos.leyenda) elementos.leyenda.style.display = 'none'; }, 5000); } } catch (e) { /* ignore */ }
+            return;
         }
         
         // Fallback para compatibilidad (código simplificado)
         if (!elementos.leyenda) return;
         
         elementos.leyenda.textContent = mensaje;
-        elementos.leyenda.className = `ui-message ui-message--${tipo} ui-message--visible`;
+    elementos.leyenda.className = `ui-message ui-message--${tipo} ui-message--visible ui-message--autohide`;
         elementos.leyenda.style.display = 'flex';
+    try { setTimeout(() => { if (elementos.leyenda) elementos.leyenda.style.display = 'none'; }, 5000); } catch (e) { /* ignore */ }
     }
 
     function mostrarProcesando() {
