@@ -5,45 +5,233 @@
 /* Tipografía auxiliar */
 .retro-admin .small-muted { color: var(--ui-color-texto-muted); font-size: .95rem; }
 
-/* Código/enlaces generados */
-.retro-admin .result-code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; white-space: nowrap; overflow:auto }
-.retro-admin .link-actions { display:flex; gap: var(--ui-gap-8); align-items:center }
+/* Código/enlaces generados - MEJORADO */
+.retro-admin .result-code { 
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; 
+  white-space: nowrap; 
+  overflow: auto;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  user-select: all;
+  cursor: text;
+}
+
+.retro-admin .link-actions { 
+  display: flex; 
+  gap: var(--ui-gap-8); 
+  align-items: center;
+  margin-top: var(--ui-gap-8);
+}
+
+/* Leyendas y mensajes mejorados */
+.retro-admin .ui-message {
+  display: none;
+  margin-top: var(--ui-gap-12);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 4px solid;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  animation: slideInDown 0.3s ease-out;
+}
+
+.retro-admin .ui-message--visible {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.retro-admin .ui-message--success {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-left-color: #10b981;
+  color: #065f46;
+}
+
+.retro-admin .ui-message--error {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-left-color: #ef4444;
+  color: #991b1b;
+}
+
+.retro-admin .ui-message--warning {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-left-color: #f59e0b;
+  color: #92400e;
+}
+
+.retro-admin .ui-message--info {
+  background: linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%);
+  border-left-color: #3b82f6;
+  color: #1e40af;
+}
+
+.retro-admin .ui-message__icon {
+  font-size: 1.1rem;
+  min-width: 20px;
+  text-align: center;
+}
+
+.retro-admin .ui-message__text {
+  font-weight: 500;
+}
+
+/* Animaciones */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* Estados de filas del historial */
-.retro-admin .history-empty { padding: var(--ui-gap-12); background:var(--ui-color-fondo); border:1px dashed var(--ui-color-borde); border-radius: var(--ui-radius-base); }
-.retro-admin .history-completed { background: rgba(16,185,129,0.06); }
-.retro-admin .history-pending { background: rgba(245,158,11,0.03); }
+.retro-admin .history-empty { 
+  padding: var(--ui-gap-12); 
+  background: var(--ui-color-fondo); 
+  border: 1px dashed var(--ui-color-borde); 
+  border-radius: var(--ui-radius-base);
+  text-align: center;
+  color: var(--ui-color-texto-muted);
+}
 
-/* Semáforo */
-.retro-admin #kpiSemaforo { cursor: help; }
-.retro-admin .retro-semaforo-col { width:120px; text-align:center; }
-.retro-admin .retro-semaforo { width:46px; height:46px; border-radius:999px; margin:0 auto; background:#d1d5db; border:4px solid rgba(0,0,0,0.04); }
-.retro-admin .retro-legend { margin-top: var(--ui-gap-8); display:flex; flex-direction:column; gap: var(--ui-gap-4); font-size:0.75rem; text-align:left; }
-.retro-admin .retro-legend__title { font-size:0.75rem; margin-top: var(--ui-gap-8); color: var(--ui-color-texto-muted); text-align:center; }
-.retro-admin .retro-legend__dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:middle; }
-.retro-admin .retro-legend__dot--bad { background:#ef4444; }
-.retro-admin .retro-legend__dot--mid { background:#f59e0b; }
-.retro-admin .retro-legend__dot--good { background:#10b981; }
+.retro-admin .history-completed { 
+  background: linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(16,185,129,0.04) 100%);
+  border-left: 3px solid #10b981;
+}
 
-/* Métricas */
+.retro-admin .history-pending { 
+  background: linear-gradient(135deg, rgba(245,158,11,0.06) 0%, rgba(245,158,11,0.02) 100%);
+  border-left: 3px solid #f59e0b;
+}
+
+/* Semáforo mejorado */
+.retro-admin #kpiSemaforo { 
+  cursor: help; 
+  transition: transform 0.2s ease;
+}
+
+.retro-admin #kpiSemaforo:hover {
+  transform: scale(1.05);
+}
+
+.retro-admin .retro-semaforo-col { width: 120px; text-align: center; }
+
+.retro-admin .retro-semaforo { 
+  width: 46px; 
+  height: 46px; 
+  border-radius: 999px; 
+  margin: 0 auto; 
+  background: #d1d5db; 
+  border: 4px solid rgba(0,0,0,0.04);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.retro-admin .retro-legend { 
+  margin-top: var(--ui-gap-8); 
+  display: flex; 
+  flex-direction: column; 
+  gap: var(--ui-gap-4); 
+  font-size: 0.75rem; 
+  text-align: left; 
+}
+
+.retro-admin .retro-legend__title { 
+  font-size: 0.75rem; 
+  margin-top: var(--ui-gap-8); 
+  color: var(--ui-color-texto-muted); 
+  text-align: center; 
+  font-weight: 500;
+}
+
+.retro-admin .retro-legend__dot { 
+  display: inline-block; 
+  width: 10px; 
+  height: 10px; 
+  border-radius: 50%; 
+  margin-right: 6px; 
+  vertical-align: middle;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.retro-admin .retro-legend__dot--bad { background: #ef4444; }
+.retro-admin .retro-legend__dot--mid { background: #f59e0b; }
+.retro-admin .retro-legend__dot--good { background: #10b981; }
+
+/* Métricas mejoradas */
 .retro-admin .retro-metrics { margin-top: var(--ui-gap-12); }
-.retro-admin .retro-metrics .ui-metrics__item--wide { grid-column: span 2; display:flex; flex-direction:column; justify-content:center; }
-@media (max-width:768px){ .retro-admin .retro-metrics .ui-metrics__item--wide { grid-column: span 1; } }
-.retro-admin .retro-metrics__row { display:flex; align-items:center; gap: var(--ui-gap-12); }
-.retro-admin .retro-metrics__col { flex:1; }
-.retro-admin #kpiSugerencia { margin-top: var(--ui-gap-8); }
 
-/* Secciones y tarjetas */
+.retro-admin .retro-metrics .ui-metrics__item--wide { 
+  grid-column: span 2; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+}
+
+@media (max-width:768px){ 
+  .retro-admin .retro-metrics .ui-metrics__item--wide { grid-column: span 1; } 
+}
+
+.retro-admin .retro-metrics__row { 
+  display: flex; 
+  align-items: center; 
+  gap: var(--ui-gap-12); 
+}
+
+.retro-admin .retro-metrics__col { flex: 1; }
+
+.retro-admin #kpiSugerencia { 
+  margin-top: var(--ui-gap-8);
+  font-style: italic;
+  color: var(--ui-color-texto-muted);
+}
+
+/* Secciones y tarjetas mejoradas */
 .retro-admin .retro-actions { margin-top: var(--ui-gap-8); }
 .retro-admin .retro-section { margin-top: var(--ui-gap-16); }
 .retro-admin .retro-result { margin-top: var(--ui-gap-16); }
-.retro-admin .retro-card { padding: var(--ui-gap-16); }
-.retro-admin .retro-history-title { font-size: var(--ui-font-size-base); margin-bottom: var(--ui-gap-8); }
+
+.retro-admin .retro-card { 
+  padding: var(--ui-gap-16);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.retro-admin .retro-history-title { 
+  font-size: var(--ui-font-size-base); 
+  margin-bottom: var(--ui-gap-8);
+  color: var(--ui-color-texto);
+  font-weight: 600;
+}
+
+/* Botones mejorados */
+.retro-admin .ui-button {
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.retro-admin .ui-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.retro-admin .ui-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
 
 /* Áreas con visibilidad controlada por JS (default oculto) */
-.retro-admin #leyenda { display:none; margin-top: var(--ui-gap-12); }
-/* Compatibilidad: aplicar las mismas reglas cuando se use la nueva convención .ui-message */
-.retro-admin .ui-message { display:none; margin-top: var(--ui-gap-12); }
-.retro-admin #generatedArea { display:none; margin-top: var(--ui-gap-12); }
-.retro-admin #responseDetail { display:none; }
-.retro-admin #historyTableWrap { display:none; }
+.retro-admin #leyenda { display: none; margin-top: var(--ui-gap-12); }
+.retro-admin #generatedArea { display: none; margin-top: var(--ui-gap-12); }
+.retro-admin #responseDetail { display: none; }
+.retro-admin #historyTableWrap { display: none; }

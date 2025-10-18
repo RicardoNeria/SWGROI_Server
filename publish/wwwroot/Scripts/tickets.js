@@ -346,7 +346,7 @@ const TicketsUIUpdater = {
             </td>
             <td class="ui-tabla__cell">${TextUtils.escapeHtml(ticket.Responsable || '')}</td>
             <td class="ui-tabla__cell" title="${TextUtils.escapeAttr(ticket.Comentario || 'Sin comentarios')}">${TextUtils.escapeHtml(comentarioTruncado)}</td>
-            <td class="ui-tabla__cell td-fecha">${formatFecha(ticket.FechaActualizacion || ticket.Fecha_Actualizacion || ticket.fecha_actualizacion)}</td>
+            <td class="ui-tabla__cell td-fecha">${formatFecha(ticket.FechaActualizacion || ticket.Fecha_Actualizacion || ticket.fecha_actualizacion || ticket.FechaRegistro || ticket.fecha_registro || '')}</td>
             <td class="ui-tabla__cell ui-tabla__cell--acciones">
                 <button class="ui-button ui-action ui-action--edit" 
                         data-action="edit" data-folio="${ticket.Folio || ''}" 

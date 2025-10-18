@@ -148,12 +148,6 @@ const TecnicosOperations = {
             const response = await TecnicosNetworkUtils.safeFetch(TECNICOS_API_CONFIG.endpoints.seguimiento);
             TecnicosModule.tickets = Array.isArray(response) ? response : [];
             
-            // DEBUG controlado
-            logDbg('🔍 Tickets cargados desde servidor:', TecnicosModule.tickets);
-            if (TecnicosModule.tickets.length > 0) {
-                logDbg('🎯 Primer ticket TipoAsunto:', TecnicosModule.tickets[0].TipoAsunto);
-            }
-            
             TecnicosUIUpdater.renderizarTabla(TecnicosModule.tickets);
             return TecnicosModule.tickets;
         } catch (error) {
@@ -276,6 +270,9 @@ const TecnicosUIUpdater = {
         const tipoAsuntoValue = TipoAsunto.toShort((ticket.TipoAsunto || ticket.tipo_asunto || '').toString());
         const descripcionTruncada = this.truncarTexto(ticket.Descripcion || '', UI_LIMITS.DESC_MAX);
         
+    // Priorizar FechaActualizacion (recreada) y fallback a FechaRegistro
+    const fechaParaMostrar = ticket.FechaActualizacion || ticket.Fecha_Actualizacion || ticket.fecha_actualizacion || ticket.FechaRegistro || ticket.fecha_registro || '';
+        
         tr.innerHTML = `
             <td class="ui-tabla__cell" title="${TextUtils.escapeAttr(ticket.Folio || '')}">${TextUtils.escapeHtml(ticket.Folio || '')}</td>
             <td class="ui-tabla__cell" title="${TextUtils.escapeAttr(tipoAsuntoValue)}">${TextUtils.escapeHtml(tipoAsuntoValue)}</td>
@@ -287,7 +284,7 @@ const TecnicosUIUpdater = {
             </td>
             <td class="ui-tabla__cell">${TextUtils.escapeHtml(ticket.Responsable || '')}</td>
             <td class="ui-tabla__cell" title="${TextUtils.escapeAttr(ticket.Comentario || '')}">${TextUtils.escapeHtml(ticket.Comentario || '')}</td>
-            <td class="ui-tabla__cell td-fecha">${formatFecha(ticket.FechaActualizacion || ticket.Fecha_Actualizacion || ticket.fecha_actualizacion)}</td>
+            <td class="ui-tabla__cell td-fecha">${formatFecha(fechaParaMostrar)}</td>
         `;
         
         return tr;

@@ -209,11 +209,45 @@
     btnCopyLink.addEventListener('click', async () => {
       const text = generatedLink.textContent || '';
       if(!text) return showStatus('No hay enlace para copiar','error');
-      try{
-        await navigator.clipboard.writeText(text);
-        showStatus('✅ Enlace copiado al portapapeles','success');
-      }catch(e){
-        showStatus('❌ No se pudo copiar. Seleccione y copie manualmente.','error');
+      
+      try {
+        // Intento 1: Clipboard API moderno
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          showStatus('✅ Enlace copiado al portapapeles','success');
+          return;
+        }
+        
+        // Intento 2: Método alternativo con selección de texto
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+          showStatus('✅ Enlace copiado al portapapeles','success');
+        } else {
+          throw new Error('execCommand failed');
+        }
+      } catch (e) {
+        // Intento 3: Selección automática para copia manual
+        try {
+          const range = document.createRange();
+          range.selectNodeContents(generatedLink);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          showStatus('📋 Enlace seleccionado. Presione Ctrl+C para copiar','warning');
+        } catch (e2) {
+          showStatus('❌ No se pudo copiar automáticamente. Seleccione el texto manualmente y use Ctrl+C','error');
+        }
       }
     });
 
