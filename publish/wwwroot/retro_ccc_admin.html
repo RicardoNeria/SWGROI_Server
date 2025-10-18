@@ -129,7 +129,7 @@
           <div id="historyTableWrap">
             <div class="ui-desplazable">
               <table class="ui-tabla" id="historyTable" role="table">
-                <thead class="ui-tabla__head"><tr><th class="ui-tabla__col">Folio</th><th class="ui-tabla__col">Cliente</th><th class="ui-tabla__col">Estado Ticket</th><th class="ui-tabla__col">Fecha</th><th class="ui-tabla__col">Enlace</th></tr></thead>
+                <thead class="ui-tabla__head"><tr><th class="ui-tabla__col">Folio</th><th class="ui-tabla__col">Folio (cliente)</th><th class="ui-tabla__col">Estado Ticket</th><th class="ui-tabla__col">Fecha</th><th class="ui-tabla__col">Enlace</th></tr></thead>
                 <tbody id="historyTBody" class="ui-tabla__body"></tbody>
               </table>
             </div>
@@ -155,18 +155,14 @@
     const responseDetail = $('responseDetail');
 
     function showStatus(message, type = 'info') {
-      const iconMap = { success: '✔', error: '✖', warning: '⚠', info: 'ℹ️' };
-      const icon = iconMap[type] || iconMap.info;
-
-      let iconNode = leyenda.querySelector('.ui-message__icon');
+      // Mostrar solo texto y clase de estado; no usar iconografía inline para mantener consistencia con otros módulos
       let textNode = leyenda.querySelector('.ui-message__text');
-      if (!iconNode) { iconNode = document.createElement('span'); iconNode.className = 'ui-message__icon'; leyenda.insertAdjacentElement('afterbegin', iconNode); }
       if (!textNode) { textNode = document.createElement('span'); textNode.className = 'ui-message__text'; leyenda.appendChild(textNode); }
-      iconNode.textContent = icon;
       textNode.textContent = message;
       leyenda.className = `ui-message ui-message--${type} ui-message--visible`;
       leyenda.style.display = 'inline-flex';
-      setTimeout(() => { leyenda.classList.remove('ui-message--visible'); leyenda.style.display = 'none'; }, 6000);
+      // Auto ocultar en 5s (alineado con otros módulos)
+      setTimeout(() => { leyenda.classList.remove('ui-message--visible'); leyenda.style.display = 'none'; }, 5000);
     }
 
     function limpiarUI(){
@@ -208,13 +204,13 @@
 
     btnCopyLink.addEventListener('click', async () => {
       const text = generatedLink.textContent || '';
-      if(!text) return showStatus('No hay enlace para copiar','error');
+  if(!text) return showStatus('No hay enlace para copiar','error');
       
       try {
         // Intento 1: Clipboard API moderno
         if (navigator.clipboard && window.isSecureContext) {
           await navigator.clipboard.writeText(text);
-          showStatus('✅ Enlace copiado al portapapeles','success');
+          showStatus('Enlace copiado al portapapeles','success');
           return;
         }
         
@@ -232,7 +228,7 @@
         document.body.removeChild(textArea);
         
         if (successful) {
-          showStatus('✅ Enlace copiado al portapapeles','success');
+          showStatus('Enlace copiado al portapapeles','success');
         } else {
           throw new Error('execCommand failed');
         }
@@ -244,9 +240,9 @@
           const selection = window.getSelection();
           selection.removeAllRanges();
           selection.addRange(range);
-          showStatus('📋 Enlace seleccionado. Presione Ctrl+C para copiar','warning');
+          showStatus('Enlace seleccionado. Presione Ctrl+C para copiar','warning');
         } catch (e2) {
-          showStatus('❌ No se pudo copiar automáticamente. Seleccione el texto manualmente y use Ctrl+C','error');
+          showStatus('No se pudo copiar automáticamente. Seleccione el texto manualmente y use Ctrl+C','error');
         }
       }
     });
@@ -254,8 +250,8 @@
     function fillResponseDetail(data){
       const tbody = $('responseTBody'); tbody.innerHTML = '';
       const rows = [];
-      rows.push(['Folio', data.folio || '-']);
-      rows.push(['Cliente', data.cliente || '-']);
+  rows.push(['Folio', data.folio || '-']);
+  rows.push(['Folio (cliente)', data.cliente || '-']);
       rows.push(['Fecha Respuesta', data.fechaRespuesta || '-']);
 
       // Extraer etiquetas de pregunta soportando múltiples formatos
@@ -370,7 +366,7 @@
 
         tr.innerHTML = `
           <td class="ui-tabla__cell">${item.folio||'-'}</td>
-          <td class="ui-tabla__cell">${item.cliente||'-'}</td>
+          <td class="ui-tabla__cell">${item.folio||'-'}</td>
           <td class="ui-tabla__cell">${estadoText}</td>
           <td class="ui-tabla__cell">${fecha}</td>
           <td class="ui-tabla__cell link-cell">${enlaceCell}</td>
@@ -584,14 +580,14 @@
 
     btnGenerar.addEventListener('click', async () => {
       const folio = folioInput.value.trim();
-      if (!folio) { showStatus('❌ Por favor ingrese un folio válido','error'); folioInput.focus(); return; }
+  if (!folio) { showStatus('Por favor ingrese un folio válido','error'); folioInput.focus(); return; }
       btnGenerar.disabled = true; btnGenerar.textContent = '⏳ Generando...';
       try{
         const resultado = await window.RetroAdmin.generar(folio);
         // resultado expected: { link, contestada, ... }
         renderGenerated(resultado.link || resultado.enlace || '', resultado.contestada === true);
         resultIntro.innerHTML = '<span class="ui-button__icon" data-icon="copy" aria-hidden="true"></span> Enlace generado. Use el botón para copiar o abrir.';
-        showStatus('✅ Enlace generado correctamente','success');
+  showStatus('Enlace generado correctamente','success');
   // optionally update history if returned; if not, normalize single result into history for metrics
         const rawHist = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
         const hist = rawHist.map(item => {
@@ -603,15 +599,15 @@
   renderHistory(hist);
   computeMetricsFromHistory(hist);
       }catch(err){
-        resultIntro.textContent = '❌ Error al generar enlace. Revise el mensaje.';
-        showStatus('❌ Error al generar enlace','error');
+  resultIntro.textContent = 'Error al generar enlace. Revise el mensaje.';
+  showStatus('Error al generar enlace','error');
         console.error(err);
       }finally{ btnGenerar.disabled=false; btnGenerar.innerHTML='<span class="ui-button__icon" data-icon="copy"></span> Generar Enlace'; }
     });
 
     btnBuscar.addEventListener('click', async () => {
       const folio = folioInput.value.trim();
-      if (!folio) { showStatus('❌ Por favor ingrese un folio válido','error'); folioInput.focus(); return; }
+  if (!folio) { showStatus('Por favor ingrese un folio válido','error'); folioInput.focus(); return; }
       btnBuscar.disabled=true; btnBuscar.innerHTML='<span class="ui-button__icon" data-icon="search"></span> Buscando...';
       try{
         const resultado = await window.RetroAdmin.buscar(folio);
@@ -619,14 +615,14 @@
         if(resultado.fechaRespuesta){
           fillResponseDetail(resultado);
           renderGenerated(resultado.enlace || resultado.link || '', true);
-          resultIntro.textContent = `✅ Respuestas encontradas: ${resultado.fechaRespuesta}`;
-          showStatus('✅ Respuestas encontradas','success');
+          resultIntro.textContent = `Respuestas encontradas: ${resultado.fechaRespuesta}`;
+          showStatus('Respuestas encontradas','success');
         } else {
           // No respondida aun
           renderGenerated(resultado.enlace || resultado.link || '', false);
           responseDetail.style.display='none';
           resultIntro.innerHTML = '<span class="ui-button__icon" data-icon="edit" aria-hidden="true"></span> Encuesta pendiente o sin respuesta registrada.';
-          showStatus('ℹ️ Encuesta pendiente','info');
+          showStatus('Encuesta pendiente','info');
         }
   // Normalizar historial: usar resultado.historial si existe, o el propio resultado como entrada única
         const rawHist2 = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
@@ -639,8 +635,8 @@
   renderHistory(hist2);
   computeMetricsFromHistory(hist2);
       }catch(err){
-        resultIntro.textContent = '❌ Error en la búsqueda';
-        showStatus('❌ Error en la búsqueda','error');
+  resultIntro.textContent = 'Error en la búsqueda';
+  showStatus('Error en la búsqueda','error');
         console.error(err);
       }finally{ btnBuscar.disabled=false; btnBuscar.innerHTML='<span class="ui-button__icon" data-icon="search"></span> Buscar Respuestas'; }
     });

@@ -17,7 +17,7 @@ window.SWGROI.UI = {
      * @param {string|HTMLElement} contenedor - ID o elemento contenedor (opcional)
      * @param {number} autoHide - Milisegundos para auto-ocultar (0 = no ocultar)
      */
-    mostrarMensaje: function(texto, tipo = 'info', contenedor = null, autoHide = 4000) {
+    mostrarMensaje: function(texto, tipo = 'info', contenedor = null, autoHide = 5000) {
         let elemento = this._getOrCreateMensajeElement(contenedor);
         
         if (!elemento) {
@@ -28,7 +28,7 @@ window.SWGROI.UI = {
         this._configurarMensaje(elemento, texto, tipo);
         this._mostrarElemento(elemento);
         
-        // Auto-ocultar todos los mensajes después de 4 segundos
+            // Auto-ocultar todos los mensajes después del periodo configurado (por defecto 5s)
         if (autoHide > 0) {
             setTimeout(() => {
                 this.ocultarMensaje(elemento);
@@ -184,7 +184,7 @@ window.SWGROI.UI = {
      * @param {string} message - Mensaje de error
      * @param {number} autoHide - Milisegundos para auto-ocultar (0 = no ocultar)
      */
-    mostrarErrorCampo: function(fieldName, message, autoHide = 4000) {
+    mostrarErrorCampo: function(fieldName, message, autoHide = 5000) {
         const field = document.getElementById(fieldName);
         // soportar variantes comunes de id de feedback en el repo
         const feedback = document.getElementById(`${fieldName}-help`) ||

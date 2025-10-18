@@ -78,6 +78,11 @@
   font-weight: 500;
 }
 
+/* Forzar ausencia de iconografía en mensajes en este módulo: el diseño usa sólo texto con contexto visual */
+.retro-admin .ui-message__icon { display: none; }
+.retro-admin .ui-message { align-items: center; }
+.retro-admin .ui-message__text { display: inline-block; }
+
 /* Animaciones */
 @keyframes slideInDown {
   from {
