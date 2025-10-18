@@ -50,6 +50,10 @@ body.ui-layout--survey {
 .retro-brand--small { justify-content:center; margin-bottom: .5rem; }
 .retro-brand--small .retro-brand__logo { height: 28px; }
 
+/* Logo más grande para la vista pública */
+.retro-brand--large .retro-brand__logo { height: 56px; }
+.retro-brand--large .retro-brand__name { font-size: 1.15rem; }
+
 /* Header */
 .retro-header {
 	display: flex;

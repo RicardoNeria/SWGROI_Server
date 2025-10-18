@@ -115,11 +115,9 @@
         estadoFormulario.preguntas = data.preguntas || [];
         estadoFormulario.cargado = true;
 
-        // Actualizar badges si existen en DOM
-        const badgeC = document.getElementById('badgeCliente');
-        const badgeF = document.getElementById('badgeFolio');
-        if (badgeC) badgeC.textContent = estadoFormulario.cliente || '—';
-        if (badgeF) badgeF.textContent = estadoFormulario.folio || '—';
+    // Actualizar badge de folio si existe en DOM (usamos folio como identificador)
+    const badgeF = document.getElementById('badgeFolio');
+    if (badgeF) badgeF.textContent = estadoFormulario.folio || '—';
 
         if (estadoFormulario.contestada) {
             // Si ya fue contestada, ir directo a la vista de éxito centrada
@@ -129,6 +127,42 @@
 
         // Normal flow when not contestada
         actualizarInfoCliente();
+        // Si el backend proporciona leyendas, las usamos y nos aseguramos de que sean visibles
+        try {
+            // retroNota
+            const retroNotaEl = document.getElementById('retroNota');
+            if (data.leyendaNota) {
+                if (retroNotaEl) {
+                    const txt = String(data.leyendaNota || '').trim();
+                    retroNotaEl.querySelector('.ui-message__text').textContent = txt || 'Por favor valore del 1 al 5 las primeras preguntas y, si lo desea, deje un comentario.';
+                    retroNotaEl.style.display = 'flex';
+                    retroNotaEl.setAttribute('data-preserve', 'true');
+                }
+            } else if (retroNotaEl) {
+                // mantener el contenido por defecto pero mostrarlo
+                retroNotaEl.style.display = '';
+            }
+
+            // leyendaFacturacion (texto personalizado)
+            const lf = document.getElementById('leyendaFacturacion');
+            if (lf) {
+                if (data.leyendaFacturacion) {
+                    lf.querySelector('.ui-message__text').textContent = String(data.leyendaFacturacion).trim();
+                }
+                lf.style.display = 'flex';
+                lf.setAttribute('data-preserve', 'true');
+            }
+
+            // leyendaObligatoria
+            const lo = document.getElementById('leyendaObligatoria');
+            if (lo) {
+                if (data.leyendaObligatoria) {
+                    lo.querySelector('.ui-message__text').textContent = String(data.leyendaObligatoria).trim();
+                }
+                lo.style.display = 'flex';
+                lo.setAttribute('data-preserve', 'true');
+            }
+        } catch (e) { console.warn('No se pudieron aplicar leyendas desde backend', e); }
         // normalize preguntas to plain strings to avoid '[object Object]'
         estadoFormulario.preguntas = (estadoFormulario.preguntas || []).map(p => normalizePreguntaText(p));
         generarPreguntas();
@@ -244,7 +278,7 @@
             seccion.style.display = 'block';
             seccion.className = 'ui-card ui-card--module retro-card retro-card--center';
 
-            const cliente = estadoFormulario.cliente ? `<div class="retro-exito__meta">Cliente: <strong>${sanitizarTexto(estadoFormulario.cliente)}</strong></div>` : '';
+            const cliente = '';
             const folio = estadoFormulario.folio ? `<div class="retro-exito__meta">Folio: <strong>${sanitizarTexto(estadoFormulario.folio)}</strong></div>` : '';
 
             seccion.innerHTML = `
@@ -419,15 +453,12 @@
                 return;
             }
 
-            // Si no hay leyenda estática, construimos una desde los datos recibidos
-            let texto = 'Evaluación de servicio CCC';
+            // Si no hay leyenda estática, mostramos el número de folio principal
             if (estadoFormulario.folio) {
-                texto += ` - Ticket: ${estadoFormulario.folio}`;
+                elementos.infoCliente.textContent = `Ticket: ${estadoFormulario.folio}`;
+            } else {
+                elementos.infoCliente.textContent = 'Evaluación de servicio CCC';
             }
-            if (estadoFormulario.cliente) {
-                texto += ` - Cliente: ${estadoFormulario.cliente}`;
-            }
-            elementos.infoCliente.textContent = texto;
         }
     }
 
