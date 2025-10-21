@@ -145,6 +145,10 @@
     if (typeof window.showRetroToast !== 'function') {
       window.showRetroToast = mkShim('info', 3200);
     }
+    // Tickets
+    if (typeof window.showTicketsToast !== 'function') {
+      window.showTicketsToast = mkShim('info', 3200);
+    }
     // Documentos: pequeñas diferencias de duración por tipo
     if (typeof window.showDocsToast !== 'function') {
       window.showDocsToast = function(message, type = 'info', duration){
