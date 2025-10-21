@@ -11,7 +11,8 @@ const AdminModule = {
     porPagina: 10,
     filtroTexto: '',
     filtroRol: '',
-    usuarioEditando: null
+    usuarioEditando: null,
+    _notifiedUsuariosCargados: false
 };
 
 // Configuración de la API
@@ -65,7 +66,15 @@ const NetworkUtils = {
 // Gestión de notificaciones (unificada con SWGROI.UI)
 const NotificationManager = {
     show(message, type = 'info') {
-        // Preferir sistema unificado si está disponible
+        // 1) Preferir el core unificado Toast Premium
+        if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            try { window.ToastPremium.show(message, type, { /*title inferido*/ }); return; } catch(e) { console.warn('ToastPremium.show falló', e); }
+        }
+        // 2) Fallback: gestor específico del módulo (legacy)
+        if (window.AdminToastManager && typeof window.AdminToastManager.show === 'function') {
+            try { window.AdminToastManager.show(message, type); return; } catch(e) { console.warn('AdminToastManager.show falló', e); }
+        }
+        // Luego intentar la UI global
         if (window.SWGROI && window.SWGROI.UI && typeof window.SWGROI.UI.mostrarMensaje === 'function') {
             window.SWGROI.UI.mostrarMensaje(message, type, 'leyenda');
             return;
@@ -138,7 +147,11 @@ const UserOperations = {
                 FilterManager.aplicarFiltros();
                 UIUpdater.actualizarKPIs();
             }
-            NotificationManager.show('Usuarios cargados correctamente', 'success');
+            // Mostrar notificación de carga solo la primera vez que se cargan datos
+            if (!AdminModule._notifiedUsuariosCargados) {
+                NotificationManager.show('Usuarios cargados correctamente', 'success');
+                AdminModule._notifiedUsuariosCargados = true;
+            }
         } catch (error) {
             NotificationManager.show(error.message || 'Error al cargar usuarios', 'error');
         }
@@ -722,7 +735,23 @@ const EventManager = {
     
     async handleFormSubmit() {
         const datos = FormManager.obtenerDatosFormulario();
-        if (!datos || !FormManager.validarFormulario(datos)) {
+        if (!datos) { return; }
+        // Validación con AdminValidator si está disponible, si no, usar validación interna
+        let esValido = true;
+        if (window.AdminValidator && typeof window.AdminValidator.validarCrearActualizar === 'function') {
+            const errs = window.AdminValidator.validarCrearActualizar(datos, !!AdminModule.usuarioEditando);
+            esValido = Object.keys(errs||{}).length === 0;
+            if (!esValido) {
+                if (typeof window.AdminValidator.mostrarErrores === 'function') {
+                    window.AdminValidator.mostrarErrores(errs);
+                } else {
+                    FormManager.mostrarErrores(errs);
+                }
+            }
+        } else {
+            esValido = FormManager.validarFormulario(datos);
+        }
+        if (!esValido) {
             return;
         }
         

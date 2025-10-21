@@ -6,10 +6,13 @@
     <title>Administración de Usuarios - SWGROI</title>
     <link rel="stylesheet" href="Styles/componentes/componentes.css">
     <link rel="stylesheet" href="Styles/admin.css">
+    <link rel="stylesheet" href="Styles/admin-toast.css">
     <script src="Scripts/ui-utils.js" defer></script>
     <script src="Scripts/seguridad.js" defer></script>
     <script src="Scripts/ui.js" defer></script>
     <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/toast-premium.js" defer></script>
+    <script src="Scripts/adminValidator.js" defer></script>
 </head>
 <body class="ui-layout ui-layout--no-topbar">
 
@@ -86,6 +89,7 @@
                         <option value="Supervisor">Supervisor</option>
                         <option value="Operador">Operador</option>
                         <option value="Técnico">Técnico</option>
+                        <option value="Mesa de control">Mesa de control</option>
                     </select>
 
                     <button type="button" id="btnBuscar" class="ui-button ui-button--primary" 
@@ -111,13 +115,7 @@
                 </div>
             </div>
 
-            <!-- MENSAJE DE ESTADO GLOBAL -->
-            <div class="ui-message-container">
-                <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
-                    <span class="ui-message__icon" aria-hidden="true"></span>
-                    <span class="ui-message__text"></span>
-                </div>
-            </div>
+            
 
             <!-- TABLA DE USUARIOS -->
             <section class="ui-card ui-card--report" aria-label="Listado de usuarios">
@@ -205,6 +203,7 @@
                                 <option value="Supervisor">Supervisor</option>
                                 <option value="Operador">Operador</option>
                                 <option value="Técnico">Técnico</option>
+                                <option value="Mesa de control">Mesa de control</option>
                             </select>
                         </div>
                         <div id="rolFeedback" class="ui-form__feedback" aria-live="polite"></div>
@@ -295,6 +294,7 @@
         </div>
     </div>
 
+    <script src="Scripts/toast-premium.js" defer></script>
     <script src="Scripts/admin.js"></script>
 </body>
 </html>

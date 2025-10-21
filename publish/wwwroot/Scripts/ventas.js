@@ -9,8 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     const $ = (id) => document.getElementById(id);
     
-    // Elementos de notificación - Usando sistema unificado
-    const leyenda = $('leyenda');
+    // Elementos de notificación - Sistema unificado de toasts del módulo
     
     // Formulario modal (IDs sincronizados con ventas.html)
     const folio = $('folio');
@@ -50,9 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const tbody = $('tbody') || document.querySelector('#tablaVentas tbody');
 
     // Paginación y resumen
-    const btnPrev = $('btnPrev');
-    const btnNext = $('btnNext');
     const lblPaginacion = $('lblPaginacion');
+    const paginacionVentas = document.getElementById('paginacionVentas');
     const tablaLoader = $('tablaLoader');
     const resumenTotales = $('resumenTotales');
     const resTotalReg = $('resTotalReg');
@@ -175,53 +173,87 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     // FUNCIONES DE NOTIFICACIÓN
     // ============================================================
-    function toast(msg, ok = true) {
-        if (!leyenda) return;
-        const type = ok ? 'success' : 'error';
-        const iconMap = { success: '✔', error: '✖', warning: '⚠', info: 'ℹ️' };
-        const icon = iconMap[type];
+    // Proveer un wrapper global para compatibilidad con validators y otras llamadas
+    if (typeof window.showVentasToast !== 'function') {
+        window.showVentasToast = function(message, type = 'info', duration = 3200) {
+            try {
+                if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+                    window.ToastPremium.show(String(message || ''), String(type || 'info'), { duration });
+                    return;
+                }
+            } catch (e) { /* ignore */ }
+            // Fallback suave si no está disponible el sistema de toasts
+            console[(type === 'error' ? 'warn' : 'log')](String(message || ''));
+        };
+    }
 
-        let iconNode = leyenda.querySelector('.ui-message__icon');
-        let textNode = leyenda.querySelector('.ui-message__text');
-        if (!iconNode) { iconNode = document.createElement('span'); iconNode.className = 'ui-message__icon'; leyenda.insertAdjacentElement('afterbegin', iconNode); }
-        if (!textNode) { textNode = document.createElement('span'); textNode.className = 'ui-message__text'; leyenda.appendChild(textNode); }
-        iconNode.textContent = icon;
-        textNode.textContent = msg;
-        leyenda.className = `ui-message ui-message--${type} ui-message--visible`;
-        leyenda.style.display = 'inline-flex';
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => { leyenda.classList.remove('ui-message--visible'); leyenda.style.display = 'none'; }, 3000);
+    function toast(msg, ok = true) {
+        const type = ok ? 'success' : 'error';
+        if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            try { window.ToastPremium.show(String(msg || ''), type, { duration: 3200 }); return; } catch (_) {}
+        }
+        if (typeof window.showVentasToast === 'function') {
+            window.showVentasToast(String(msg || ''), type, 3200);
+        } else {
+            console[(ok ? 'log' : 'warn')](String(msg || ''));
+        }
     }
 
     function setMv(msg, ok = true) {
-        // Sistema unificado de mensajes (único archivo fuente: ui-utils.js)
+        // Mostrar mensaje en el modal sin depender de SWGROI.UI
         const modalContainer = document.getElementById('modalVentaMensaje') || document.querySelector('#modalVenta .ui-message-container');
-        if (modalContainer && window.SWGROI?.UI?.mostrarMensaje) {
-            const tipo = ok ? 'success' : 'error';
-            window.SWGROI.UI.mostrarMensaje(msg, tipo, modalContainer, 4000);
-            modalContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (!modalContainer) return;
+
+        // Asegurar elemento .ui-message dentro del contenedor
+        let msgEl = modalContainer.querySelector('.ui-message');
+        if (!msgEl) {
+            msgEl = document.createElement('div');
+            msgEl.className = 'ui-message';
+            msgEl.setAttribute('role', 'status');
+            msgEl.setAttribute('aria-live', 'polite');
+            // estructura interna: icono + texto
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'ui-message__icon';
+            const textSpan = document.createElement('span');
+            textSpan.className = 'ui-message__text';
+            msgEl.appendChild(iconSpan);
+            msgEl.appendChild(textSpan);
+            modalContainer.appendChild(msgEl);
         }
+
+        // Actualizar contenido y clases
+        const tipo = ok ? 'success' : 'error';
+        const iconMap = { success: '\u2714', error: '\u2716', warning: '\u26a0', info: '\u2139\ufe0f' };
+        const iconNode = msgEl.querySelector('.ui-message__icon');
+        const textNode = msgEl.querySelector('.ui-message__text');
+        if (iconNode) iconNode.textContent = iconMap[tipo] || '';
+        if (textNode) textNode.textContent = String(msg || '');
+        msgEl.className = `ui-message ui-message--${tipo} ui-message--visible`;
+        msgEl.style.display = 'inline-flex';
+
+        clearTimeout(mvTimer);
+        mvTimer = setTimeout(() => {
+            msgEl.classList.remove('ui-message--visible');
+            msgEl.style.display = 'none';
+        }, 4000);
+
+        // Enfocar visualmente el contenedor para visibilidad
+        try { modalContainer.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { /* noop */ }
     }
 
     function clearMv() {
-        // Ocultar cualquier variante de mensaje en el modal
+        // Ocultar cualquier mensaje en el modal (sin SWGROI.UI)
         const container = document.getElementById('modalVentaMensaje') || document.querySelector('#modalVenta .ui-message-container');
-        if (container) {
-            const msg = container.querySelector('.ui-message');
-            if (msg) {
-                // Usar helper unificado para ocultar con animación
-                if (window.SWGROI?.UI?.ocultarMensaje) {
-                    window.SWGROI.UI.ocultarMensaje(msg);
-                } else {
-                    msg.classList.remove('ui-message--visible');
-                    msg.style.display = 'none';
-                }
-                const iconSpan = msg.querySelector('.ui-message__icon');
-                const textSpan = msg.querySelector('.ui-message__text');
-                if (iconSpan) iconSpan.textContent = '';
-                if (textSpan) textSpan.textContent = '';
-            }
-        }
+        if (!container) return;
+        const msg = container.querySelector('.ui-message');
+        if (!msg) return;
+        clearTimeout(mvTimer);
+        msg.classList.remove('ui-message--visible');
+        msg.style.display = 'none';
+        const iconSpan = msg.querySelector('.ui-message__icon');
+        const textSpan = msg.querySelector('.ui-message__text');
+        if (iconSpan) iconSpan.textContent = '';
+        if (textSpan) textSpan.textContent = '';
     }
 
     // ============================================================
@@ -445,7 +477,10 @@ document.addEventListener('DOMContentLoaded', () => {
             mcanConfirm.parentNode.replaceChild(nuevo, mcanConfirm);
             nuevo.addEventListener('click', async () => {
                 const motivo = (mcanMot?.value || '').trim();
-                if (!motivo) { toast('Motivo requerido', false); return; }
+                // Validación centralizada
+                if (window.VentasValidator && !window.VentasValidator.validarCancelacion(mcanOv.value, motivo)) {
+                    return; // errores ya notificados
+                }
                 try {
                     const r = await fetch('/ventas/cancelar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ovsr3: mcanOv.value, motivo }) });
                     const j = await r.json().catch(()=>null);
@@ -929,15 +964,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function actualizarPaginacion() {
-        if (!lblPaginacion || !btnPrev || !btnNext) return;
-        
-        const inicio = ((pageNumber - 1) * pageSize) + 1;
-        const fin = Math.min(pageNumber * pageSize, totalRecords);
-        
-        lblPaginacion.textContent = `Mostrando ${inicio}-${fin} de ${totalRecords} ventas`;
-        
-        btnPrev.disabled = pageNumber <= 1;
-        btnNext.disabled = pageNumber * pageSize >= totalRecords;
+        if (window.SWGROI && window.SWGROI.Pagination && paginacionVentas) {
+            window.SWGROI.Pagination.render(paginacionVentas, {
+                total: totalRecords,
+                page: pageNumber,
+                size: pageSize,
+                infoLabel: lblPaginacion,
+                onChange: (p)=>{ pageNumber = p; cargarTabla(false); }
+            });
+            return;
+        }
+        if (lblPaginacion) {
+            const inicio = totalRecords === 0 ? 0 : ((pageNumber - 1) * pageSize) + 1;
+            const fin = Math.min(pageNumber * pageSize, totalRecords);
+            lblPaginacion.textContent = totalRecords === 0 ? 'No hay ventas' : `Mostrando ${inicio}-${fin} de ${totalRecords} ventas`;
+        }
     }
 
     // ============================================================
@@ -1098,7 +1139,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reactivar/activar una venta (si el backend lo permite)
     window.activarVenta = async function(ovsr3) {
-        if (!ovsr3) { toast('OVSR3 inválido', false); return; }
+        if (window.VentasValidator && !window.VentasValidator.validarActivacion(ovsr3)) {
+            return; // errores ya notificados
+        }
         mostrarConfirm('Activar OV', `¿Deseas activar la venta ${ovsr3}? Esto validará que no existan otras ventas activas para el mismo folio.`, async () => {
             try {
                 const resp = await fetch('/ventas/activar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ovsr3 }) });
@@ -1218,6 +1261,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnGuardar) {
         btnGuardar.addEventListener('click', (e) => {
             e.preventDefault();
+            const form = document.getElementById('formVenta');
+            if (window.VentasValidator && !window.VentasValidator.validarFormularioNuevaVenta(form)) {
+                return; // errores ya notificados con toast
+            }
             mostrarConfirm('Registrar Venta', '¿Deseas registrar esta venta?', guardarVenta);
         });
     }
@@ -1227,29 +1274,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnLimpiar) btnLimpiar.addEventListener('click', limpiarFiltros);
     if (btnBuscar) {
         btnBuscar.addEventListener('click', () => {
+            // Validar filtros antes de buscar
+            if (window.VentasValidator) {
+                const ok = window.VentasValidator.validarFiltros({
+                    folio: filtroFolio?.value,
+                    estado: filtroEstado?.value,
+                    ovsr3: filtroOvsr3?.value,
+                    min: filtroMin?.value,
+                    max: filtroMax?.value,
+                    divisorCom: divisorCom?.value
+                });
+                if (!ok) return;
+            }
             pageNumber = 1;
             cargarTabla();
             saveFilters();
         });
     }
 
-    // Paginación
-    if (btnPrev) {
-        btnPrev.addEventListener('click', () => {
-            if (pageNumber > 1) {
-                pageNumber--;
-                cargarTabla();
-            }
-        });
-    }
-    if (btnNext) {
-        btnNext.addEventListener('click', () => {
-            if (pageNumber * pageSize < totalRecords) {
-                pageNumber++;
-                cargarTabla();
-            }
-        });
-    }
+    // Paginación se gestiona con SWGROI.Pagination
 
     // Exportaciones con filtros actuales
     function buildExportUrl(opts = {}) {
@@ -1346,6 +1389,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) {
             el.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
+                    // Validar filtros antes de buscar
+                    if (window.VentasValidator) {
+                        const ok = window.VentasValidator.validarFiltros({
+                            folio: filtroFolio?.value,
+                            estado: filtroEstado?.value,
+                            ovsr3: filtroOvsr3?.value,
+                            min: filtroMin?.value,
+                            max: filtroMax?.value,
+                            divisorCom: divisorCom?.value
+                        });
+                        if (!ok) return;
+                    }
                     pageNumber = 1;
                     cargarTabla();
                     saveFilters();
@@ -1379,30 +1434,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFilters();
     cargarTabla(false, true);
 
-    // ============================================================
-    // INICIALIZACIÓN
-    // ============================================================
-        function toast(msg, ok = true) {
-            const tipo = ok ? 'success' : 'error';
-            if (window.SWGROI && window.SWGROI.UI && typeof window.SWGROI.UI.mostrarMensaje === 'function') {
-                window.SWGROI.UI.mostrarMensaje(msg, tipo, 'leyenda', 3000);
-                return;
-            }
-            // fallback: manipular elemento leyenda si existe
-            if (!leyenda) return;
-            const iconMap = { success: '\u2714', error: '\u2716', warning: '\u26a0', info: '\u2139\ufe0f' };
-            const icon = iconMap[tipo];
-            let iconNode = leyenda.querySelector('.ui-message__icon');
-            let textNode = leyenda.querySelector('.ui-message__text');
-            if (!iconNode) { iconNode = document.createElement('span'); iconNode.className = 'ui-message__icon'; leyenda.insertAdjacentElement('afterbegin', iconNode); }
-            if (!textNode) { textNode = document.createElement('span'); textNode.className = 'ui-message__text'; leyenda.appendChild(textNode); }
-            iconNode.textContent = icon;
-            textNode.textContent = msg;
-            leyenda.className = `ui-message ui-message--${tipo} ui-message--visible`;
-            leyenda.style.display = 'inline-flex';
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => { leyenda.classList.remove('ui-message--visible'); leyenda.style.display = 'none'; }, 3000);
-        }
     // ============================================================
     
     // Validación de folio

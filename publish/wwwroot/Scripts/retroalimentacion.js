@@ -10,6 +10,20 @@
     // ================================
     // VARIABLES Y CONFIGURACIÓN
     // ================================
+    // Proveer wrapper global de toast para Retro: delega a ToastPremium si está disponible
+    if (typeof window.showRetroToast !== 'function') {
+        window.showRetroToast = function(message, type = 'info', options = {}) {
+            try {
+                if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+                    const { duration = (type === 'error' ? 5000 : 3000) } = options || {};
+                    window.ToastPremium.show(String(message || ''), String(type || 'info'), { duration });
+                    return;
+                }
+            } catch (e) { /* ignore */ }
+            // Fallback suave
+            console[(type === 'error' ? 'warn' : 'log')](String(message || ''));
+        };
+    }
     
     let estadoFormulario = {
         cargado: false,
@@ -193,7 +207,7 @@
                     updateProgressBar();
                     mostrarLeyendaObligatoria(true);
                 } catch (e) {
-                    alert('JSON inválido: ' + e.message);
+                    showRetroToast('JSON inválido: ' + e.message, 'error');
                 }
             });
         } catch (e) { console.warn('Dev panel init error', e); }
@@ -553,22 +567,12 @@
     }
 
     function validarCampo(event) {
+        // La validación ahora se maneja por el RetroalimentacionValidator
+        // Este método se mantiene para compatibilidad pero delega al validador centralizado
         const campo = event.target;
-        const grupo = campo.closest('.retro-pregunta');
         
-        if (!grupo) return;
-
-        // Remover clases de error previas
-        const radios = grupo.querySelectorAll('.retro-escala__radio');
-        const textarea = grupo.querySelector('textarea');
-        
-        radios.forEach(radio => radio.classList.remove('retro-escala__radio--error'));
-        if (textarea) textarea.classList.remove('ui-form__input--error');
-
-        // Remover mensaje de error previo
-        const errorExistente = grupo.querySelector('.ui-form__feedback');
-        if (errorExistente) {
-            errorExistente.remove();
+        if (window.RetroalimentacionValidator) {
+            window.RetroalimentacionValidator.validateField(campo.name, campo.value);
         }
     }
 
@@ -579,7 +583,16 @@
     async function manejarEnvio(event) {
         event.preventDefault();
         
-        if (!validarFormulario()) {
+        // NUEVA INTEGRACIÓN: Usar el validador centralizado
+        if (!window.RetroalimentacionValidator) {
+            console.error('Validador no disponible');
+            showRetroToast('Error: Sistema de validación no disponible', 'error');
+            return;
+        }
+
+        // Validar usando el sistema centralizado
+        if (!window.RetroalimentacionValidator.validarFormularioRetro(elementos.formRespuestas)) {
+            // El validador ya mostró los mensajes de error via Toast
             return;
         }
 
@@ -592,6 +605,12 @@
             // marcar como contestada y mostrar éxito
             estadoFormulario.contestada = true;
 
+            // NUEVA INTEGRACIÓN: Usar Toast para éxito
+            showRetroToast('¡Respuestas enviadas exitosamente!', 'success', {
+                title: 'Envío completado',
+                duration: 3000
+            });
+
             // Mostrar texto de enviado y estado visual inmediatamente
             if (elementos.btnEnviar) {
                 try {
@@ -600,9 +619,6 @@
                     elementos.btnEnviar.innerHTML = '<span class="ui-button__icon" data-icon="confirm"></span>Enviado';
                 } catch (e) { /* ignore */ }
             }
-
-            // Mensaje breve de éxito (no redirección)
-            mostrarMensaje('Enviado', 'success');
 
             // Intentar cerrar inmediatamente la ventana (sin redirección).
             try { window.close && window.close(); } catch (e) { /* ignore */ }
@@ -618,72 +634,24 @@
             
         } catch (error) {
             console.error('Error enviando respuestas:', error);
-            mostrarMensaje(error.message || 'Error al enviar respuestas', 'error');
+            
+            // NUEVA INTEGRACIÓN: Usar Toast para errores
+            showRetroToast(error.message || 'Error al enviar respuestas', 'error', {
+                title: 'Error de envío',
+                duration: 5000
+            });
+            
             deshabilitarFormulario(false);
         }
     }
 
-    function validarFormulario() {
-        // Construir objeto de errores por campo para la API centralizada
-        const errores = {};
+    // ================================
+    // ENVÍO DE RESPUESTAS
+    // ================================
 
-        // Validar preguntas obligatorias (1-4)
-        for (let i = 1; i <= 4; i++) {
-            const radios = document.querySelectorAll(`input[name="r${i}"]:checked`);
-            if (radios.length === 0) {
-                // clave de campo: el name del input en el formulario
-                errores[`r${i}`] = 'Esta pregunta es obligatoria';
-            }
-        }
-
-        const tieneErrores = Object.keys(errores).length > 0;
-
-        if (tieneErrores) {
-            // Delegar a la utilidad unificada si está disponible
-            if (window.SWGROI && window.SWGROI.UI && typeof window.SWGROI.UI.mostrarErroresFormulario === 'function') {
-                try {
-                    window.SWGROI.UI.mostrarErroresFormulario(errores, true);
-                } catch (e) {
-                    console.warn('SWGROI.UI.mostrarErroresFormulario fallo', e);
-                }
-            } else {
-                // Fallback: marcar campos y mostrar mensaje global
-                for (const key in errores) {
-                    const num = key.replace(/^r/, '');
-                    mostrarErrorCampo(num, errores[key]);
-                }
-                mostrarMensaje('Por favor complete todas las preguntas obligatorias', 'error');
-            }
-        }
-
-        return !tieneErrores;
-    }
-
-    function mostrarErrorCampo(numeroPregunta, mensaje) {
-        // Preferir el helper central por nombre de campo
-        const fieldName = `r${numeroPregunta}`;
-        if (window.SWGROI && window.SWGROI.UI && typeof window.SWGROI.UI.mostrarErrorCampo === 'function') {
-            try {
-                window.SWGROI.UI.mostrarErrorCampo(fieldName, mensaje, true);
-                return;
-            } catch (e) { console.warn('SWGROI.UI.mostrarErrorCampo falló', e); }
-        }
-
-        // Fallback local
-        const input = document.querySelector(`input[name="r${numeroPregunta}"]`);
-        if (!input) return;
-        const grupo = input.closest('.retro-pregunta');
-        if (!grupo) return;
-        const radios = grupo.querySelectorAll('.retro-escala__radio');
-        radios.forEach(radio => radio.classList.add('retro-escala__radio--error'));
-
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'ui-form__feedback';
-        errorDiv.textContent = mensaje;
-
-        const respuestaDiv = grupo.querySelector('.retro-respuesta');
-        respuestaDiv && respuestaDiv.appendChild(errorDiv);
-    }
+    // ================================
+    // RECOPILACIÓN Y ENVÍO DE DATOS
+    // ================================
 
     function recopilarRespuestas() {
         const respuestas = {};
@@ -740,9 +708,17 @@
     }
 
     function mostrarError(mensaje) {
-        // Usar el sistema unificado si está disponible
-        if (window.SWGROI && window.SWGROI.UI) {
-            window.SWGROI.UI.mostrarMensaje(mensaje, 'error', elementos.leyenda);
+        // NUEVA INTEGRACIÓN: Usar Toast preferentemente
+        if (window.showRetroToast) {
+            showRetroToast(mensaje, 'error', {
+                title: 'Error',
+                duration: 6000
+            });
+        } else {
+            // Fallback al sistema unificado si está disponible
+            if (window.SWGROI && window.SWGROI.UI) {
+                window.SWGROI.UI.mostrarMensaje(mensaje, 'error', elementos.leyenda);
+            }
         }
         
         // Fallback específico del módulo
@@ -823,7 +799,16 @@
     }
 
     function mostrarMensaje(mensaje, tipo = 'info') {
-        // Usar el sistema unificado si está disponible
+        // Preferir ToastPremium/showRetroToast
+        if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            try { window.ToastPremium.show(String(mensaje || ''), String(tipo || 'info'), { duration: (tipo === 'error' ? 5000 : 3000) }); return; } catch (e) {}
+        }
+        if (typeof window.showRetroToast === 'function') {
+            showRetroToast(mensaje, tipo, { duration: tipo === 'error' ? 5000 : 3000 });
+            return;
+        }
+        
+        // Fallback al sistema unificado si está disponible
         if (window.SWGROI && window.SWGROI.UI) {
             return window.SWGROI.UI.mostrarMensaje(mensaje, tipo, elementos.leyenda);
         }
@@ -907,7 +892,9 @@
     window.RetroalimentacionModule = {
         getEstado: () => estadoFormulario,
         recargar: cargarFormulario,
-        validar: validarFormulario
+        validar: () => window.RetroalimentacionValidator ? 
+                      window.RetroalimentacionValidator.validarFormularioRetro(elementos.formRespuestas) : 
+                      false
     };
 
 })();

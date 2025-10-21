@@ -35,26 +35,21 @@
     });
 
     function notificar(mensaje, exito) {
-        // Mostrar mensaje unificado en el contenedor del formulario
-        try {
-            const cont = document.querySelector('#formRecuperar .ui-message-container');
-            if (window.SWGROI && window.SWGROI.UI && cont) {
-                window.SWGROI.UI.mostrarMensaje(mensaje, exito ? 'success' : 'error', cont);
-            }
-        } catch(_) {}
-        // Además emitir evento por compatibilidad
-        const evento = new CustomEvent("recuperar:mensaje", {
-            detail: { mensaje, exito }
-        });
-        document.dispatchEvent(evento);
+        // Preferir ToastPremium
+        if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            try { window.ToastPremium.show(mensaje, exito ? 'success' : 'error', { duration: exito ? 2600 : 5000 }); return; } catch(_){}
+        }
+        // Fallback al sistema unificado de UI si existiera
+        try { if (window.SWGROI && window.SWGROI.UI) { window.SWGROI.UI.mostrarMensaje(mensaje, exito ? 'success' : 'error'); return; } } catch(_){ }
+        // Último recurso: consola
+        try { console.log('[Recuperar]', exito ? 'OK' : 'ERR', mensaje); } catch(_){ }
     }
 
     // Listener de compatibilidad: pintar mensaje cuando otros scripts escuchen el evento
+    // Compat: seguir emitiendo evento, por si algún listener externo desea reaccionar
     document.addEventListener('recuperar:mensaje', function(e){
-        const cont = document.querySelector('#formRecuperar .ui-message-container');
-        if (!cont) return;
-        if (window.SWGROI && window.SWGROI.UI) {
-            window.SWGROI.UI.mostrarMensaje(e.detail?.mensaje || '', e.detail?.exito ? 'success' : 'error', cont);
-        }
+        const msg = e.detail?.mensaje || '';
+        const ok  = !!e.detail?.exito;
+        notificar(msg, ok);
     });
 });

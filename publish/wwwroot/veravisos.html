@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="Styles/componentes/componentes.css">
     <script src="Scripts/icon-loader.js" defer></script>
     <script src="Scripts/ui-utils.js" defer></script>
+    <script src="Scripts/toast-premium.js" defer></script>
 </head>
 <body class="ui-layout ui-layout--no-topbar">
 
@@ -151,17 +152,7 @@
                 <!-- PAGINACIÓN UNIFICADA -->
                 <div class="ui-paginacion" role="navigation" aria-label="Paginación de avisos">
                     <span id="paginacionInfo" class="ui-paginacion__info">Cargando...</span>
-                    <div id="paginacionPages" class="ui-paginacion__pages" aria-hidden="true"></div>
-                    <div class="ui-paginacion__controles">
-                        <button id="btnPrev" class="ui-button ui-button--ghost ui-paginacion__btn" 
-                                type="button" aria-label="Página anterior" disabled>
-                            <span class="ui-button__icon" data-icon="arrow-left"></span>Anterior
-                        </button>
-                        <button id="btnNext" class="ui-button ui-button--ghost ui-paginacion__btn" 
-                                type="button" aria-label="Página siguiente" disabled>
-                            Siguiente<span class="ui-button__icon" data-icon="arrow-right"></span>
-                        </button>
-                    </div>
+                    <div id="paginacionVerAvisos" class="ui-paginacion__controles"></div>
                 </div>
             </section>
         </div>

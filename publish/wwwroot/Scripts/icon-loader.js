@@ -13,9 +13,17 @@
     // href for <use> must use xlink:href or href depending on browser; use setAttributeNS
     use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#'+id);
     svg.appendChild(use);
-    // clear existing and append
-    el.textContent = '';
-    el.appendChild(svg);
+    // prefer injecting into an inner placeholder span if present (some UIs render
+    // <span class="ui-button__icon"><span class="ui-button__icon__icon"></span></span>)
+    const inner = el.querySelector && el.querySelector('.ui-button__icon__icon');
+    if (inner) {
+      inner.textContent = '';
+      inner.appendChild(svg);
+    } else {
+      // clear existing and append directly
+      el.textContent = '';
+      el.appendChild(svg);
+    }
   }
 
   function processAll(root){

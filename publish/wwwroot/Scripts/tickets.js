@@ -31,13 +31,18 @@ const TICKETS_API_CONFIG = {
 
 // Utilidades para manejo de fetch seguro
 const TicketsNetworkUtils = {
+    _getCookie(name){ try{ const v=document.cookie.split('; ').find(c=>c.startsWith(name+'=')); return v?decodeURIComponent(v.split('=')[1]):''; }catch{ return ''; } },
     async safeFetch(url, options = {}) {
         const defaultOptions = {
             credentials: 'include',
             headers: { ...TICKETS_API_CONFIG.headers }
         };
         
-        const fetchOptions = { ...defaultOptions, ...options };
+    const csrf = this._getCookie('csrftoken');
+    const fetchOptions = { ...defaultOptions, ...options };
+    const headers = { ...(fetchOptions.headers||{}) };
+    if (csrf) headers['X-CSRF-Token'] = csrf;
+    fetchOptions.headers = headers;
         
         try {
             const response = await fetch(url, fetchOptions);
@@ -63,19 +68,30 @@ const TicketsNetworkUtils = {
     }
 };
 
-// Gestión de notificaciones (unificada)
+// Gestión de notificaciones (unificada con ToastPremium)
 const TicketsNotificationManager = {
-    show(message, type = 'info') {
-        if (window.SWGROI && window.SWGROI.UI && typeof window.SWGROI.UI.mostrarMensaje === 'function') {
-            window.SWGROI.UI.mostrarMensaje(message, type, 'leyenda');
+    show(message, type = 'info', options = {}) {
+        const msg = String(message || '');
+        const t = String(type || 'info');
+        // Preferir ToastPremium si está disponible
+        if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            const duration = options.duration ?? (t === 'success' ? 2600 : t === 'error' ? 7000 : 3600);
+            window.ToastPremium.show(msg, t, { duration });
             return;
         }
+        // Compatibilidad con UI global anterior si existiese
+        if (window.SWGROI && window.SWGROI.UI && typeof window.SWGROI.UI.mostrarMensaje === 'function') {
+            window.SWGROI.UI.mostrarMensaje(msg, t, 'leyenda');
+            return;
+        }
+        // Fallback: usar la leyenda embebida
         const leyenda = document.getElementById('leyenda');
-        if (!leyenda) return;
-        leyenda.className = `ui-message ui-message--${type} ui-message--visible`;
-        leyenda.textContent = message;
+        if (!leyenda) { try { console.log('[Toast]', t, msg); } catch(_){} return; }
+        const textEl = leyenda.querySelector('.ui-message__text');
+        if (textEl) textEl.textContent = msg; else leyenda.textContent = msg;
+        leyenda.className = `ui-message ui-message--${t} ui-message--visible`;
         leyenda.style.display = 'inline-flex';
-        setTimeout(() => { leyenda.classList.remove('ui-message--visible'); leyenda.style.display = 'none'; }, 5000);
+        setTimeout(() => { leyenda.classList.remove('ui-message--visible'); leyenda.style.display = 'none'; }, options.duration ?? 4000);
     }
 };
 
@@ -101,8 +117,7 @@ const TicketsModalManager = {
 const TicketOperations = {
     async buscarTicketPorFolio(folio) {
         try {
-            const url = `${TICKETS_API_CONFIG.endpoints.seguimiento}?folio=${encodeURIComponent(folio)}`;
-            const data = await TicketsNetworkUtils.safeFetch(url);
+            const data = await (window.TicketsService ? TicketsService.getSeguimiento(folio) : TicketsNetworkUtils.safeFetch(`${TICKETS_API_CONFIG.endpoints.seguimiento}?folio=${encodeURIComponent(folio)}`));
             return data;
         } catch (error) {
             throw new Error(error.message || 'Error al buscar el ticket');
@@ -111,10 +126,7 @@ const TicketOperations = {
     
     async registrarTicket(datos) {
         try {
-            const response = await TicketsNetworkUtils.safeFetch(TICKETS_API_CONFIG.endpoints.tickets, {
-                method: 'POST',
-                body: JSON.stringify(datos)
-            });
+            const response = await (window.TicketsService ? TicketsService.registrarTicket(datos) : TicketsNetworkUtils.safeFetch(TICKETS_API_CONFIG.endpoints.tickets, { method:'POST', body: JSON.stringify(datos) }));
             
             TicketsNotificationManager.show('Ticket registrado correctamente', 'success');
             return response;
@@ -126,10 +138,7 @@ const TicketOperations = {
     
     async actualizarTicket(datos) {
         try {
-            const response = await TicketsNetworkUtils.safeFetch(TICKETS_API_CONFIG.endpoints.actualizar, {
-                method: 'POST',
-                body: JSON.stringify(datos)
-            });
+            const response = await (window.TicketsService ? TicketsService.actualizarTicket(datos) : TicketsNetworkUtils.safeFetch(TICKETS_API_CONFIG.endpoints.actualizar, { method:'POST', body: JSON.stringify(datos) }));
             
             TicketsNotificationManager.show('Ticket actualizado correctamente', 'success');
             return response;
@@ -141,10 +150,7 @@ const TicketOperations = {
     
     async eliminarTicket(folio) {
         try {
-            const response = await TicketsNetworkUtils.safeFetch(TICKETS_API_CONFIG.endpoints.eliminar, {
-                method: 'POST',
-                body: JSON.stringify({ folio: folio })
-            });
+            const response = await (window.TicketsService ? TicketsService.eliminarTicket(folio) : TicketsNetworkUtils.safeFetch(TICKETS_API_CONFIG.endpoints.eliminar, { method:'POST', body: JSON.stringify({ folio }) }));
             
             TicketsNotificationManager.show('Ticket eliminado correctamente', 'success');
             return response;
@@ -172,6 +178,15 @@ const TicketOperations = {
 
 // Actualizador de UI
 const TicketsUIUpdater = {
+    _escapeHtml(str){ return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); },
+    _escapeAttr(str){ return this._escapeHtml(str).replace(/\n/g,'&#10;'); },
+    renderTextoConVerMas(texto, maxLength){
+        const txt = String(texto||'');
+        if (txt.length <= maxLength) return this._escapeHtml(txt);
+        const corto = this._escapeHtml(txt.substring(0, maxLength)) + '...';
+        const full = this._escapeAttr(txt);
+        return `${corto} <a href="#" class="ver-mas" data-full="${full}">Ver más</a>`;
+    },
     renderizarKPIs() {
         const tickets = TicketsModule.tickets;
         const abiertos = tickets.filter(t => (t.Estado || '').toLowerCase() === 'abierto').length;
@@ -209,7 +224,7 @@ const TicketsUIUpdater = {
         if (ticketsPagina.length === 0) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td colspan="7" class="ui-tabla__cell">
+                <td colspan="8" class="ui-tabla__cell">
                     <div class="tickets-mensaje-vacio">
                         ${total === 0 ? 'No hay tickets registrados' : 'No se encontraron tickets con los filtros aplicados'}
                     </div>
@@ -234,12 +249,13 @@ const TicketsUIUpdater = {
         
         tr.innerHTML = `
             <td class="ui-tabla__cell" title="${ticket.Folio || ''}">${ticket.Folio || ''}</td>
-            <td class="ui-tabla__cell">${this.truncarTexto(ticket.Descripcion || '', 80)}</td>
+            <td class="ui-tabla__cell">${this.renderTextoConVerMas(ticket.Descripcion || '', 80)}</td>
+            <td class=\"ui-tabla__cell\">${(ticket.TipoAsunto || '')}</td>
             <td class="ui-tabla__cell">
                 <span class="ui-badge ui-badge--${this.obtenerClaseEstado(ticket.Estado || '')}">${this.formatearEstado(ticket.Estado || '')}</span>
             </td>
             <td class="ui-tabla__cell">${ticket.Responsable || ''}</td>
-            <td class="ui-tabla__cell">${(ticket.Comentario || '').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
+            <td class="ui-tabla__cell">${this.renderTextoConVerMas((ticket.Comentario || ''), 80)}</td>
             <td class="ui-tabla__cell td-fecha">${formatFecha(ticket.FechaActualizacion || ticket.Fecha_Actualizacion || ticket.fecha_actualizacion)}</td>
             <td class="ui-tabla__cell ui-tabla__cell--acciones">
                 <button class="ui-button ui-action ui-action--edit" 
@@ -275,22 +291,24 @@ const TicketsUIUpdater = {
     },
     
     actualizarPaginacion(total) {
-        const lblPaginacion = document.getElementById('lblPaginacionTickets');
-        const btnPrev = document.getElementById('btnPrevTickets');
-        const btnNext = document.getElementById('btnNextTickets');
-        
-        if (lblPaginacion) {
-            const maxPage = Math.max(1, Math.ceil(total / TicketsModule.estado.pageSize));
-            const inicio = (TicketsModule.estado.page - 1) * TicketsModule.estado.pageSize + 1;
-            const fin = Math.min(TicketsModule.estado.page * TicketsModule.estado.pageSize, total);
-            
-            lblPaginacion.textContent = total === 0 
-                ? 'No hay tickets' 
-                : `Página ${TicketsModule.estado.page} de ${maxPage} · ${inicio}-${fin} de ${total} tickets`;
+        const lbl = document.getElementById('lblPaginacionTickets');
+        const cont = document.getElementById('paginacionTickets');
+        const page = TicketsModule.estado.page;
+        const size = TicketsModule.estado.pageSize;
+        if (window.SWGROI && window.SWGROI.Pagination && cont) {
+            window.SWGROI.Pagination.render(cont, {
+                total,
+                page,
+                size,
+                infoLabel: lbl,
+                onChange: (p)=>{ TicketsModule.estado.page = p; TicketsUIUpdater.renderizarTabla(); }
+            });
+        } else if (lbl) {
+            const maxPage = Math.max(1, Math.ceil(total/size));
+            const inicio = total===0?0:((page-1)*size+1);
+            const fin = Math.min(page*size, total);
+            lbl.textContent = total===0? 'No hay tickets' : `Página ${page} de ${maxPage} · ${inicio}-${fin} de ${total} tickets`;
         }
-        
-        if (btnPrev) btnPrev.disabled = TicketsModule.estado.page <= 1;
-        if (btnNext) btnNext.disabled = TicketsModule.estado.page >= Math.ceil(total / TicketsModule.estado.pageSize);
     },
     
     truncarTexto(texto, maxLength) {
@@ -337,6 +355,7 @@ const TicketsFormManager = {
         const elements = {
             folio: document.getElementById('folio'),
             descripcion: document.getElementById('descripcion'),
+            tipoAsunto: document.getElementById('tipoAsunto'),
             estado: document.getElementById('estado'),
             responsable: document.getElementById('responsable'),
             estadoSeguimiento: document.getElementById('estadoSeguimiento'),
@@ -345,6 +364,7 @@ const TicketsFormManager = {
         
         if (elements.folio) elements.folio.value = ticket.Folio || '';
         if (elements.descripcion) elements.descripcion.value = ticket.Descripcion || '';
+    if (elements.tipoAsunto) elements.tipoAsunto.value = ticket.TipoAsunto || '';
         if (elements.estado) elements.estado.value = ticket.Estado || '';
         if (elements.responsable) elements.responsable.value = ticket.Responsable || '';
         if (elements.estadoSeguimiento) elements.estadoSeguimiento.value = ticket.Estado || '';
@@ -368,6 +388,8 @@ const TicketsFormManager = {
         
         const comentarioTecnico = document.getElementById('comentarioTecnico');
         if (comentarioTecnico) comentarioTecnico.textContent = '(No hay comentarios técnicos aún)';
+    const tipoAsunto = document.getElementById('tipoAsunto');
+    if (tipoAsunto) tipoAsunto.value = '';
         
         this.configurarEstadoFormulario(false);
         TicketsModule.ticketEditando = null;
@@ -411,6 +433,7 @@ const TicketsFormManager = {
     validarFormulario() {
         const folio = document.getElementById('folio')?.value.trim();
         const descripcion = document.getElementById('descripcion')?.value.trim();
+        const tipoAsunto = document.getElementById('tipoAsunto')?.value;
         const estado = document.getElementById('estado')?.value;
         const responsable = document.getElementById('responsable')?.value.trim();
 
@@ -418,6 +441,7 @@ const TicketsFormManager = {
 
         if (!folio) errores.folio = 'El folio es obligatorio';
         if (!descripcion) errores.descripcion = 'La descripción es obligatoria';
+        if (!tipoAsunto) errores.tipoAsunto = 'El tipo de asunto es obligatorio';
         if (!estado) errores.estado = 'El estado es obligatorio';
         if (!responsable) errores.responsable = 'El responsable es obligatorio';
 
@@ -448,13 +472,14 @@ const TicketsFormManager = {
 const TicketsExportManager = {
     exportarCSV() {
         const ticketsFiltrados = TicketsUIUpdater.filtrarTickets();
-        const headers = ['Folio', 'Descripción', 'Estado', 'Responsable', 'Comentario'];
+        const headers = ['Folio', 'Descripción', 'TipoAsunto', 'Estado', 'Responsable', 'Comentario'];
         
         const csvContent = [
             headers.join(',') ,
             ...ticketsFiltrados.map(ticket => [
                 `"${(ticket.Folio || '').replace(/"/g, '""')}"`,
                 `"${(ticket.Descripcion || '').replace(/"/g, '""')}"`,
+                `"${(ticket.TipoAsunto || '').replace(/"/g, '""')}"`,
                 `"${(TicketsUIUpdater.formatearEstado(ticket.Estado || '')).replace(/"/g, '""')}"`,
                 `"${(ticket.Responsable || '').replace(/"/g, '""')}"`,
                 `"${(ticket.Comentario || '').replace(/"/g, '""')}"`
@@ -489,10 +514,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnBuscar) {
         btnBuscar.addEventListener('click', async function() {
             const folio = buscadorFolio?.value.trim();
-            if (!folio) {
-                TicketsNotificationManager.show('Por favor ingrese un folio para buscar', 'error');
-                return;
-            }
+            if (window.TicketsValidator && !TicketsValidator.validarBusquedaFolio(folio)) return;
             
             try {
                 const ticket = await TicketOperations.buscarTicketPorFolio(folio);
@@ -527,11 +549,13 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            if (!TicketsFormManager.validarFormulario()) return;
+            if (window.TicketsValidator) { if (!TicketsValidator.validarRegistroFromForm(form)) return; }
+            else { if (!TicketsFormManager.validarFormulario()) return; }
             
             const datos = {
                 Folio: document.getElementById('folio')?.value.trim(),
                 Descripcion: document.getElementById('descripcion')?.value.trim(),
+                TipoAsunto: document.getElementById('tipoAsunto')?.value,
                 Estado: document.getElementById('estado')?.value,
                 Responsable: document.getElementById('responsable')?.value.trim(),
                 Comentario: ''
@@ -550,11 +574,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Evento de actualización
     if (btnActualizar) {
         btnActualizar.addEventListener('click', async function() {
-            if (!TicketsFormManager.validarFormulario()) return;
+            if (window.TicketsValidator) { if (!TicketsValidator.validarActualizacionFromForm(form)) return; }
+            else { if (!TicketsFormManager.validarFormulario()) return; }
             
             const datos = {
                 folio: document.getElementById('folio')?.value.trim(),
                 descripcion: document.getElementById('descripcion')?.value.trim(),
+                tipoAsunto: document.getElementById('tipoAsunto')?.value,
                 estado: document.getElementById('estado')?.value,
                 responsable: document.getElementById('responsable')?.value.trim()
             };
@@ -588,8 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const filtroEstadoTicket = document.getElementById('filtroEstadoTicket');
     const btnBuscarTicket = document.getElementById('btnBuscarTicket');
     const btnLimpiarTabla = document.getElementById('btnLimpiarTabla');
-    const btnPrevTickets = document.getElementById('btnPrevTickets');
-    const btnNextTickets = document.getElementById('btnNextTickets');
+    // Controles ahora se renderizan por helper en #paginacionTickets
     const btnExportCsv = document.getElementById('btnExportCsvTickets');
     const btnImprimir = document.getElementById('btnImprimirTickets');
     
@@ -613,21 +638,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    if (btnPrevTickets) {
-        btnPrevTickets.addEventListener('click', function() {
-            if (TicketsModule.estado.page > 1) {
-                TicketsModule.estado.page--;
-                TicketsUIUpdater.renderizarTabla();
-            }
-        });
-    }
-    
-    if (btnNextTickets) {
-        btnNextTickets.addEventListener('click', function() {
-            TicketsModule.estado.page++;
-            TicketsUIUpdater.renderizarTabla();
-        });
-    }
+    // (Eliminados listeners específicos prev/next)
     
     if (btnExportCsv) {
         btnExportCsv.addEventListener('click', function() {
@@ -645,6 +656,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const tbody = document.querySelector('#tablaTickets tbody');
     if (tbody) {
         tbody.addEventListener('click', function(e) {
+            const link = e.target.closest('a.ver-mas');
+            if (link) {
+                e.preventDefault();
+                const full = link.getAttribute('data-full') || '';
+                const body = document.getElementById('modalTextoContenido');
+                if (body) body.textContent = full;
+                TicketsModalManager.show('modalTextoLargo');
+                return;
+            }
+
             const button = e.target.closest('button[data-action]');
             if (!button) return;
 
@@ -725,6 +746,9 @@ function mostrarModalConfirmacion(titulo, mensaje, callback) {
 function cerrarModalConfirmacion() {
     TicketsModalManager.hide('modalConfirmacion');
 }
+
+// Cerrar modal de texto largo
+function cerrarModalTextoLargo(){ TicketsModalManager.hide('modalTextoLargo'); }
 
 // Añadir utilitary para formatear fecha (si no existe)
 function formatFecha(fechaIso) {

@@ -10,6 +10,7 @@
     <script src="Scripts/seguridad.js" defer></script>
     <script src="Scripts/ui.js" defer></script>
     <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/toast-premium.js" defer></script>
 </head>
 <body class="ui-layout ui-layout--no-topbar">
 
@@ -27,8 +28,8 @@
                     <a href="menu.html" class="ui-sidebar__link"><span class="ui-button__icon" data-icon="home" aria-hidden="true"></span> Menú principal</a>
                 </li>
                 <li class="ui-sidebar__item">
-                    <a href="avisos.html" class="ui-sidebar__link ui-sidebar__link--active" aria-current="page">
-                        <span class="ui-button__icon" data-icon="megaphone" aria-hidden="true"></span> Avisos  y Comunicados
+                        <a href="avisos.html" id="link-avisos" data-test="link-avisos" class="ui-sidebar__link ui-sidebar__link--active" aria-current="page">
+                        <span class="ui-button__icon" data-icon="megaphone" aria-hidden="true"></span> Avisos y comunicados
                     </a>
                 </li>
                 <li class="ui-sidebar__item">
@@ -146,13 +147,7 @@
                 </div>
             </div>
 
-            <!-- MENSAJE DE ESTADO GLOBAL -->
-            <div class="ui-message-container">
-                <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
-                    <span class="ui-message__icon" aria-hidden="true"></span>
-                    <span class="ui-message__text"></span>
-                </div>
-            </div>
+            
 
             <!-- CONTROLES DE TABLA -->
             <div class="ui-table-controls">
@@ -184,7 +179,7 @@
             <!-- TABLA DE AVISOS -->
             <section class="ui-card ui-card--report" aria-label="Listado de avisos">
                 <div class="ui-tabla-wrap ui-desplazable">
-                    <table class="ui-tabla" role="table" aria-describedby="leyenda">
+                    <table class="ui-tabla" role="table">
                         <thead class="ui-tabla__head">
                             <tr role="row">
                                 <th scope="col" class="ui-tabla__col">Acciones</th>
@@ -203,17 +198,7 @@
                 <!-- PAGINACIÓN UNIFICADA -->
                 <div class="ui-paginacion" role="navigation" aria-label="Paginación de resultados">
                     <span id="paginacionInfo" class="ui-paginacion__info">Mostrando 0-0 de 0 avisos</span>
-                    <div class="ui-paginacion__controles">
-            <button id="btnPrev" class="ui-button ui-button--ghost ui-button--sm ui-paginacion__btn" 
-                type="button" aria-label="Página anterior" aria-controls="tablaAvisos" disabled>
-                            <span class="ui-button__icon" data-icon="prev" aria-hidden="true"></span>Anterior
-                        </button>
-                        <span id="paginacionPages" class="ui-paginacion__pages"></span>
-            <button id="btnNext" class="ui-button ui-button--ghost ui-button--sm ui-paginacion__btn" 
-                type="button" aria-label="Página siguiente" aria-controls="tablaAvisos" disabled>
-                            Siguiente<span class="ui-button__icon" data-icon="next" aria-hidden="true"></span>
-                        </button>
-                    </div>
+                    <div id="paginacionAvisos" class="ui-paginacion__controles"></div>
                 </div>
             </section>
         </div>

@@ -650,17 +650,8 @@ body {
     }
 }
 
-/* Estados de validación */
-.ui-form__input--error,
-.retro-escala__radio--error {
-    border-color: var(--ui-color-error);
-}
-
-.ui-form__feedback {
-    font-size: var(--ui-font-size-sm);
-    color: var(--ui-color-error);
-    margin-top: var(--ui-gap-4);
-}
+/* Estados de validación - LEGACY: Ahora se usa Toast
+   Estas clases se mantienen para compatibilidad pero serán removidas en futuras versiones */
 
 /* Densidad visual optimizada */
 .ui-card--module {

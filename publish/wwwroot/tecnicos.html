@@ -6,12 +6,14 @@
     <title>Mesa de Control - SWGROI</title>
     <link rel="stylesheet" href="Styles/componentes/componentes.css">
     <link rel="stylesheet" href="Styles/tecnicos.css">
+    <link rel="stylesheet" href="Styles/tecnicos-toast.css">
     <script src="Scripts/icon-loader.js" defer></script>
     <script src="Scripts/ui-utils.js" defer></script>
     <script src="Scripts/seguridad.js" defer></script>
     <script src="Scripts/ui.js" defer></script>
+    <script src="Scripts/toast-premium.js" defer></script>
 </head>
-<body class="ui-layout ui-layout--no-topbar">
+<body class="ui-layout ui-layout--no-topbar tecnicos-page">
 
     <!-- SIDEBAR UNIFICADO -->
     <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
@@ -58,13 +60,7 @@
             <!-- TÍTULO PRINCIPAL -->
             <h2 class="ui-card__title"><span class="ui-button__icon" data-icon="tools" aria-hidden="true"></span> Mesa de Control</h2>
 
-            <!-- MENSAJE DE ESTADO GLOBAL -->
-            <div class="ui-message-container">
-                <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
-                    <span class="ui-message__icon" aria-hidden="true"></span>
-                    <span class="ui-message__text"></span>
-                </div>
-            </div>
+            <!-- Mensajes unificados mostrados vía ToastPremium -->
 
             <!-- SECCIÓN DE ACTUALIZACIÓN DE ESTADO -->
             <section class="tecnicos-actualizacion ui-card ui-card--report" aria-label="Actualización de estado">
@@ -82,13 +78,10 @@
                         </div>
 
                         <div class="ui-form-group">
-                            <label for="comentarioTecnico" class="ui-form__label">Comentario Técnico:</label>
+                            <label for="tipoAsuntoVisual" class="ui-form__label">Tipo de Asunto:</label>
                             <div class="ui-form__field">
-                                <textarea id="comentarioTecnico" name="comentarioTecnico" rows="4" 
-                                          class="ui-form__input" placeholder="Ingrese observaciones técnicas..."
-                                          required aria-describedby="comentarioFeedback"></textarea>
+                                <div id="tipoAsuntoVisual" class="ui-form__display tecnicos-tipoasunto">--</div>
                             </div>
-                            <div id="comentarioFeedback" class="ui-form__feedback" aria-live="polite"></div>
                         </div>
 
                         <div class="ui-form-group">
@@ -104,6 +97,16 @@
                                         <option value="Cerrado">Cerrado</option>
                                     </select>
                             </div>
+                        </div>
+
+                        <div class="ui-form-group" style="grid-column: 1 / -1;">
+                            <label for="comentarioTecnico" class="ui-form__label">Comentario Técnico:</label>
+                            <div class="ui-form__field">
+                                <textarea id="comentarioTecnico" name="comentarioTecnico" rows="4" 
+                                          class="ui-form__input" placeholder="Ingrese observaciones técnicas..."
+                                          required aria-describedby="comentarioFeedback"></textarea>
+                            </div>
+                            <div id="comentarioFeedback" class="ui-form__feedback" aria-live="polite"></div>
                         </div>
                     </div>
 
@@ -151,11 +154,12 @@
                 <h3 class="tecnicos-tabla__titulo"><span class="ui-button__icon" data-icon="ticket" aria-hidden="true"></span> Tickets Registrados</h3>
                 
                 <div class="ui-tabla-wrap ui-desplazable">
-                    <table class="ui-tabla" id="tablaTickets" role="table" aria-describedby="leyenda">
+                    <table class="ui-tabla" id="tablaTickets" role="table">
                         <thead class="ui-tabla__head">
                             <tr role="row">
                                 <th scope="col" class="ui-tabla__col">Folio</th>
                                 <th scope="col" class="ui-tabla__col">Descripción</th>
+                                <th scope="col" class="ui-tabla__col">Tipo de Asunto</th>
                                 <th scope="col" class="ui-tabla__col">Estado Ticket</th>
                                 <th scope="col" class="ui-tabla__col">Responsable</th>
                                 <th scope="col" class="ui-tabla__col">Comentario Técnico</th>
@@ -171,22 +175,35 @@
                 <!-- PAGINACIÓN (si es necesaria) -->
                 <div class="ui-paginacion" role="navigation" aria-label="Paginación de resultados">
                     <span id="paginacionInfo" class="ui-paginacion__info">Mostrando tickets</span>
-                    <div class="ui-paginacion__controles">
-                        <button id="btnPrevPage" class="ui-button ui-button--ghost ui-paginacion__btn" 
-                                type="button" aria-label="Página anterior">
-                            <span class="ui-button__icon" data-icon="prev"></span>Anterior
-                        </button>
-                        <button id="btnNextPage" class="ui-button ui-button--ghost ui-paginacion__btn" 
-                                type="button" aria-label="Página siguiente">
-                            Siguiente<span class="ui-button__icon" data-icon="next"></span>
-                        </button>
-                    </div>
+                    <div id="paginacionTecnicos" class="ui-paginacion__controles"></div>
                 </div>
             </section>
         </div>
     </main>
 
     <!-- SCRIPTS -->
+    <!-- MODAL TEXTO LARGO (Ver más) -->
+    <div class="ui-modal-overlay" id="modalTextoLargo" role="dialog" aria-modal="true" aria-labelledby="modalTextoTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalTextoTitulo" class="ui-modal__title">Contenido completo</h3>
+                <button class="ui-button ui-button--ghost ui-modal__close" aria-label="Cerrar" onclick="cerrarModalTextoLargo()">
+                    <span class="ui-button__icon" data-icon="x"></span>
+                </button>
+            </div>
+            <div class="ui-modal__body">
+                <pre id="modalTextoContenido" class="ui-prewrap" style="white-space: pre-wrap; font-family: inherit;"></pre>
+            </div>
+            <div class="ui-modal__actions">
+                <button class="ui-button ui-button--primary" onclick="cerrarModalTextoLargo()">
+                    <span class="ui-button__icon" data-icon="check"></span>Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="Scripts/tecnicosService.js"></script>
+    <script src="Scripts/tecnicosValidator.js"></script>
     <script src="Scripts/tecnicos.js"></script>
 </body>
 </html>

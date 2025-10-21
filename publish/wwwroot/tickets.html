@@ -6,12 +6,14 @@
     <title>Gestión de Tickets - SWGROI</title>
     <link rel="stylesheet" href="Styles/componentes/componentes.css">
     <link rel="stylesheet" href="Styles/tickets.css">
+    <link rel="stylesheet" href="Styles/tickets-toast.css">
     <script src="Scripts/icon-loader.js" defer></script>
     <script src="Scripts/ui-utils.js" defer></script>
     <script src="Scripts/seguridad.js" defer></script>
     <script src="Scripts/ui.js" defer></script>
+    <script src="Scripts/toast-premium.js" defer></script>
 </head>
-<body class="ui-layout ui-layout--no-topbar">
+<body class="ui-layout ui-layout--no-topbar tickets-page">
 
     <!-- SIDEBAR UNIFICADO -->
     <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
@@ -58,13 +60,7 @@
             <!-- TÍTULO PRINCIPAL -->
             <h2 class="ui-card__title"><span class="ui-button__icon" data-icon="ticket" aria-hidden="true"></span> Gestión de Tickets de Soporte</h2>
 
-            <!-- MENSAJE DE ESTADO GLOBAL -->
-            <div class="ui-message-container">
-                <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
-                    <span class="ui-message__icon" aria-hidden="true"></span>
-                    <span class="ui-message__text"></span>
-                </div>
-            </div>
+            <!-- Mensajes unificados: se muestran con ToastPremium (sin banner fijo) -->
 
             <!-- BUSCADOR DE TICKETS -->
             <section class="tickets-buscador" aria-label="Búsqueda de tickets">
@@ -91,10 +87,37 @@
                                 <div class="ui-form__field">
                                     <input type="text" id="folio" name="folio" class="ui-form__input" 
                                            required pattern="^[A-Z0-9\-]{6,20}$" minlength="6" maxlength="20"
-                                           placeholder="Ej: TKT-2025-001" 
+                                           placeholder="Ingresa el número de folio a crear..." 
                                            aria-describedby="folioFeedback">
                                 </div>
                                 <div id="folioFeedback" class="ui-form__feedback" aria-live="polite"></div>
+                            </div>
+
+                            <div class="ui-form-group">
+                                <label for="tipoAsunto" class="ui-form__label">Tipo de Asunto:</label>
+                                <div class="ui-form__field">
+                                    <select id="tipoAsunto" name="tipoAsunto" class="ui-form__input" required>
+                                        <option value="">-- Seleccionar tipo de asunto --</option>
+                                        <option value="Mantenimiento correctivo">Mantenimiento correctivo</option>
+                                        <option value="Mantenimiento preventivo">Mantenimiento preventivo</option>
+                                        <option value="Sistema de cerca eléctrica">Sistema de cerca eléctrica</option>
+                                        <option value="Sistema de videovigilancia (CCTV)">Sistema de videovigilancia (CCTV)</option>
+                                        <option value="Fallo en la comunicación del sistema">Fallo en la comunicación del sistema</option>
+                                        <option value="Gestión de claves de acceso">Gestión de claves de acceso</option>
+                                        <option value="Capacitación técnica y asesoría sobre la aplicación">Capacitación técnica y asesoría sobre la aplicación</option>
+                                        <option value="Levantamiento de necesidades operativas">Levantamiento de necesidades operativas</option>
+                                        <option value="Instalación de nuevo equipo">Instalación de nuevo equipo</option>
+                                        <option value="Instalación de componentes específicos">Instalación de componentes específicos</option>
+                                        <option value="Desmonte de equipo existente">Desmonte de equipo existente</option>
+                                        <option value="Actualización o reemplazo de equipo">Actualización o reemplazo de equipo</option>
+                                        <option value="Reemplazo de dispositivo individual">Reemplazo de dispositivo individual</option>
+                                        <option value="Reemplazo de pilas o baterías (incluye dispositivos de acceso)">Reemplazo de pilas o baterías (incluye dispositivos de acceso)</option>
+                                        <option value="Reemplazo de componente específico o general">Reemplazo de componente específico o general</option>
+                                        <option value="Centralización de infraestructura o servicios">Centralización de infraestructura o servicios</option>
+                                        <option value="Migración de sistemas, datos o panel de alarma">Migración de sistemas, datos o panel de alarma</option>
+                                    </select>
+                                </div>
+                                <div id="tipoAsuntoFeedback" class="ui-form__feedback" aria-live="polite"></div>
                             </div>
 
                             <div class="ui-form-group">
@@ -225,11 +248,12 @@
             <!-- TABLA DE TICKETS -->
             <section class="ui-card ui-card--report" aria-label="Listado de tickets">
                 <div class="ui-tabla-wrap ui-desplazable">
-                    <table class="ui-tabla" id="tablaTickets" role="table" aria-describedby="leyenda">
+                    <table class="ui-tabla" id="tablaTickets" role="table">
                         <thead class="ui-tabla__head">
                             <tr role="row">
                                 <th scope="col" class="ui-tabla__col">Folio</th>
                                 <th scope="col" class="ui-tabla__col">Descripción</th>
+                                        <th scope="col" class="ui-tabla__col">Tipo de Asunto</th>
                                 <th scope="col" class="ui-tabla__col">Estado Ticket</th>
                                 <th scope="col" class="ui-tabla__col">Responsable</th>
                                 <th scope="col" class="ui-tabla__col">Comentario</th>
@@ -240,7 +264,7 @@
                         <tbody class="ui-tabla__body">
                             <!-- Contenido dinámico generado por JS -->
                             <tr class="ui-tabla__row">
-                                <td class="ui-tabla__cell" colspan="7">
+                                        <td class="ui-tabla__cell" colspan="8">
                                     <div class="tickets-mensaje-vacio">
                                         Cargando tickets...
                                     </div>
@@ -253,16 +277,7 @@
                 <!-- PAGINACIÓN -->
                 <div class="ui-paginacion" role="navigation" aria-label="Paginación de tickets">
                     <span id="lblPaginacionTickets" class="ui-paginacion__info">Cargando...</span>
-                    <div class="ui-paginacion__controles">
-                        <button id="btnPrevTickets" class="ui-button ui-button--ghost ui-paginacion__btn" 
-                                type="button" aria-label="Página anterior" disabled>
-                            <span class="ui-button__icon" data-icon="prev"></span>Anterior
-                        </button>
-                        <button id="btnNextTickets" class="ui-button ui-button--ghost ui-paginacion__btn" 
-                                type="button" aria-label="Página siguiente" disabled>
-                            Siguiente<span class="ui-button__icon" data-icon="next"></span>
-                        </button>
-                    </div>
+                    <div id="paginacionTickets" class="ui-paginacion__controles"></div>
                 </div>
             </section>
         </div>
@@ -293,8 +308,30 @@
                 </button>
             </div>
         </div>
-    </main>
+    </div>
 
+    <!-- MODAL TEXTO LARGO (Ver más) -->
+    <div class="ui-modal-overlay" id="modalTextoLargo" role="dialog" aria-modal="true" aria-labelledby="modalTextoTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalTextoTitulo" class="ui-modal__title">Contenido completo</h3>
+                <button class="ui-button ui-button--ghost ui-modal__close" aria-label="Cerrar" onclick="cerrarModalTextoLargo()">
+                    <span class="ui-button__icon" data-icon="x"></span>
+                </button>
+            </div>
+            <div class="ui-modal__body">
+                <pre id="modalTextoContenido" class="ui-prewrap" style="white-space: pre-wrap; font-family: inherit;"></pre>
+            </div>
+            <div class="ui-modal__actions">
+                <button class="ui-button ui-button--primary" onclick="cerrarModalTextoLargo()">
+                    <span class="ui-button__icon" data-icon="check"></span>Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="Scripts/ticketsService.js"></script>
+    <script src="Scripts/ticketsValidator.js"></script>
     <script src="Scripts/tickets.js"></script>
 </body>
 </html>

@@ -1,0 +1,11 @@
+/* TECNICOS-TOAST.CSS — ajustes ligeros para la página de Mesa de Control */
+
+/* Mantener posición superior derecha, como el resto de módulos */
+body.tecnicos-page #toast-container-premium{
+  top: 1.25rem;
+  bottom: auto;
+}
+
+@media (max-width: 480px){
+  body.tecnicos-page #toast-container-premium{ left: .75rem; right: .75rem; top: .75rem; bottom: auto; }
+}

@@ -20,11 +20,16 @@
     qs: s => document.querySelector(s),
     qsa: s => Array.from(document.querySelectorAll(s)),
     toast(msg, type = 'info') {
-      // Preferir sistema global SWGROI.UI
+      // 1) Preferir Toast Premium unificado
+      if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+        try { window.ToastPremium.show(String(msg || ''), String(type || 'info'), { duration: 4000 }); return; } catch (_) {}
+      }
+      // 2) Fallback: sistema global SWGROI.UI
       if (window.SWGROI && window.SWGROI.UI && typeof window.SWGROI.UI.mostrarMensaje === 'function') {
         window.SWGROI.UI.mostrarMensaje(msg, type, 'leyenda', 4000);
         return;
       }
+      // 3) Fallback mínimo: contenedor local si existe
       const c = util.qs('#toastContainer'); if (!c) return; const t = document.createElement('div'); t.className = `ui-toast ui-toast--${type}`; t.textContent = msg; c.appendChild(t); setTimeout(() => t.classList.add('ui-toast--visible'), 20); setTimeout(() => { t.classList.remove('ui-toast--visible'); setTimeout(() => t.remove(), 300); }, 4000);
     },
     fmtBytes(b) { if (!b && b !== 0) return '0 B'; const k = 1024, sizes = ['B', 'KB', 'MB', 'GB']; const i = b > 0 ? Math.floor(Math.log(b) / Math.log(k)) : 0; return (b / Math.pow(k, i)).toFixed(i ? 1 : 0) + ' ' + sizes[i]; },
@@ -341,7 +346,29 @@
       this.tabla.innerHTML = rows || '<tr class="ui-tabla__row tabla-vacia"><td colspan="5" class="tabla-vacia">No hay documentos para mostrar</td></tr>';
     }
 
-    renderPager() { if (!this.pagin) return; const total = this.total || 0; const pageSize = this.opts.pageSize; const totalPages = Math.max(1, Math.ceil(total / pageSize)); const cur = Math.min(this.page, totalPages); const start = total === 0 ? 0 : (cur - 1) * pageSize + 1; const end = total === 0 ? 0 : Math.min(cur * pageSize, total); this.pagin.innerHTML = `<span class="ui-paginacion__info">Página ${cur} de ${totalPages} · ${start}-${end} de ${total} documentos</span><div class="ui-paginacion__controles"><button class="ui-button ui-button--ghost ui-paginacion__btn" ${cur === 1 ? 'disabled' : ''} data-page="${cur - 1}"><span class="ui-button__icon" data-icon="prev"></span>Anterior</button><button class="ui-button ui-button--ghost ui-paginacion__btn" ${cur === totalPages ? 'disabled' : ''} data-page="${cur + 1}">Siguiente<span class="ui-button__icon" data-icon="next"></span></button></div>`; this.pagin.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => { const p = parseInt(b.dataset.page); if (p >= 1 && p <= totalPages) { this.page = p; this.load(); } })); }
+    renderPager() {
+      if (!this.pagin) return;
+      const total = Number(this.total || 0);
+      const size = Number(this.opts.pageSize || 10);
+      const info = document.getElementById('paginacionInfoDocs');
+      if (window.SWGROI && window.SWGROI.Pagination) {
+        window.SWGROI.Pagination.render(this.pagin, {
+          total,
+          page: this.page,
+          size,
+          infoLabel: info,
+          onChange: (p)=>{ this.page = p; this.load(); }
+        });
+        return;
+      }
+      // Fallback mínimo si no existe el helper
+      const totalPages = Math.max(1, Math.ceil(total / size));
+      const cur = Math.min(this.page, totalPages);
+      const start = total === 0 ? 0 : (cur - 1) * size + 1;
+      const end = total === 0 ? 0 : Math.min(cur * size, total);
+      if (info) info.textContent = total === 0 ? 'No hay documentos' : `Mostrando ${start}-${end} de ${total}`;
+      this.pagin.innerHTML = '';
+    }
 
   updateKPIs(meta) {
     if (!meta) return;

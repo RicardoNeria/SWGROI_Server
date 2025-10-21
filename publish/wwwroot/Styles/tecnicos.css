@@ -59,6 +59,24 @@
     box-shadow: none;
 }
 
+/* Visual del Tipo de Asunto en seguimiento */
+.tecnicos-tipoasunto {
+    padding: var(--ui-gap-12);
+    background: var(--ui-color-fondo);
+    border-radius: var(--ui-radius-base);
+    border: 1px solid var(--ui-color-borde);
+    color: var(--ui-color-texto);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: var(--ui-font-size-lg);
+    line-height: 1.2;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+}
+
+.tecnicos-tipoasunto--ok { color: var(--ui-color-exito); font-weight: 700; }
+
 /* ================================
    TABLA DE TICKETS
    ================================ */

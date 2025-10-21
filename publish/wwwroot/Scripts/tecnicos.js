@@ -69,19 +69,18 @@ const TecnicosNetworkUtils = {
     }
 };
 
-// Gestión de notificaciones (unificada)
+// Gestión de notificaciones (unificada con ToastPremium)
 const TecnicosNotificationManager = {
-    show(message, type = 'info') {
-        if (window.SWGROI && window.SWGROI.UI && typeof window.SWGROI.UI.mostrarMensaje === 'function') {
-            window.SWGROI.UI.mostrarMensaje(message, type, 'leyenda');
+    show(message, type = 'info', options = {}) {
+        const msg = String(message || '');
+        const t = String(type || 'info');
+        if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            const duration = options.duration ?? (t === 'success' ? 2600 : t === 'error' ? 7000 : 3600);
+            window.ToastPremium.show(msg, t, { duration });
             return;
         }
-        const leyenda = document.getElementById('leyenda');
-        if (!leyenda) return;
-        leyenda.className = `ui-message ui-message--${type} ui-message--visible`;
-        leyenda.textContent = message;
-        leyenda.style.display = 'inline-flex';
-        setTimeout(() => { leyenda.classList.remove('ui-message--visible'); leyenda.style.display = 'none'; }, 4000);
+        if (typeof window.showTecnicosToast === 'function') { window.showTecnicosToast(msg, t, options.duration); return; }
+        try { console.log('[Toast]', t, msg); } catch(_){ }
     }
 };
 
@@ -99,7 +98,7 @@ if (typeof formatFecha !== 'function') {
 const TecnicosOperations = {
     async cargarTickets() {
         try {
-            const response = await TecnicosNetworkUtils.safeFetch(TECNICOS_API_CONFIG.endpoints.seguimiento);
+            const response = await (window.TecnicosService ? TecnicosService.listarSeguimiento() : TecnicosNetworkUtils.safeFetch(TECNICOS_API_CONFIG.endpoints.seguimiento));
             TecnicosModule.tickets = Array.isArray(response) ? response : [];
             TecnicosUIUpdater.renderizarTabla(TecnicosModule.tickets);
             return TecnicosModule.tickets;
@@ -113,10 +112,7 @@ const TecnicosOperations = {
 
     async actualizarEstadoTicket(datos) {
         try {
-            const response = await TecnicosNetworkUtils.safeFetch(TECNICOS_API_CONFIG.endpoints.seguimiento, {
-                method: 'POST',
-                body: JSON.stringify(datos)
-            });
+            const response = await (window.TecnicosService ? TecnicosService.actualizarEstado(datos) : TecnicosNetworkUtils.safeFetch(TECNICOS_API_CONFIG.endpoints.seguimiento, { method:'POST', body: JSON.stringify(datos) }));
             
             const exito = typeof response === 'string' && response.toLowerCase().includes('actualizado');
             const mensaje = typeof response === 'string' ? response : 'Estado actualizado correctamente';
@@ -137,7 +133,7 @@ const TecnicosOperations = {
 
     async buscarTicketsFiltrados() {
         try {
-            const response = await TecnicosNetworkUtils.safeFetch(TECNICOS_API_CONFIG.endpoints.seguimiento);
+            const response = await (window.TecnicosService ? TecnicosService.listarSeguimiento() : TecnicosNetworkUtils.safeFetch(TECNICOS_API_CONFIG.endpoints.seguimiento));
             const tickets = Array.isArray(response) ? response : [];
             
             const ticketsFiltrados = this.filtrarTickets(tickets, TecnicosModule.filtros);
@@ -168,6 +164,15 @@ const TecnicosOperations = {
 
 // Actualizador de UI
 const TecnicosUIUpdater = {
+    _escapeHtml(str){ return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); },
+    _escapeAttr(str){ return this._escapeHtml(str).replace(/\n/g,'&#10;'); },
+    renderTextoConVerMas(texto, maxLength){
+        const txt = String(texto||'');
+        if (txt.length <= maxLength) return this._escapeHtml(txt);
+        const corto = this._escapeHtml(txt.substring(0, maxLength)) + '...';
+        const full = this._escapeAttr(txt);
+        return `${corto} <a href="#" class="ver-mas" data-full="${full}">Ver más</a>`;
+    },
     renderizarTabla(tickets) {
         const tbody = document.querySelector('#tablaTickets tbody');
         if (!tbody) return;
@@ -177,7 +182,7 @@ const TecnicosUIUpdater = {
         if (!tickets || tickets.length === 0) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td colspan="6" class="ui-tabla__cell">
+                <td colspan="7" class="ui-tabla__cell">
                     <div style="text-align: center; padding: 2rem; color: #64748b;">
                         No hay tickets registrados
                     </div>
@@ -215,14 +220,15 @@ const TecnicosUIUpdater = {
         
             tr.innerHTML = `
             <td class="ui-tabla__cell">${ticket.Folio || ''}</td>
-            <td class="ui-tabla__cell">${this.truncarTexto(ticket.Descripcion || '', 100)}</td>
+            <td class="ui-tabla__cell">${this.renderTextoConVerMas(ticket.Descripcion || '', 100)}</td>
+            <td class="ui-tabla__cell">${ticket.TipoAsunto || ''}</td>
             <td class="ui-tabla__cell">
                 <span class="ui-badge ui-badge--${this.obtenerClaseEstado(ticket.Estado || '')}">
                     ${ticket.Estado || ''}
                 </span>
             </td>
             <td class="ui-tabla__cell">${ticket.Responsable || ''}</td>
-            <td class="ui-tabla__cell">${(ticket.Comentario || '').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
+            <td class="ui-tabla__cell">${this.renderTextoConVerMas((ticket.Comentario || ''), 100)}</td>
             <td class="ui-tabla__cell td-fecha">${formatFecha(ticket.FechaActualizacion || ticket.Fecha_Actualizacion || ticket.fecha_actualizacion)}</td>
         `;
         
@@ -232,20 +238,21 @@ const TecnicosUIUpdater = {
     _updatePaginationControls(totalItems) {
         const pageSize = (TecnicosModule.pagination && TecnicosModule.pagination.pageSize) || 10;
         const currentPage = (TecnicosModule.pagination && TecnicosModule.pagination.currentPage) || 1;
-        const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-
         const info = document.getElementById('paginacionInfo');
-        const btnPrev = document.getElementById('btnPrevPage');
-        const btnNext = document.getElementById('btnNextPage');
-
-        if (info) {
+        const cont = document.getElementById('paginacionTecnicos');
+        if (window.SWGROI && window.SWGROI.Pagination && cont) {
+            window.SWGROI.Pagination.render(cont, {
+                total: totalItems,
+                page: currentPage,
+                size: pageSize,
+                infoLabel: info,
+                onChange: (p)=>{ TecnicosModule.pagination.currentPage = p; this.renderizarTabla(TecnicosModule.tickets); }
+            });
+        } else if (info) {
             const start = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
             const end = Math.min(totalItems, currentPage * pageSize);
             info.textContent = totalItems === 0 ? 'No hay tickets' : `Mostrando ${start}-${end} de ${totalItems}`;
         }
-
-        if (btnPrev) btnPrev.disabled = currentPage <= 1;
-        if (btnNext) btnNext.disabled = currentPage >= totalPages;
     },
 
     seleccionarTicket(folio) {
@@ -279,6 +286,7 @@ const TecnicosUIUpdater = {
     llenarFormulario(ticket) {
         const comentarioTecnico = document.getElementById('comentarioTecnico');
         const nuevoEstado = document.getElementById('nuevoEstado');
+    const tipoAsuntoVisual = document.getElementById('tipoAsuntoVisual');
         
         if (comentarioTecnico) {
             comentarioTecnico.value = ticket.Comentario || '';
@@ -286,6 +294,13 @@ const TecnicosUIUpdater = {
         
         if (nuevoEstado) {
             nuevoEstado.value = ticket.Estado || '';
+        }
+
+        if (tipoAsuntoVisual) {
+            const t = ticket.TipoAsunto || '--';
+            tipoAsuntoVisual.textContent = t;
+            if (t && t !== '--') tipoAsuntoVisual.classList.add('tecnicos-tipoasunto--ok');
+            else tipoAsuntoVisual.classList.remove('tecnicos-tipoasunto--ok');
         }
     },
 
@@ -314,7 +329,8 @@ const TecnicosUIUpdater = {
     limpiarFormulario() {
         const folioVisual = document.getElementById('folioVisual');
         const comentarioTecnico = document.getElementById('comentarioTecnico');
-        const nuevoEstado = document.getElementById('nuevoEstado');
+    const nuevoEstado = document.getElementById('nuevoEstado');
+    const tipoAsuntoVisual = document.getElementById('tipoAsuntoVisual');
         
         if (folioVisual) {
             folioVisual.textContent = 'Seleccione un ticket de la tabla';
@@ -327,6 +343,11 @@ const TecnicosUIUpdater = {
         
         if (nuevoEstado) {
             nuevoEstado.selectedIndex = 0;
+        }
+
+        if (tipoAsuntoVisual) {
+            tipoAsuntoVisual.textContent = '--';
+            tipoAsuntoVisual.classList.remove('tecnicos-tipoasunto--ok');
         }
         
         // Remover selección de tabla
@@ -384,35 +405,19 @@ const TecnicosUIUpdater = {
     // ...existing code...
 };
 
-// Validaciones del formulario
+// Validaciones del formulario (delegar a Validator si existe)
 const TecnicosValidation = {
-    validarFormulario() {
+    validarFormulario(form) {
+        if (window.TecnicosValidator && typeof window.TecnicosValidator.validarSeguimientoForm === 'function') {
+            return window.TecnicosValidator.validarSeguimientoForm(form, TecnicosModule.ticketSeleccionado);
+        }
+        // Fallback mínimo si no está el validator
         const folio = TecnicosModule.ticketSeleccionado?.Folio;
         const comentario = document.getElementById('comentarioTecnico')?.value.trim();
         const nuevoEstado = document.getElementById('nuevoEstado')?.value;
-        
-        if (!folio) {
-            TecnicosNotificationManager.show('Debe seleccionar un ticket de la tabla', 'error');
-            return false;
-        }
-        
-        if (!comentario) {
-            TecnicosNotificationManager.show('El comentario técnico es obligatorio', 'error');
-            return false;
-        }
-        
-        if (comentario.length < 10) {
-            TecnicosNotificationManager.show('El comentario debe tener al menos 10 caracteres', 'error');
-            return false;
-        }
-        
-        // Nota: ya no limitamos a 500 caracteres. Se permite texto libre.
-        
-        if (!nuevoEstado) {
-            TecnicosNotificationManager.show('Debe seleccionar un nuevo estado', 'error');
-            return false;
-        }
-        
+        if (!folio) { TecnicosNotificationManager.show('Debe seleccionar un ticket de la tabla', 'error'); return false; }
+        if (!comentario || comentario.length < 10) { TecnicosNotificationManager.show('El comentario debe tener al menos 10 caracteres', 'error'); return false; }
+        if (!nuevoEstado) { TecnicosNotificationManager.show('Debe seleccionar un nuevo estado', 'error'); return false; }
         return true;
     }
 };
@@ -425,15 +430,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnLimpiar = document.getElementById('btnLimpiar');
     const comentarioTecnico = document.getElementById('comentarioTecnico');
     const tablaTickets = document.getElementById('tablaTickets');
-    const btnPrevPage = document.getElementById('btnPrevPage');
-    const btnNextPage = document.getElementById('btnNextPage');
+    // Controles de paginación ahora se gestionan con SWGROI.Pagination
     
     // Evento de envío del formulario de seguimiento
     if (formSeguimiento) {
         formSeguimiento.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            if (!TecnicosValidation.validarFormulario()) return;
+            if (!TecnicosValidation.validarFormulario(formSeguimiento)) return;
             
             // Normalizar y proteger los datos antes de enviarlos
             const rawFolio = TecnicosModule.ticketSeleccionado.Folio || '';
@@ -508,6 +512,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Delegación de eventos para selección de filas de tabla
     if (tablaTickets) {
         tablaTickets.addEventListener('click', function(e) {
+            const link = e.target.closest('a.ver-mas');
+            if (link) {
+                e.preventDefault();
+                const full = link.getAttribute('data-full') || '';
+                const body = document.getElementById('modalTextoContenido');
+                if (body) body.textContent = full;
+                // Reutilizamos el mismo id de modal en todas las páginas
+                if (typeof TicketsModalManager !== 'undefined') { TicketsModalManager.show('modalTextoLargo'); }
+                else {
+                    const modal = document.getElementById('modalTextoLargo');
+                    if (modal) modal.style.display = 'flex';
+                }
+                return;
+            }
             const fila = e.target.closest('.ui-tabla__row');
             if (fila) {
                 const folio = fila.getAttribute('data-folio');
@@ -536,25 +554,14 @@ document.addEventListener('DOMContentLoaded', function() {
     TecnicosModule.pagination = { pageSize: 10, currentPage: 1 };
 
     // Handlers de paginación
-    if (btnPrevPage) {
-        btnPrevPage.addEventListener('click', function() {
-            if (TecnicosModule.pagination.currentPage > 1) {
-                TecnicosModule.pagination.currentPage -= 1;
-                TecnicosUIUpdater.renderizarTabla(TecnicosModule.tickets);
-            }
-        });
-    }
-
-    if (btnNextPage) {
-        btnNextPage.addEventListener('click', function() {
-            const totalPages = Math.max(1, Math.ceil(TecnicosModule.tickets.length / TecnicosModule.pagination.pageSize));
-            if (TecnicosModule.pagination.currentPage < totalPages) {
-                TecnicosModule.pagination.currentPage += 1;
-                TecnicosUIUpdater.renderizarTabla(TecnicosModule.tickets);
-            }
-        });
-    }
+    // (Eliminados listeners de prev/next)
 
     // Carga inicial de tickets
     TecnicosOperations.cargarTickets();
 });
+
+// Cerrar modal de texto largo en técnicos
+function cerrarModalTextoLargo(){
+    const modal = document.getElementById('modalTextoLargo');
+    if (modal) modal.style.display = 'none';
+}

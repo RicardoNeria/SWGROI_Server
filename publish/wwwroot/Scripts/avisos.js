@@ -66,10 +66,16 @@ const NetworkUtils = {
 // Gestión de notificaciones (unificada)
 const NotificationManager = {
     show(message, type = 'info') {
+        // 1) Preferir sistema unificado Toast Premium
+        if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            try { window.ToastPremium.show(String(message || ''), String(type || 'info'), { duration: 4000 }); return; } catch (_) {}
+        }
+        // 2) Fallback: UI global
         if (window.SWGROI && window.SWGROI.UI && typeof window.SWGROI.UI.mostrarMensaje === 'function') {
             window.SWGROI.UI.mostrarMensaje(message, type, 'leyenda');
             return;
         }
+        // 3) Fallback mínimo: leyenda en página
         const leyenda = document.getElementById('leyenda');
         if (!leyenda) return;
         leyenda.className = `ui-message ui-message--${type} ui-message--visible`;
@@ -104,7 +110,7 @@ const ModalManager = {
 
 // Operaciones CRUD
 const AvisoOperations = {
-    async cargarAvisos() {
+    async cargarAvisos(options = { toast: false, message: '' }) {
         try {
             const params = new URLSearchParams({
                 page: AvisosModule.estado.page.toString(),
@@ -125,7 +131,11 @@ const AvisoOperations = {
             UIUpdater.renderizarTabla();
             UIUpdater.renderizarPaginacion(data.total || 0);
             
-            NotificationManager.show('Avisos cargados correctamente', 'success');
+            // Notificación opcional y contextual (no spamear "cargados")
+            if (options && options.toast) {
+                const msg = options.message || 'Operación realizada';
+                NotificationManager.show(msg, 'success');
+            }
         } catch (error) {
             NotificationManager.show(error.message || 'Error al cargar avisos', 'error');
         }
@@ -195,7 +205,7 @@ const FilterManager = {
         AvisosModule.estado.hasta = filtroHasta ? filtroHasta.value : '';
         AvisosModule.estado.page = 1;
         
-        AvisoOperations.cargarAvisos();
+        AvisoOperations.cargarAvisos({ toast: true, message: 'Avisos cargados correctamente' });
     },
     
     limpiarFiltros() {
@@ -212,7 +222,7 @@ const FilterManager = {
         AvisosModule.estado.hasta = '';
         AvisosModule.estado.page = 1;
         
-        AvisoOperations.cargarAvisos();
+        AvisoOperations.cargarAvisos({ toast: true, message: 'Avisos cargados correctamente' });
     }
 };
 
@@ -323,60 +333,41 @@ const UIUpdater = {
         const tipoClass = tipo ? `ui-action ui-action--${tipo}` : 'ui-action';
         btn.className = `ui-button ui-button--sm ${tipoClass}`.trim();
         // icono puede ser un id de icono o un emoji; normalizamos a un id y usamos data-icon
+        // Usamos una estructura anidada para compatibilidad con selectores generados
         const iconId = UIUpdater._normalizeIcon ? UIUpdater._normalizeIcon(icono) : icono;
         if (iconId) {
-            btn.innerHTML = `<span class="ui-button__icon" data-icon="${iconId}" aria-hidden="true"></span>`;
+            btn.innerHTML = `<span class="ui-button__icon" data-icon="${iconId}" aria-hidden="true"><span class="ui-button__icon__icon"></span></span>`;
         } else {
-            btn.innerHTML = `<span class="ui-button__icon"></span>`;
+            btn.innerHTML = `<span class="ui-button__icon"><span class="ui-button__icon__icon"></span></span>`;
         }
         btn.title = texto;
         btn.setAttribute('aria-label', texto);
         btn.addEventListener('click', onClick);
+        // For automated tests, expose test-friendly attributes when available
+        try { btn.setAttribute('data-test', tipo || texto.toLowerCase()); } catch(e) {}
         return btn;
     },
     
     renderizarPaginacion(total) {
-        const paginacionInfo = document.getElementById('paginacionInfo') || document.getElementById('lblPaginacion');
-        const btnPrev = document.getElementById('btnPrev');
-        const btnNext = document.getElementById('btnNext');
-        const paginacionPages = document.getElementById('paginacionPages');
-        
-        if (!paginacionInfo) return;
-        
-    const totalPaginas = Math.ceil(total / AvisosModule.estado.pageSize) || 1;
-        const inicio = (AvisosModule.estado.page - 1) * AvisosModule.estado.pageSize + 1;
-        const fin = Math.min(AvisosModule.estado.page * AvisosModule.estado.pageSize, total);
-        
-    paginacionInfo.textContent = `Mostrando ${inicio}-${fin} de ${total} avisos`;
-        
-        // Botones prev/next
-        if (btnPrev) {
-            btnPrev.disabled = AvisosModule.estado.page === 1;
+        const info = document.getElementById('paginacionInfo') || document.getElementById('lblPaginacion');
+        const cont = document.getElementById('paginacionAvisos') || document.getElementById('paginacionPages');
+        const totalItems = Number(total || 0);
+        if (window.SWGROI && window.SWGROI.Pagination && cont) {
+            window.SWGROI.Pagination.render(cont, {
+                total: totalItems,
+                page: AvisosModule.estado.page,
+                size: AvisosModule.estado.pageSize,
+                infoLabel: info,
+                onChange: (p)=>{ AvisosModule.estado.page = p; AvisoOperations.cargarAvisos(); }
+            });
+            return;
         }
-        if (btnNext) {
-            btnNext.disabled = AvisosModule.estado.page >= totalPaginas;
-        }
-        
-        // Números de página
-        if (paginacionPages) {
-            paginacionPages.innerHTML = '';
-            
-            if (totalPaginas <= 1) return;
-            
-            for (let i = 1; i <= totalPaginas; i++) {
-                if (i === 1 || i === totalPaginas || Math.abs(i - AvisosModule.estado.page) <= 2) {
-                    const btnPagina = UIUpdater.crearBotonPaginacion(i.toString(), i);
-                    if (i === AvisosModule.estado.page) {
-                        btnPagina.className = 'ui-button ui-button--primary ui-button--sm';
-                    }
-                    paginacionPages.appendChild(btnPagina);
-                } else if (Math.abs(i - AvisosModule.estado.page) === 3) {
-                    const span = document.createElement('span');
-                    span.textContent = '...';
-                    span.className = 'ui-paginacion__ellipsis';
-                    paginacionPages.appendChild(span);
-                }
-            }
+        // Fallback mínimo si el helper no está disponible
+        if (info) {
+            const totalPaginas = Math.max(1, Math.ceil(totalItems / AvisosModule.estado.pageSize));
+            const inicio = totalItems === 0 ? 0 : ((AvisosModule.estado.page - 1) * AvisosModule.estado.pageSize + 1);
+            const fin = Math.min(AvisosModule.estado.page * AvisosModule.estado.pageSize, totalItems);
+            info.textContent = totalItems === 0 ? 'No hay avisos' : `Mostrando ${inicio}-${fin} de ${totalItems} avisos`;
         }
     },
     
@@ -737,7 +728,7 @@ const EventManager = {
             selPageSize.addEventListener('change', (e) => {
                 AvisosModule.estado.pageSize = parseInt(e.target.value);
                 AvisosModule.estado.page = 1;
-                AvisoOperations.cargarAvisos();
+                AvisoOperations.cargarAvisos({ toast: true, message: 'Avisos cargados correctamente' });
             });
         }
         
@@ -746,7 +737,7 @@ const EventManager = {
             selSort.addEventListener('change', (e) => {
                 AvisosModule.estado.sort = e.target.value;
                 AvisosModule.estado.page = 1;
-                AvisoOperations.cargarAvisos();
+                AvisoOperations.cargarAvisos({ toast: true, message: 'Avisos cargados correctamente' });
             });
         }
         
@@ -755,34 +746,19 @@ const EventManager = {
             selDir.addEventListener('change', (e) => {
                 AvisosModule.estado.dir = e.target.value;
                 AvisosModule.estado.page = 1;
-                AvisoOperations.cargarAvisos();
+                AvisoOperations.cargarAvisos({ toast: true, message: 'Avisos cargados correctamente' });
             });
         }
         
-        // Paginación
-        const btnPrev = document.getElementById('btnPrev');
-        if (btnPrev) {
-            btnPrev.addEventListener('click', () => {
-                if (AvisosModule.estado.page > 1) {
-                    AvisosModule.estado.page--;
-                    AvisoOperations.cargarAvisos();
-                }
-            });
-        }
-        
-        const btnNext = document.getElementById('btnNext');
-        if (btnNext) {
-            btnNext.addEventListener('click', () => {
-                AvisosModule.estado.page++;
-                AvisoOperations.cargarAvisos();
-            });
-        }
+        // Paginación se gestiona con SWGROI.Pagination (no listeners directos aquí)
     },
     
     setupActionEvents() {
         const btnRefrescar = document.getElementById('btnRefrescar');
         if (btnRefrescar) {
-            btnRefrescar.addEventListener('click', () => AvisoOperations.cargarAvisos());
+            btnRefrescar.addEventListener('click', () => {
+                AvisoOperations.cargarAvisos({ toast: true, message: 'Avisos cargados correctamente' });
+            });
         }
         
         const btnExportar = document.getElementById('btnExportar');
@@ -809,7 +785,8 @@ const EventManager = {
 document.addEventListener('DOMContentLoaded', async () => {
     EventManager.init();
     FormManager.actualizarContador();
-    await AvisoOperations.cargarAvisos();
+    // Mostrar el toast una sola vez al entrar al módulo
+    await AvisoOperations.cargarAvisos({ toast: true, message: 'Avisos cargados correctamente' });
 });
 
 // Auto-refresh de avisos (KPIs y lista) cada 30s

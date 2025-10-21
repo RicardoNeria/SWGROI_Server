@@ -8,7 +8,24 @@
   <link rel="stylesheet" href="Styles/retro_ccc_admin.css" />
   <script src="Scripts/icon-loader.js" defer></script>
   <script src="Scripts/ui.js" defer></script>
+  <script src="Scripts/toast-premium.js" defer></script>
+  <script src="Scripts/retroalimentacionValidator.js" defer></script>
   <script src="Scripts/retro_admin.js" defer></script>
+  <script>
+    // Shim para compatibilidad: showRetroToast -> ToastPremium
+    (function(){
+      if (typeof window.showRetroToast !== 'function') {
+        window.showRetroToast = function(message, type = 'info', options = {}){
+          if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            const { title, duration = (type==='error'?6000:4000) } = options || {};
+            window.ToastPremium.show(String(message||''), String(type||'info'), { title, duration });
+            return;
+          }
+          console.log('[Toast]', type, message);
+        };
+      }
+    })();
+  </script>
 </head>
 <body class="ui-layout ui-layout--no-topbar">
 
@@ -140,6 +157,9 @@
     </div>
   </main>
 
+  <!-- Contenedor para notificaciones Toast del módulo de retroalimentación -->
+  <div id="toast-container-retro"></div>
+
   <script>
     const $ = (id) => document.getElementById(id);
     const folioInput = $('folioInput');
@@ -155,6 +175,15 @@
     const responseDetail = $('responseDetail');
 
     function showStatus(message, type = 'info') {
+      // NUEVA INTEGRACIÓN: Usar Toast preferentemente para mejor UX
+      if (window.showRetroToast) {
+        showRetroToast(message, type, {
+          duration: type === 'error' ? 5000 : 3000
+        });
+        return;
+      }
+
+      // Fallback al sistema de leyenda existente
       const iconMap = { success: '✔', error: '✖', warning: '⚠', info: 'ℹ️' };
       const icon = iconMap[type] || iconMap.info;
 
@@ -208,12 +237,18 @@
 
     btnCopyLink.addEventListener('click', async () => {
       const text = generatedLink.textContent || '';
-      if(!text) return showStatus('No hay enlace para copiar','error');
+      if(!text) {
+        showRetroToast('No hay enlace para copiar', 'error');
+        return;
+      }
       try{
         await navigator.clipboard.writeText(text);
-        showStatus('✅ Enlace copiado al portapapeles','success');
+        showRetroToast('Enlace copiado al portapapeles', 'success', {
+          title: 'Copiado',
+          duration: 2000
+        });
       }catch(e){
-        showStatus('❌ No se pudo copiar. Seleccione y copie manualmente.','error');
+        showRetroToast('No se pudo copiar. Seleccione y copie manualmente.', 'error');
       }
     });
 
@@ -550,14 +585,18 @@
 
     btnGenerar.addEventListener('click', async () => {
       const folio = folioInput.value.trim();
-      if (!folio) { showStatus('❌ Por favor ingrese un folio válido','error'); folioInput.focus(); return; }
-      btnGenerar.disabled = true; btnGenerar.textContent = '⏳ Generando...';
+      if (!folio) { 
+        showRetroToast('Por favor ingrese un folio válido', 'error'); 
+        folioInput.focus(); 
+        return; 
+      }
+      btnGenerar.disabled = true; btnGenerar.textContent = 'Generando...';
       try{
         const resultado = await window.RetroAdmin.generar(folio);
         // resultado expected: { link, contestada, ... }
         renderGenerated(resultado.link || resultado.enlace || '', resultado.contestada === true);
         resultIntro.innerHTML = '<span class="ui-button__icon" data-icon="copy" aria-hidden="true"></span> Enlace generado. Use el botón para copiar o abrir.';
-        showStatus('✅ Enlace generado correctamente','success');
+        showRetroToast('Enlace generado correctamente', 'success');
   // optionally update history if returned; if not, normalize single result into history for metrics
         const rawHist = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
         const hist = rawHist.map(item => {
@@ -569,15 +608,19 @@
   renderHistory(hist);
   computeMetricsFromHistory(hist);
       }catch(err){
-        resultIntro.textContent = '❌ Error al generar enlace. Revise el mensaje.';
-        showStatus('❌ Error al generar enlace','error');
+        resultIntro.textContent = 'Error al generar enlace. Revise el mensaje.';
+        showRetroToast('Error al generar enlace', 'error');
         console.error(err);
       }finally{ btnGenerar.disabled=false; btnGenerar.innerHTML='<span class="ui-button__icon" data-icon="copy"></span> Generar Enlace'; }
     });
 
     btnBuscar.addEventListener('click', async () => {
       const folio = folioInput.value.trim();
-      if (!folio) { showStatus('❌ Por favor ingrese un folio válido','error'); folioInput.focus(); return; }
+      if (!folio) { 
+        showRetroToast('Por favor ingrese un folio válido', 'error'); 
+        folioInput.focus(); 
+        return; 
+      }
       btnBuscar.disabled=true; btnBuscar.innerHTML='<span class="ui-button__icon" data-icon="search"></span> Buscando...';
       try{
         const resultado = await window.RetroAdmin.buscar(folio);
@@ -585,14 +628,14 @@
         if(resultado.fechaRespuesta){
           fillResponseDetail(resultado);
           renderGenerated(resultado.enlace || resultado.link || '', true);
-          resultIntro.textContent = `✅ Respuestas encontradas: ${resultado.fechaRespuesta}`;
-          showStatus('✅ Respuestas encontradas','success');
+          resultIntro.textContent = `Respuestas encontradas: ${resultado.fechaRespuesta}`;
+          showRetroToast('Respuestas encontradas', 'success');
         } else {
           // No respondida aun
           renderGenerated(resultado.enlace || resultado.link || '', false);
           responseDetail.style.display='none';
           resultIntro.innerHTML = '<span class="ui-button__icon" data-icon="edit" aria-hidden="true"></span> Encuesta pendiente o sin respuesta registrada.';
-          showStatus('ℹ️ Encuesta pendiente','info');
+          showRetroToast('Encuesta pendiente', 'info');
         }
   // Normalizar historial: usar resultado.historial si existe, o el propio resultado como entrada única
         const rawHist2 = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
@@ -605,8 +648,8 @@
   renderHistory(hist2);
   computeMetricsFromHistory(hist2);
       }catch(err){
-        resultIntro.textContent = '❌ Error en la búsqueda';
-        showStatus('❌ Error en la búsqueda','error');
+        resultIntro.textContent = 'Error en la búsqueda';
+        showRetroToast('Error en la búsqueda', 'error');
         console.error(err);
       }finally{ btnBuscar.disabled=false; btnBuscar.innerHTML='<span class="ui-button__icon" data-icon="search"></span> Buscar Respuestas'; }
     });

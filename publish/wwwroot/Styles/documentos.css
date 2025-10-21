@@ -20,6 +20,9 @@
   --documentos-font-size:0.90rem;
 }
 
+/* Override del fondo global para evitar la franja púrpura en Documentos */
+html, body { background: var(--ui-color-fondo-alt, #f8fafc) !important; }
+
 .documentos-container{margin:0 auto;padding:18px 20px;font-size:var(--ui-font-size-base)}
 /* Mantener el título principal del módulo más grande que el resto */
 .documentos-container > h1,

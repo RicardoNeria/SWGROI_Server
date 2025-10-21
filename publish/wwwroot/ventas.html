@@ -10,6 +10,8 @@
     <script src="Scripts/ui-utils.js" defer></script>
     <script src="Scripts/seguridad.js" defer></script>
     <script src="Scripts/ui.js" defer></script>
+    <script src="Scripts/toast-premium.js" defer></script>
+    <script src="Scripts/ventasValidator.js" defer></script>
     <script src="Scripts/ventas.js" defer></script>
 </head>
 <body class="ui-layout ui-layout--no-topbar">
@@ -182,13 +184,7 @@
                 </div>
             </div>
 
-            <!-- MENSAJE DE ESTADO GLOBAL -->
-            <div class="ui-message-container">
-                <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
-                    <span class="ui-message__icon" aria-hidden="true"></span>
-                    <span class="ui-message__text"></span>
-                </div>
-            </div>
+            
 
             <!-- LOADER DE TABLA -->
             <div id="tablaLoader" class="ui-loader" style="display:none">
@@ -233,16 +229,7 @@
                 <!-- PAGINACIÓN UNIFICADA -->
                 <div class="ui-paginacion" role="navigation" aria-label="Paginación de resultados">
                     <span id="lblPaginacion" class="ui-paginacion__info">Mostrando 0-0 de 0 ventas</span>
-                    <div class="ui-paginacion__controles">
-                        <button id="btnPrev" class="ui-button ui-button--ghost ui-paginacion__btn" 
-                                type="button" aria-label="Página anterior" disabled>
-                           <span class="ui-button__icon" data-icon="prev" aria-hidden="true"></span>Anterior
-                        </button>
-                        <button id="btnNext" class="ui-button ui-button--ghost ui-paginacion__btn" 
-                                type="button" aria-label="Página siguiente" disabled>
-                           Siguiente<span class="ui-button__icon" data-icon="next" aria-hidden="true"></span>
-                        </button>
-                    </div>
+                    <div id="paginacionVentas" class="ui-paginacion__controles"></div>
                 </div>
             </section>
         </div>
@@ -643,6 +630,8 @@
     </div>
 
 </body>
+<!-- Contenedor de toasts del módulo de Ventas -->
+<div id="toast-container-ventas" aria-live="polite" aria-atomic="true"></div>
 <script>
     // Enlazar el botón de Reporte HTML para incluir filtros actuales (divisor y filtros)
     (function(){

@@ -65,16 +65,17 @@ const NetworkUtilsVer = {
 // Gestión de notificaciones (delegar a la utilidad unificada cuando exista)
 const NotificationVer = {
 	show(message, type = 'info') {
-		// Si la utilidad central está disponible, delegamos
+		// 1) Preferir Toast Premium unificado
+		if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+			try { window.ToastPremium.show(String(message || ''), String(type || 'info'), { duration: 4000 }); return; } catch (_) {}
+		}
+		// 2) Delegar a utilidad central si existe
 		if (window.SWGROI && window.SWGROI.UI && typeof window.SWGROI.UI.mostrarMensaje === 'function') {
 			try { window.SWGROI.UI.mostrarMensaje(message, type); return; } catch (e) { console.warn('SWGROI.UI.mostrarMensaje falló', e); }
 		}
-
-		// Fallback local: mantener compatibilidad con estructura de leyenda
+		// 3) Fallback local: leyenda
 		const leyenda = document.getElementById('leyenda');
 		if (!leyenda) return;
-
-		// Crear o actualizar nodos internos simplificados
 		let iconNode = leyenda.querySelector('.ui-message__icon');
 		let textNode = leyenda.querySelector('.ui-message__text');
 		if (!iconNode) {
@@ -88,15 +89,11 @@ const NotificationVer = {
 			textNode.className = 'ui-message__text';
 			leyenda.appendChild(textNode);
 		}
-
-		// icon visual simple
 		const iconMap = { success: '✔', error: '✖', warning: '⚠', info: 'ℹ️' };
 		iconNode.textContent = iconMap[type] || iconMap.info;
 		textNode.textContent = message;
-
 		leyenda.className = `ui-message ui-message--${type} ui-message--visible`;
 		leyenda.style.display = 'inline-flex';
-
 		setTimeout(() => {
 			leyenda.classList.remove('ui-message--visible');
 			leyenda.style.display = 'none';
@@ -141,20 +138,24 @@ const UIUpdaterVer = {
 	},
 
 	renderizarPaginacion(total, page = VerAvisosModule.estado.page, pageSize = VerAvisosModule.estado.pageSize) {
-		const paginacionInfo = document.getElementById('lblPaginacion');
-		const btnPrev = document.getElementById('btnPrev');
-		const btnNext = document.getElementById('btnNext');
-
-		if (!paginacionInfo) return;
-
-		const totalPaginas = Math.max(1, Math.ceil(total / pageSize));
-		const inicio = (page - 1) * pageSize + 1;
-		const fin = Math.min(page * pageSize, total);
-
-		paginacionInfo.textContent = total === 0 ? '0-0 de 0' : `${inicio}-${fin} de ${total}`;
-
-		if (btnPrev) btnPrev.disabled = page <= 1;
-		if (btnNext) btnNext.disabled = page >= totalPaginas;
+		const info = document.getElementById('paginacionInfo');
+		const cont = document.getElementById('paginacionVerAvisos');
+		const totalItems = Number(total || 0);
+		if (window.SWGROI && window.SWGROI.Pagination && cont) {
+			window.SWGROI.Pagination.render(cont, {
+				total: totalItems,
+				page,
+				size: pageSize,
+				infoLabel: info,
+				onChange: (p)=>{ VerAvisosModule.estado.page = p; DataOperationsVer.cargarAvisos(); }
+			});
+			return;
+		}
+		if (info) {
+			const inicio = totalItems === 0 ? 0 : (page - 1) * pageSize + 1;
+			const fin = Math.min(page * pageSize, totalItems);
+			info.textContent = totalItems === 0 ? 'No hay avisos' : `${inicio}-${fin} de ${totalItems}`;
+		}
 	},
 
 	formatearFecha(fecha) {
@@ -320,20 +321,7 @@ const EventManagerVer = {
 	},
 
 	setupPaginationEvents() {
-		const btnPrev = document.getElementById('btnPrev');
-		const btnNext = document.getElementById('btnNext');
-
-		if (btnPrev) btnPrev.addEventListener('click', () => {
-			if (VerAvisosModule.estado.page > 1) {
-				VerAvisosModule.estado.page--;
-				DataOperationsVer.cargarAvisos();
-			}
-		});
-
-		if (btnNext) btnNext.addEventListener('click', () => {
-			VerAvisosModule.estado.page++;
-			DataOperationsVer.cargarAvisos();
-		});
+		// Paginación manejada por SWGROI.Pagination en renderizarPaginacion
 	},
 
 	setupSortEvents() {

@@ -6,9 +6,27 @@
   <title>Gestión Documental - SWGROI</title>
   <link rel="stylesheet" href="Styles/componentes/componentes.css">
   <link rel="stylesheet" href="Styles/documentos.css">
+  
   <script src="Scripts/icon-loader.js" defer></script>
   <script src="Scripts/ui.js" defer></script>
   <script src="Scripts/ui-utils.js" defer></script>
+  <script src="Scripts/toast-premium.js" defer></script>
+  <script>
+    // Compatibilidad: mapear showDocsToast -> ToastPremium
+    (function(){
+      if (typeof window.showDocsToast !== 'function') {
+        window.showDocsToast = function(message, type = 'info', options = {}){
+          if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            const { title, duration = (type==='error'?6000:4000), closable } = options || {};
+            window.ToastPremium.show(String(message||''), String(type||'info'), { title, duration, closable });
+            return;
+          }
+          console.log('[Toast]', type, message);
+        };
+      }
+    })();
+  </script>
+  <script src="Scripts/documentosValidator.js" defer></script>
   <script src="Scripts/documentos.js" defer></script>
 </head>
 <body class="ui-layout ui-layout--no-topbar">
@@ -96,18 +114,12 @@
         </div>
       </div>
 
-    <!-- Mensaje global unificado -->
-    <div class="ui-message-container">
-      <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
-        <span class="ui-message__icon" aria-hidden="true"></span>
-        <span class="ui-message__text"></span>
-      </div>
-    </div>
+    
 
       <!-- Tabla compacta -->
       <section class="ui-card ui-card--report" aria-label="Listado de documentos">
         <div class="ui-tabla-wrap ui-desplazable">
-          <table class="ui-tabla ui-tabla--compacta" role="table" aria-describedby="leyenda">
+          <table class="ui-tabla ui-tabla--compacta" role="table">
             <thead class="ui-tabla__head">
               <tr class="ui-tabla__row">
                 <th class="ui-tabla__col">Documento</th>
@@ -123,8 +135,11 @@
           </table>
         </div>
 
-        <!-- Paginación -->
-        <div id="paginacionContainer" class="ui-paginacion" role="navigation" aria-label="Paginación de resultados"></div>
+        <!-- Paginación unificada -->
+        <div class="ui-paginacion" role="navigation" aria-label="Paginación de resultados">
+          <span id="paginacionInfoDocs" class="ui-paginacion__info">Mostrando documentos</span>
+          <div id="paginacionContainer" class="ui-paginacion__controles"></div>
+        </div>
       </section>
 
     </div>
@@ -251,6 +266,8 @@
     });
   </script>
   
+  <!-- Container para Toast Notifications del módulo de documentos -->
+  <div id="toast-container-docs"></div>
 
 </body>
 </html>
