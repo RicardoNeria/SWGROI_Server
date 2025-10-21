@@ -149,6 +149,10 @@
     if (typeof window.showTicketsToast !== 'function') {
       window.showTicketsToast = mkShim('info', 3200);
     }
+    // Mesa de Control (Técnicos)
+    if (typeof window.showTecnicosToast !== 'function') {
+      window.showTecnicosToast = mkShim('info', 3200);
+    }
     // Documentos: pequeñas diferencias de duración por tipo
     if (typeof window.showDocsToast !== 'function') {
       window.showDocsToast = function(message, type = 'info', duration){
