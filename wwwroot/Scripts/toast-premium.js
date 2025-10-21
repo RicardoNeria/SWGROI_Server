@@ -122,4 +122,40 @@
 
   window.ToastPremium = { show, clearAll: () => { Array.from(active.keys()).forEach(close); } };
   console.log('[ToastPremium] listo');
+  
+  // Shims de compatibilidad para nombres legacy presentes en varios módulos
+  // Mapean showVentasToast/showRetroToast/showDocsToast -> ToastPremium.show()
+  (function(){
+    function mkShim(defaultType, defaultDuration){
+      return function(message, type = defaultType, duration = defaultDuration){
+        const t = String(type || defaultType || 'info');
+        const d = Number(duration);
+        const eff = Number.isFinite(d) && d > 0 ? d : (t === 'error' ? 7000 : t === 'success' ? 2800 : 3200);
+        if (window.ToastPremium && typeof window.ToastPremium.show === 'function'){
+          return window.ToastPremium.show(String(message||''), t, { duration: eff });
+        }
+        try { console.log('[Toast]', t, message); } catch(_){}
+      };
+    }
+
+    // Ventas y Retro: mismos defaults
+    if (typeof window.showVentasToast !== 'function') {
+      window.showVentasToast = mkShim('info', 3200);
+    }
+    if (typeof window.showRetroToast !== 'function') {
+      window.showRetroToast = mkShim('info', 3200);
+    }
+    // Documentos: pequeñas diferencias de duración por tipo
+    if (typeof window.showDocsToast !== 'function') {
+      window.showDocsToast = function(message, type = 'info', duration){
+        const t = String(type || 'info');
+        let d = Number(duration);
+        if (!Number.isFinite(d) || d <= 0) d = (t === 'success' ? 2600 : t === 'error' ? 6800 : 3600);
+        if (window.ToastPremium && typeof window.ToastPremium.show === 'function'){
+          return window.ToastPremium.show(String(message||''), t, { duration: d });
+        }
+        try { console.log('[Toast]', t, message); } catch(_){}
+      };
+    }
+  })();
 })(window);
