@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Retroalimentación CCC - SWGROI</title>
+    <!-- Usar estilos unificados de componentes y mantener reglas específicas del módulo -->
+    <link rel="stylesheet" href="Styles/componentes/componentes.css">
+    <link rel="stylesheet" href="Styles/retroalimentacion.css">
+    <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/ui-utils.js" defer></script>
+    <script src="Scripts/ui.js" defer></script>
+    <script src="Scripts/retroalimentacion.js" defer></script>
+    <style>
+        /* Variables de tema local para mantener consistencia */
+        :root{
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --muted: #6b7280;
+            --accent-1: #1e40af; /* azul oscuro */
+            --accent-2: #3b82f6; /* azul claro */
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius: 10px;
+            --max-width: 920px;
+            --gap: 1rem;
+            --shadow: 0 6px 20px rgba(15,23,42,0.06);
+        }
+
+        /* Base layout */
+        body.ui-layout--survey{ background: linear-gradient(180deg, #fbfdff 0%, var(--bg) 60%); font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#0f172a; margin:0; }
+        .ui-layout__main{ padding:2rem; min-height:100vh; box-sizing:border-box; }
+        .ui-card--module{ max-width:var(--max-width); margin:0 auto; background:transparent; box-shadow:none; }
+
+        /* Card form central */
+        .ui-card--form{ background:var(--card); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow); border:1px solid rgba(15,23,42,0.04); }
+        .retro-card-header{ display:flex; align-items:center; justify-content:space-between; gap:var(--gap); }
+        .retro-logo{ width:48px; height:auto; border-radius:8px; object-fit:contain; }
+        .ui-card__title{ font-size:1.125rem; margin:0; font-weight:600; display:flex; align-items:center; gap:0.5rem; }
+        .ui-card__subtitle{ margin:0; color:var(--muted); font-size:0.95rem; }
+
+        /* Progress */
+        .retro-progress-row{ margin-top:0.75rem; display:flex; flex-direction:column; gap:0.5rem; }
+        .retro-progress__meta{ display:flex; justify-content:space-between; font-size:0.875rem; color:var(--muted); }
+        .retro-progress{ width:100%; height:12px; background:linear-gradient(180deg, rgba(15,23,42,0.03), rgba(15,23,42,0.02)); border-radius:999px; overflow:hidden; }
+        .retro-progress__bar{ height:100%; background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); width:0%; transition:width .45s cubic-bezier(.2,.9,.25,1); box-shadow:0 4px 10px rgba(59,130,246,0.18) inset; }
+
+        /* Mensajes */
+        .ui-message{ padding:0.65rem 0.75rem; border-radius:8px; background:rgba(14,165,233,0.04); color:var(--muted); display:flex; align-items:center; gap:0.6rem; }
+        .ui-message--error{ background:rgba(239,68,68,0.06); color:var(--danger); }
+        .ui-message--info{ background:rgba(59,130,246,0.06); color:var(--accent-1); }
+
+        /* Preguntas */
+        .retro-preguntas{ margin-top:0.75rem; display:flex; flex-direction:column; gap:0.75rem; }
+        .retro-pregunta{ border-radius:8px; padding:0.85rem; background:linear-gradient(180deg, rgba(15,23,42,0.01), rgba(15,23,42,0.005)); border:1px solid rgba(15,23,42,0.03); }
+        .retro-pregunta__titulo{ margin:0 0 0.45rem 0; font-weight:600; font-size:0.98rem; }
+        .retro-pregunta__descripcion{ margin:0; color:var(--muted); font-size:0.9rem; }
+
+        /* Estilos para opciones (radio/escala) — conservadores para no romper JS */
+        .retro-opciones{ margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap; }
+        .retro-opcion{ padding:0.45rem 0.65rem; border-radius:999px; border:1px solid rgba(15,23,42,0.06); background:#fff; cursor:pointer; transition:all .18s ease; font-size:0.92rem; }
+        .retro-opcion:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(2,6,23,0.06); }
+        .retro-opcion[aria-checked="true"], .retro-opcion.selected{ background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); color:white; border-color:transparent; }
+
+        /* Acciones */
+        .retro-acciones{ display:flex; gap:0.6rem; justify-content:flex-end; margin-top:1rem; }
+        .ui-button{ display:inline-flex; align-items:center; gap:0.5rem; padding:0.55rem 0.85rem; border-radius:8px; border:1px solid transparent; cursor:pointer; font-weight:600; }
+        .ui-button--primary{ background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); color:#fff; box-shadow:0 8px 24px rgba(59,130,246,0.14); }
+        .ui-button--ghost{ background:transparent; border:1px solid rgba(15,23,42,0.06); color:var(--muted); }
+        .ui-button:focus{ outline:3px solid rgba(59,130,246,0.12); }
+
+        /* Secciones de estado */
+        .retro-exito, .retro-error, .retro-cargando{ padding:0.9rem; border-radius:8px; }
+        .retro-exito__titulo{ margin:0 0 0.25rem 0; color:var(--success); }
+        .retro-error__titulo{ margin:0 0 0.25rem 0; color:var(--danger); }
+
+        /* Spinner simple CSS */
+        .retro-cargando__spinner{ width:28px; height:28px; border-radius:50%; border:3px solid rgba(15,23,42,0.06); border-top-color:var(--accent-2); animation:spin .9s linear infinite; }
+        @keyframes spin{ to{ transform:rotate(360deg); } }
+
+        /* Responsive */
+        @media (max-width:768px){
+            .ui-layout__main{ padding:1rem; }
+            .retro-card-header{ flex-direction:column; align-items:flex-start; }
+            .retro-acciones{ justify-content:stretch; flex-direction:column-reverse; }
+            .ui-button{ width:100%; justify-content:center; }
+        }
+    </style>
+</head>
+<body class="ui-layout ui-layout--survey">
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="ui-layout__main">
+        <div class="ui-card ui-card--module" role="main">
+
+            <!-- Encabezado simple con logo y cerrar formulario -->
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Central de Alarmas" class="retro-logo">
+                    <div>
+                        <h2 class="ui-card__title"><span class="ui-button__icon" data-icon="edit" aria-hidden="true"></span> Encuesta de Satisfacción</h2>
+                        <!-- Se evita duplicar el id "infoCliente"; la leyenda principal está en el card inferior -->
+                    </div>
+                </div>
+                <div>
+                    <button type="button" id="btnCerrarFormulario" class="ui-button ui-button--ghost">Cerrar formulario</button>
+                </div>
+            </div>
+
+            <!-- MENSAJE DE ESTADO GLOBAL (unificado) -->
+            <div class="ui-message-container">
+                <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
+                    <span class="ui-message__icon" aria-hidden="true"></span>
+                    <span class="ui-message__text"></span>
+                </div>
+            </div>
+
+            <!-- CONTENEDOR PRINCIPAL DEL MÓDULO -->
+            <section aria-label="Encuesta de satisfacción">
+                <div class="ui-card ui-card--form">
+                    <div class="ui-card__header retro-card-header">
+                        <div>
+                            <p id="infoCliente" class="ui-card__subtitle ui-card__subtitle--error">Favor de contestar la siguiente encuesta para completar el proceso de su factura</p>
+                        </div>
+                        <div class="ui-card__meta">
+                            <div class="ui-badge ui-badge--administrador" aria-hidden="true">Cliente: <span id="badgeCliente">—</span></div>
+                            <div class="ui-card__meta-text">Folio: <strong id="badgeFolio">—</strong></div>
+                        </div>
+                    </div>
+
+                    <div class="retro-progress-row">
+                        <div class="retro-progress__meta" aria-hidden="true">
+                            <span id="progressCount" class="retro-progress__count">0/0</span>
+                            <span id="progressPct" class="retro-progress__pct">0%</span>
+                        </div>
+                        <div id="progressContainer" class="retro-progress" role="progressbar" aria-label="Progreso de respuestas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                            <div id="progressBar" class="retro-progress__bar" aria-hidden="true"></div>
+                        </div>
+                    </div>
+
+                    <!-- Leyenda roja obligatoria -->
+                    <div id="leyendaObligatoria" class="ui-message ui-message--error retro-card-spacing" role="status" aria-live="polite">
+                        <strong><span class="ui-button__icon" data-icon="edit" aria-hidden="true"></span> Favor de contestar la siguiente encuesta para completar el proceso de su factura</strong>
+                    </div>
+
+                    <!-- Nota secundaria (visible mientras la encuesta NO esté contestada) -->
+                    <div id="retroNota" class="retro-obligatorio" role="note" aria-live="polite">
+                        Sus respuestas son anónimas y nos ayudan a mejorar.
+                    </div>
+
+                    <!-- Leyenda que se muestra cuando la encuesta ya fue contestada -->
+                    <div id="leyendaContestada" class="ui-message ui-message--info retro-card-spacing" role="status" aria-live="polite" style="display:none">
+                        <!-- Texto rellenado por JS cuando corresponda -->
+                    </div>
+
+                    <!-- FORMULARIO CLIENTE (Por token) -->
+                    <form id="formRespuestas" class="ui-form retro-form" aria-labelledby="formTitle" novalidate>
+                        <h3 id="formTitle" class="ui-form__label" style="display:none">Preguntas de la encuesta</h3>
+                        <fieldset id="preguntasContainer" class="retro-preguntas" aria-live="polite">
+                            <!-- Preguntas se cargan dinámicamente por retroalimentacion.js -->
+                        </fieldset>
+
+                        <div class="retro-acciones" style="margin-top:1rem;">
+                            <button type="submit" id="btnEnviar" class="ui-button ui-button--primary">
+                                <span class="ui-button__icon" data-icon="send"></span>Enviar respuestas
+                            </button>
+                            <button type="button" id="btnCancelar" class="ui-button ui-button--ghost" title="Refrescar campos">
+                                <span class="ui-button__icon" data-icon="refresh"></span>Refrescar campos
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- MENSAJE DE ÉXITO -->
+                    <div id="seccionExito" class="ui-card retro-exito retro-card-spacing" style="display:none;">
+                        <div style="display:flex; gap:1rem; align-items:center;">
+                            <div class="retro-exito__icono"><span class="ui-button__icon" data-icon="check" style="font-size: 1.5em; color: #10b981;"></span></div>
+                            <div>
+                                <h3 class="retro-exito__titulo">¡Gracias por su retroalimentación!</h3>
+                                <p class="retro-exito__mensaje">Sus respuestas han sido registradas exitosamente. Su opinión nos ayuda a mejorar nuestro servicio.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MENSAJE DE ERROR -->
+                    <div id="seccionError" class="ui-card retro-error retro-card-spacing" style="display:none;">
+                        <div style="display:flex; gap:1rem; align-items:flex-start;">
+                            <div class="retro-error__icono"><span class="ui-button__icon" data-icon="x" style="font-size: 1.5em; color: #ef4444;"></span></div>
+                            <div>
+                                <h3 class="retro-error__titulo">Error al cargar formulario</h3>
+                                <p id="mensajeError" class="retro-error__mensaje">No se pudo cargar el formulario de retroalimentación.</p>
+                                <div style="margin-top:0.6rem;">
+                                    <button onclick="window.location.reload()" class="ui-button ui-button--secondary">
+                                        <span class="ui-button__icon" data-icon="refresh"></span>Intentar de nuevo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CARGANDO -->
+                    <div id="seccionCargando" class="ui-card retro-cargando retro-card-spacing" style="display:block;">
+                        <div style="display:flex; gap:1rem; align-items:center;">
+                            <div class="retro-cargando__spinner" aria-hidden="true"></div>
+                            <p class="retro-cargando__texto">Cargando formulario...</p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+</body>
+</html>

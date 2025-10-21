@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Iconos SVG - SWGROI</title>
+    <link rel="stylesheet" href="Styles/componentes/componentes.css">
+    <script src="Scripts/icon-loader.js" defer></script>
+    <style>
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            padding: 2rem; 
+            background: #f8fafc;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .test-title {
+            margin: 0 0 1rem 0;
+            color: #1f2937;
+            font-size: 1.5rem;
+        }
+        .icon-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 0.5rem 0;
+        }
+        .performance-info {
+            background: #e0f2fe;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="test-title">🧪 Test de Performance de Iconos SVG</h1>
+    
+    <div class="performance-info">
+        <strong>Información de Performance:</strong><br>
+        • SVG Sprite: <span id="sprite-status">Cargando...</span><br>
+        • Iconos renderizados: <span id="icon-count">0</span><br>
+        • Tiempo de carga: <span id="load-time">Calculando...</span>
+    </div>
+
+    <div class="test-grid">
+        <div class="test-card">
+            <h3>Botones Principales</h3>
+            <div class="icon-row">
+                <button class="ui-button ui-button--primary">
+                    <span class="ui-button__icon" data-icon="search"></span> Buscar
+                </button>
+                <button class="ui-button ui-button--secondary">
+                    <span class="ui-button__icon" data-icon="clear"></span> Limpiar
+                </button>
+                <button class="ui-button ui-button--success">
+                    <span class="ui-button__icon" data-icon="save"></span> Guardar
+                </button>
+                <button class="ui-button ui-button--danger">
+                    <span class="ui-button__icon" data-icon="delete"></span> Eliminar
+                </button>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <h3>Navegación</h3>
+            <div class="icon-row">
+                <button class="ui-button ui-button--ghost">
+                    <span class="ui-button__icon" data-icon="home"></span> Inicio
+                </button>
+                <button class="ui-button ui-button--ghost">
+                    <span class="ui-button__icon" data-icon="folder"></span> Documentos
+                </button>
+                <button class="ui-button ui-button--ghost">
+                    <span class="ui-button__icon" data-icon="ticket"></span> Tickets
+                </button>
+                <button class="ui-button ui-button--ghost">
+                    <span class="ui-button__icon" data-icon="logout"></span> Salir
+                </button>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <h3>Acciones de Tabla</h3>
+            <div class="icon-row">
+                <button class="ui-button ui-action ui-action--edit">
+                    <span class="ui-button__icon" data-icon="edit"></span>
+                </button>
+                <button class="ui-button ui-action ui-action--view">
+                    <span class="ui-button__icon" data-icon="export"></span>
+                </button>
+                <button class="ui-button ui-action ui-action--download">
+                    <span class="ui-button__icon" data-icon="download"></span>
+                </button>
+                <button class="ui-button ui-action ui-action--delete">
+                    <span class="ui-button__icon" data-icon="delete"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <h3>Títulos con Iconos</h3>
+            <h4><span class="ui-button__icon" data-icon="chart"></span> Tendencias</h4>
+            <h4><span class="ui-button__icon" data-icon="clock"></span> Actividad</h4>
+            <h4><span class="ui-button__icon" data-icon="users"></span> Usuarios</h4>
+            <h4><span class="ui-button__icon" data-icon="shield"></span> Seguridad</h4>
+        </div>
+
+        <div class="test-card">
+            <h3>Diferentes Tamaños</h3>
+            <div class="icon-row">
+                <button class="ui-button ui-button--sm">
+                    <span class="ui-button__icon" data-icon="plus"></span> Pequeño
+                </button>
+                <button class="ui-button">
+                    <span class="ui-button__icon" data-icon="plus"></span> Normal
+                </button>
+                <button class="ui-button ui-button--lg">
+                    <span class="ui-button__icon" data-icon="plus"></span> Grande
+                </button>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <h3>Todos los Iconos</h3>
+            <div class="icon-row">
+                <span class="ui-button__icon" data-icon="search" title="search"></span>
+                <span class="ui-button__icon" data-icon="clear" title="clear"></span>
+                <span class="ui-button__icon" data-icon="plus" title="plus"></span>
+                <span class="ui-button__icon" data-icon="export" title="export"></span>
+                <span class="ui-button__icon" data-icon="refresh" title="refresh"></span>
+                <span class="ui-button__icon" data-icon="prev" title="prev"></span>
+                <span class="ui-button__icon" data-icon="next" title="next"></span>
+                <span class="ui-button__icon" data-icon="close" title="close"></span>
+                <span class="ui-button__icon" data-icon="save" title="save"></span>
+                <span class="ui-button__icon" data-icon="edit" title="edit"></span>
+                <span class="ui-button__icon" data-icon="delete" title="delete"></span>
+                <span class="ui-button__icon" data-icon="print" title="print"></span>
+                <span class="ui-button__icon" data-icon="download" title="download"></span>
+                <span class="ui-button__icon" data-icon="menu" title="menu"></span>
+                <span class="ui-button__icon" data-icon="logout" title="logout"></span>
+                <span class="ui-button__icon" data-icon="report" title="report"></span>
+                <span class="ui-button__icon" data-icon="copy" title="copy"></span>
+                <span class="ui-button__icon" data-icon="cancel" title="cancel"></span>
+                <span class="ui-button__icon" data-icon="confirm" title="confirm"></span>
+                <span class="ui-button__icon" data-icon="send" title="send"></span>
+                <span class="ui-button__icon" data-icon="info" title="info"></span>
+                <span class="ui-button__icon" data-icon="eye-open" title="eye-open"></span>
+                <span class="ui-button__icon" data-icon="eye-closed" title="eye-closed"></span>
+                <span class="ui-button__icon" data-icon="key" title="key"></span>
+                <span class="ui-button__icon" data-icon="megaphone" title="megaphone"></span>
+                <span class="ui-button__icon" data-icon="home" title="home"></span>
+                <span class="ui-button__icon" data-icon="ticket" title="ticket"></span>
+                <span class="ui-button__icon" data-icon="money" title="money"></span>
+                <span class="ui-button__icon" data-icon="tools" title="tools"></span>
+                <span class="ui-button__icon" data-icon="users" title="users"></span>
+                <span class="ui-button__icon" data-icon="folder" title="folder"></span>
+                <span class="ui-button__icon" data-icon="user" title="user"></span>
+                <span class="ui-button__icon" data-icon="clock" title="clock"></span>
+                <span class="ui-button__icon" data-icon="shield" title="shield"></span>
+                <span class="ui-button__icon" data-icon="chart" title="chart"></span>
+                <span class="ui-button__icon" data-icon="file" title="file"></span>
+                <span class="ui-button__icon" data-icon="upload" title="upload"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const startTime = performance.now();
+        
+        // Monitor sprite loading
+        function checkSpriteLoaded() {
+            const sprite = document.querySelector('svg[style*="display:none"]');
+            const spriteStatus = document.getElementById('sprite-status');
+            
+            if (sprite) {
+                spriteStatus.textContent = '✅ Sprite cargado correctamente';
+                spriteStatus.style.color = 'green';
+            } else {
+                spriteStatus.textContent = '❌ Error cargando sprite';
+                spriteStatus.style.color = 'red';
+            }
+        }
+
+        // Count rendered icons
+        function countIcons() {
+            const icons = document.querySelectorAll('.ui-button__icon[data-icon]');
+            const renderedIcons = document.querySelectorAll('.ui-button__icon svg');
+            
+            document.getElementById('icon-count').textContent = 
+                `${renderedIcons.length}/${icons.length} renderizados`;
+        }
+
+        // Measure load time
+        window.addEventListener('load', () => {
+            const loadTime = performance.now() - startTime;
+            document.getElementById('load-time').textContent = `${loadTime.toFixed(2)}ms`;
+            
+            // Check sprite and icons after a short delay
+            setTimeout(() => {
+                checkSpriteLoaded();
+                countIcons();
+            }, 100);
+        });
+
+        // Test responsive behavior
+        window.addEventListener('resize', () => {
+            console.log('Window resized - checking icon scaling');
+        });
+    </script>
+</body>
+</html>

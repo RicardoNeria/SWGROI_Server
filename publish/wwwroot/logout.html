@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cerrando Sesión – SWGROI</title>
+    <link rel="stylesheet" href="Styles/componentes/componentes.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        .mensaje {
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+    <script>
+        // Eliminar cookie y redirigir al login
+        document.cookie = "usuario=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        setTimeout(() => {
+            window.location.href = "/login.html";
+        }, 1500);
+    </script>
+</head>
+<body class="ui-auth-body">
+    <div class="ui-card--centered ui-auth-page">
+        <div class="ui-card mensaje ui-logout">
+            Cerrando sesión... Serás redirigido al inicio de sesión.
+        </div>
+    </div>
+    <script src="Scripts/ui.js"></script>
+</body>
+</html>

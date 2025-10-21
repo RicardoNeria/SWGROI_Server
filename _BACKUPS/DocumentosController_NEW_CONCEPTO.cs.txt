@@ -1,0 +1,168 @@
+using System;
+using System.Net;
+using SWGROI_Server.Services;
+using SWGROI_Server.Utils;
+
+namespace SWGROI_Server.Controllers
+{
+    /// <summary>
+    /// CONTROLADOR SIMPLIFICADO - GESTIÓN DE DOCUMENTOS
+    /// Patrón de Controlador Delgado con Servicio de Negocio
+    /// 
+    /// RESPONSABILIDADES (LIMITADAS):
+    /// - Recepción y enrutado de solicitudes HTTP
+    /// - Validación básica de entrada
+    /// - Delegación al servicio de negocio DocumentosService
+    /// - Manejo básico de excepciones HTTP
+    /// 
+    /// DELEGADO AL SERVICIO:
+    /// - Toda la lógica de negocio
+    /// - Validaciones complejas
+    /// - Operaciones de base de datos
+    /// - Procesamiento de archivos
+    /// - Auditoría y logging detallado
+    /// </summary>
+    public static class DocumentosController
+    {
+        /// <summary>
+        /// Punto de entrada principal - Delegación directa al servicio
+        /// </summary>
+        public static void ProcesarSolicitud(HttpListenerContext context)
+        {
+            try
+            {
+                var request = context.Request;
+                var response = context.Response;
+
+                // Aplicar headers de seguridad
+                Http.SetHeaders(response, "application/json", true);
+
+                // Obtener la operación solicitada
+                var operacion = ObtenerParametro(request, "op") ?? "";
+
+                // Enrutar al servicio según operación
+                switch (request.HttpMethod.ToUpper())
+                {
+                    case "GET":
+                        ProcesarGET(context, operacion);
+                        break;
+                    case "POST":
+                        ProcesarPOST(context, operacion);
+                        break;
+                    default:
+                        HttpResponseHelper.SendErrorResponse(context, "Método no permitido", 405);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error en DocumentosController: {ex.Message}");
+                HttpResponseHelper.SendErrorResponse(context, "Error interno del servidor", 500);
+            }
+        }
+
+        /// <summary>
+        /// Procesa solicitudes GET - Delegación al servicio
+        /// </summary>
+        private static void ProcesarGET(HttpListenerContext context, string operacion)
+        {
+            try
+            {
+                switch (operacion)
+                {
+                    case "listar":
+                        DocumentosService.ListarDocumentos(context, null);
+                        break;
+                    case "buscar":
+                        DocumentosService.ListarDocumentos(context, null); // Usa filtros
+                        break;
+                    case "descargar":
+                        var idDescarga = int.Parse(ObtenerParametro(context.Request, "id") ?? "0");
+                        DocumentosService.DescargarDocumento(context, idDescarga);
+                        break;
+                    case "categorias":
+                        DocumentosService.ObtenerCategorias(context);
+                        break;
+                    case "obtener":
+                        var idObtener = int.Parse(ObtenerParametro(context.Request, "id") ?? "0");
+                        DocumentosService.DescargarDocumento(context, idObtener);
+                        break;
+                    default:
+                        HttpResponseHelper.SendErrorResponse(context, "Operación GET no válida", 400);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error en ProcesarGET: {ex.Message}");
+                HttpResponseHelper.SendErrorResponse(context, "Error en la operación GET", 500);
+            }
+        }
+
+        /// <summary>
+        /// Procesa solicitudes POST - Delegación al servicio
+        /// </summary>
+        private static void ProcesarPOST(HttpListenerContext context, string operacion)
+        {
+            try
+            {
+                switch (operacion)
+                {
+                    case "subir":
+                        DocumentosService.SubirDocumento(context);
+                        break;
+                    case "actualizar":
+                        // Implementar cuando el servicio lo soporte
+                        HttpResponseHelper.SendErrorResponse(context, "Operación no implementada", 501);
+                        break;
+                    case "eliminar":
+                        var idEliminar = int.Parse(ObtenerParametro(context.Request, "id") ?? "0");
+                        DocumentosService.EliminarDocumento(context, idEliminar);
+                        break;
+                    case "favorito":
+                        var idFavorito = int.Parse(ObtenerParametro(context.Request, "id") ?? "0");
+                        DocumentosService.ToggleFavorito(context, idFavorito);
+                        break;
+                    default:
+                        HttpResponseHelper.SendErrorResponse(context, "Operación POST no válida", 400);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error en ProcesarPOST: {ex.Message}");
+                HttpResponseHelper.SendErrorResponse(context, "Error en la operación POST", 500);
+            }
+        }
+
+        #region Utilidades Mínimas
+
+        /// <summary>
+        /// Extrae un parámetro de la URL
+        /// </summary>
+        private static string ObtenerParametro(HttpListenerRequest request, string nombre)
+        {
+            try
+            {
+                var queryString = request.Url?.Query ?? "";
+                if (queryString.StartsWith("?"))
+                    queryString = queryString.Substring(1);
+
+                foreach (var param in queryString.Split('&'))
+                {
+                    var parts = param.Split('=');
+                    if (parts.Length == 2 && parts[0] == nombre)
+                        return WebUtility.UrlDecode(parts[1]);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error al obtener parámetro {nombre}: {ex.Message}");
+            }
+
+            return null;
+        }
+
+        #endregion
+    }
+}

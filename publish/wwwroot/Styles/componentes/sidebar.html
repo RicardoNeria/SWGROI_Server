@@ -1,0 +1,40 @@
+<aside class="ui-sidebar" role="navigation" aria-label="Menú lateral">
+  <div class="ui-sidebar__header">
+    <h2 class="ui-sidebar__title">SWGROI</h2>
+    <div class="ui-sidebar__logo">
+      <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Logo Central de Alarmas" class="ui-sidebar__logo-img">
+    </div>
+  </div>
+
+  <nav class="ui-sidebar__nav">
+    <ul class="ui-sidebar__menu">
+      <li class="ui-sidebar__item">
+        <a href="menu.html" class="ui-sidebar__link">Menú principal</a>
+      </li>
+      <li class="ui-sidebar__item">
+        <a href="logout" class="ui-sidebar__link ui-sidebar__link--logout">Cerrar sesión</a>
+      </li>
+    </ul>
+  </nav>
+  <!-- Leyenda: cerrar sesión para regresar al login (mostrada cuando hay sesión activa) -->
+  <div id="logoutNoticeSidebar" class="ui-sidebar__logout-notice" style="display:none; padding: .75rem;">
+    <div style="font-size:.9rem; color:var(--ui-color-texto);">
+      <strong>Para regresar al login</strong>
+      <div style="font-size:.8rem; color:var(--ui-color-texto-muted)">Cierre su sesión actual</div>
+      <div style="margin-top:.5rem;"><a href="logout" class="ui-button ui-button--ghost ui-button--sm">Cerrar sesión</a></div>
+    </div>
+  </div>
+</aside>
+<script>
+  (function(){
+    function getCookie(name){
+      const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return v ? decodeURIComponent(v.pop()) : null;
+    }
+    const hasSession = !!getCookie('sessionid') || !!getCookie('usuario');
+    if (hasSession){
+      const s = document.getElementById('logoutNoticeSidebar');
+      if (s) s.style.display = 'block';
+    }
+  })();
+</script>

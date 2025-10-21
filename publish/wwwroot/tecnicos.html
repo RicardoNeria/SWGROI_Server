@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mesa de Control - SWGROI</title>
+    <link rel="stylesheet" href="Styles/componentes/componentes.css">
+    <link rel="stylesheet" href="Styles/tecnicos.css">
+    <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/ui-utils.js" defer></script>
+    <script src="Scripts/seguridad.js" defer></script>
+    <script src="Scripts/ui.js" defer></script>
+</head>
+<body class="ui-layout ui-layout--no-topbar">
+
+    <!-- SIDEBAR UNIFICADO -->
+    <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
+        <div class="ui-sidebar__header">
+            <h2 class="ui-sidebar__title">SWGROI</h2>
+            <div class="ui-sidebar__logo">
+                <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Logo Central de Alarmas" class="ui-sidebar__logo-img">
+            </div>
+        </div>
+        <nav class="ui-sidebar__nav">
+            <ul class="ui-sidebar__menu">
+                <li class="ui-sidebar__item">
+                    <a href="menu.html" class="ui-sidebar__link"><span class="ui-button__icon" data-icon="home" aria-hidden="true"></span> Menú principal</a>
+                </li>
+                <li class="ui-sidebar__item">
+                    <a href="tecnicos.html" class="ui-sidebar__link ui-sidebar__link--active" aria-current="page">
+                        <span class="ui-button__icon" data-icon="tools" aria-hidden="true"></span> Mesa de Control
+                    </a>
+                </li>
+                <li class="ui-sidebar__item">
+                    <a href="logout" class="ui-sidebar__link ui-sidebar__link--logout"><span class="ui-button__icon" data-icon="logout" aria-hidden="true"></span> Cerrar sesión</a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="ui-layout__main">
+        <div class="ui-card ui-card--module documentos-container" role="region" aria-label="Módulo de Seguimiento Técnico">
+            
+            <!-- BREADCRUMBS -->
+            <nav class="ui-breadcrumbs" aria-label="Rastro de navegación">
+                <ol class="ui-breadcrumbs__list">
+                    <li class="ui-breadcrumbs__item">
+                        <a href="menu.html" class="ui-breadcrumbs__link">Inicio</a>
+                    </li>
+                    <li class="ui-breadcrumbs__item ui-breadcrumbs__item--active" aria-current="page">
+                        <span class="ui-breadcrumbs__separator">/</span>
+                        <span class="ui-breadcrumbs__current">Mesa de Control</span>
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- TÍTULO PRINCIPAL -->
+            <h2 class="ui-card__title"><span class="ui-button__icon" data-icon="tools" aria-hidden="true"></span> Mesa de Control</h2>
+
+            <!-- MENSAJE DE ESTADO GLOBAL -->
+            <div class="ui-message-container">
+                <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
+                    <span class="ui-message__icon" aria-hidden="true"></span>
+                    <span class="ui-message__text"></span>
+                </div>
+            </div>
+
+            <!-- SECCIÓN DE ACTUALIZACIÓN DE ESTADO -->
+            <section class="tecnicos-actualizacion ui-card ui-card--report" aria-label="Actualización de estado">
+                <h3 class="tecnicos-actualizacion__titulo"><span class="ui-button__icon" data-icon="edit" aria-hidden="true"></span> Seguimiento y Actualizacion del Estado de Ticket</h3>
+                
+                <form id="formSeguimiento" class="ui-form tecnicos-form" role="form">
+                    <div class="tecnicos-form__grid">
+                        <div class="ui-form-group">
+                            <label for="folioVisual" class="ui-form__label">Folio del Ticket:</label>
+                            <div class="ui-form__field">
+                                <div id="folioVisual" class="ui-form__display tecnicos-folio">
+                                    Seleccione un ticket de la tabla
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label for="comentarioTecnico" class="ui-form__label">Comentario Técnico:</label>
+                            <div class="ui-form__field">
+                                <textarea id="comentarioTecnico" name="comentarioTecnico" rows="4" 
+                                          class="ui-form__input" placeholder="Ingrese observaciones técnicas..."
+                                          required aria-describedby="comentarioFeedback"></textarea>
+                            </div>
+                            <div id="comentarioFeedback" class="ui-form__feedback" aria-live="polite"></div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label for="nuevoEstado" class="ui-form__label">Nuevo Estado:</label>
+                            <div class="ui-form__field">
+                                    <select id="nuevoEstado" name="nuevoEstado" class="ui-form__input" required>
+                                        <option value="">-- Seleccionar estado --</option>
+                                        <option value="Almacén">Almacén</option>
+                                        <option value="Capturado">Capturado</option>
+                                        <option value="Programado/Asignado">Programado/Asignado</option>
+                                        <option value="Abierto">Abierto</option>
+                                        <option value="En Proceso">En Proceso</option>
+                                        <option value="Cerrado">Cerrado</option>
+                                    </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ui-form__actions tecnicos-form__acciones">
+                        <button type="submit" class="ui-button ui-button--primary">
+                            <span class="ui-button__icon" data-icon="save"></span>Actualizar Estado
+                        </button>
+                        <button type="button" id="btnLimpiar" class="ui-button ui-button--secondary">
+                            <span class="ui-button__icon" data-icon="clear"></span>Limpiar
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- FILTROS DE BÚSQUEDA -->
+            <div class="ui-filters">
+                <form class="ui-filters__form" role="search" aria-label="Filtros de búsqueda">
+                    <input type="text" id="buscadorFolio" class="ui-filters__input" 
+                           placeholder="Buscar por folio..." aria-label="Buscar por folio">
+                    
+                    <select id="buscadorEstado" class="ui-filters__select" aria-label="Filtrar por estado">
+                            <option value="">-- Todos los estados --</option>
+                            <option value="Almacén">Almacén</option>
+                            <option value="Capturado">Capturado</option>
+                            <option value="Programado/Asignado">Programado/Asignado</option>
+                            <option value="Abierto">Abierto</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Cerrado">Cerrado</option>
+                    </select>
+
+                    <input type="text" id="buscadorResponsable" class="ui-filters__input" 
+                           placeholder="Buscar por responsable..." aria-label="Buscar por responsable">
+
+                    <button type="button" id="btnBuscarTickets" class="ui-button ui-button--primary" aria-controls="tablaTickets">
+                        <span class="ui-button__icon" data-icon="search"></span>Buscar
+                    </button>
+                    <button type="button" id="btnActualizarTabla" class="ui-button ui-button--secondary" aria-controls="tablaTickets">
+                        <span class="ui-button__icon" data-icon="refresh"></span>Actualizar
+                    </button>
+                </form>
+            </div>
+
+            <!-- TABLA DE TICKETS -->
+            <section class="ui-card ui-card--report" aria-label="Lista de tickets">
+                <h3 class="tecnicos-tabla__titulo"><span class="ui-button__icon" data-icon="ticket" aria-hidden="true"></span> Tickets Registrados</h3>
+                
+                <div class="ui-tabla-wrap ui-desplazable">
+                    <table class="ui-tabla" id="tablaTickets" role="table" aria-describedby="leyenda">
+                        <thead class="ui-tabla__head">
+                            <tr role="row">
+                                <th scope="col" class="ui-tabla__col">Folio</th>
+                                <th scope="col" class="ui-tabla__col">Descripción</th>
+                                <th scope="col" class="ui-tabla__col">Estado Ticket</th>
+                                <th scope="col" class="ui-tabla__col">Responsable</th>
+                                <th scope="col" class="ui-tabla__col">Comentario Técnico</th>
+                                <th scope="col" class="ui-tabla__col">Última actualización</th>
+                            </tr>
+                        </thead>
+                        <tbody class="ui-tabla__body">
+                            <!-- Contenido dinámico generado por JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINACIÓN (si es necesaria) -->
+                <div class="ui-paginacion" role="navigation" aria-label="Paginación de resultados">
+                    <span id="paginacionInfo" class="ui-paginacion__info">Mostrando tickets</span>
+                    <div class="ui-paginacion__controles">
+                        <button id="btnPrevPage" class="ui-button ui-button--ghost ui-paginacion__btn" 
+                                type="button" aria-label="Página anterior">
+                            <span class="ui-button__icon" data-icon="prev"></span>Anterior
+                        </button>
+                        <button id="btnNextPage" class="ui-button ui-button--ghost ui-paginacion__btn" 
+                                type="button" aria-label="Página siguiente">
+                            Siguiente<span class="ui-button__icon" data-icon="next"></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="Scripts/tecnicos.js"></script>
+</body>
+</html>

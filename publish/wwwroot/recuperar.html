@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Recuperar Contraseña - SWGROI</title>
+    <link rel="stylesheet" href="Styles/componentes/componentes.css">
+    <link rel="stylesheet" href="Styles/recuperar.css">
+    <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/ui-utils.js" defer></script>
+    <script src="Scripts/seguridad.js" defer></script>
+    <script src="Scripts/ui.js" defer></script>
+    <script src="Scripts/recuperar.js" defer></script>
+</head>
+<body class="ui-layout ui-layout--no-topbar">
+
+    <!-- SIDEBAR UNIFICADO -->
+    <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
+        <div class="ui-sidebar__header">
+            <h2 class="ui-sidebar__title">SWGROI</h2>
+            <div class="ui-sidebar__logo">
+                <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Logo Central de Alarmas" class="ui-sidebar__logo-img">
+            </div>
+        </div>
+        <nav class="ui-sidebar__nav">
+            <ul class="ui-sidebar__menu">
+                <li class="ui-sidebar__item">
+                    <a href="#" class="ui-sidebar__link ui-sidebar__link--active" aria-current="page">
+                        <span class="ui-button__icon" data-icon="key" aria-hidden="true"></span> Recuperar Contraseña
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="ui-layout__main">
+        <div class="ui-card ui-card--module">
+            
+            <!-- BREADCRUMBS -->
+            <nav class="ui-breadcrumbs" aria-label="Rastro de navegación">
+                <ol class="ui-breadcrumbs__list">
+                    <li class="ui-breadcrumbs__item">
+                        <a href="menu.html" class="ui-breadcrumbs__link">Inicio de sesion</a>
+                    </li>
+                    <li class="ui-breadcrumbs__item ui-breadcrumbs__item--active" aria-current="page">
+                        <span class="ui-breadcrumbs__separator">/</span>
+                        <span class="ui-breadcrumbs__current">Recuperar Contraseña</span>
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- TÍTULO PRINCIPAL -->
+            <h2 class="ui-card__title"><span class="ui-button__icon" data-icon="key" aria-hidden="true"></span> Recuperar Contraseña</h2>
+
+            <!-- FORMULARIO DE RECUPERACIÓN -->
+            <form id="formRecuperar" class="ui-form" aria-labelledby="formRecuperar">
+                <div class="ui-form__group">
+                    <label for="usuario" class="ui-form__label">Usuario</label>
+                    <input type="text" id="usuario" name="usuario" class="ui-form__input" placeholder="Ingrese su usuario" required>
+                </div>
+
+                <div class="ui-form__group">
+                    <label for="nuevaContrasena" class="ui-form__label">Nueva Contraseña</label>
+                    <input type="password" id="nuevaContrasena" name="nuevaContrasena" class="ui-form__input" placeholder="Ingrese su nueva contraseña" required>
+                </div>
+
+                <div class="ui-form__actions">
+                    <button type="submit" class="ui-button ui-button--primary">Actualizar Contraseña</button>
+                </div>
+
+                <div class="ui-message-container">
+                    <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
+                        <span class="ui-message__icon" aria-hidden="true"></span>
+                        <span class="ui-message__text"></span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

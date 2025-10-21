@@ -1,0 +1,89 @@
+﻿/* login_estilo.css fiel al original */
+body.body-login {
+    min-height: 100vh;
+    background: #2c3e50;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+.contenedor-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-card {
+    background: #ffffff;
+    padding: 30px 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    width: 300px;
+    text-align: center;
+}
+
+.logo-login {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.login-card button {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+    .login-card button:hover {
+        background-color: #2980b9;
+    }
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.captcha-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0;
+}
+
+    .captcha-container img {
+        width: 60px;
+        height: 60px;
+    }
+
+.link-recuperar, #enlaceRecuperar {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #3498db;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+    .link-recuperar:hover, #enlaceRecuperar:hover {
+        text-decoration: underline;
+    }
+
+#mensajeLogin {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}

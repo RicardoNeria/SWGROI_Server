@@ -1,0 +1,584 @@
+/* ================================================
+   LOGIN SWGROI - SISTEMA DE COMPONENTES UNIFICADO
+   Integrado con componentes.css y variables del sistema
+   ================================================ */
+
+/* Importar variables y componentes base */
+@import url('/Styles/componentes/componentes.css');
+
+/* Variables específicas del login */
+:root {
+    --login-card-width: 360px;
+    --login-card-padding: var(--ui-gap-12); /* Reducido de 16 a 12 */
+    --login-spacing: var(--ui-gap-6); /* Reducido de 8 a 6 */
+    --login-field-spacing: var(--ui-gap-8); /* Reducido de 12 a 8 */
+}
+
+/* Reset y configuración base usando sistema unificado */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Layout principal del login usando ui-login-layout del sistema */
+.login-body {
+    font-family: inherit;
+    background: #1e3a8a; /* Azul marino */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ui-gap-12); /* Reducido padding exterior */
+    margin: 0;
+    overflow: hidden; /* Eliminar scroll */
+}
+
+/* Tarjeta principal usando componentes del sistema */
+.login-card {
+    background: var(--ui-color-fondo);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-lg);
+    padding: var(--login-card-padding);
+    width: 100%;
+    max-width: var(--login-card-width);
+    border: 1px solid var(--ui-color-borde);
+    animation: ui-fadeIn 0.3s ease;
+    /* Asegurar tamaño natural sin restricciones */
+    max-height: none;
+    overflow: visible;
+}
+
+/* vibración sutil en error sin cambiar tamaño */
+.login-card.error {
+    animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+}
+
+/* Header del login usando sistema de componentes */
+.login-header {
+    text-align: center;
+    margin-bottom: var(--ui-gap-6); /* Reducido de 8 a 6 */
+}
+
+.login-logo {
+    width: 80px; /* Reducido de 120px a 80px */
+    height: 80px; /* Reducido de 120px a 80px */
+    object-fit: cover;
+    margin: 0 auto var(--ui-gap-4) auto; /* Reducido margen inferior */
+    display: block;
+    border-radius: 50%;
+    border: 3px solid var(--ui-color-primario);
+    box-shadow: var(--ui-shadow-base);
+}
+
+.login-title {
+    font-size: var(--ui-font-size-lg);
+    color: var(--ui-color-primario);
+    margin-bottom: var(--ui-gap-1); /* Reducido de 2 a 1 */
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.login-subtitle {
+    color: var(--ui-color-texto-muted);
+    font-size: var(--ui-font-size-sm);
+    font-weight: 600;
+    margin: 0 0 var(--ui-gap-4) 0; /* Reducido de 6 a 4 */
+}
+
+/* Formulario usando ui-form del sistema */
+.login-form {
+    margin-bottom: var(--ui-gap-4); /* Reducido de 6 a 4 */
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-gap-6); /* Reducido de 8 a 6 */
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-gap-2); /* Reducido de 3 a 2 */
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--ui-color-texto);
+    font-size: var(--ui-font-size-sm);
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--ui-gap-6);
+}
+
+.form-input {
+    width: 100%;
+    padding: var(--ui-gap-6) var(--ui-gap-10); /* Reducido padding vertical */
+    border: 1px solid var(--ui-color-borde);
+    border-radius: var(--ui-radius-base);
+    font-size: var(--ui-font-size-sm);
+    color: var(--ui-color-texto);
+    background: var(--ui-color-fondo);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: inherit;
+    box-sizing: border-box;
+    min-height: 34px; /* Reducido de 38px a 34px */
+}
+
+/* Iconos para labels */
+.form-label-icon {
+    font-size: var(--ui-font-size-base);
+    color: var(--ui-color-primario);
+}
+
+/* Imagen de icono para labels */
+.form-label-icon-img {
+    width: 2.5em;
+    height: 2.5em;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--ui-color-primario);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+.form-input::placeholder {
+    color: var(--ui-color-texto-muted);
+}
+
+.form-input:disabled {
+    background: #1c5894;
+    color: var(--ui-color-texto-muted);
+    cursor: not-allowed;
+}
+
+/* Campo de contraseña con toggle usando componentes */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle {
+    position: absolute;
+    right: var(--ui-gap-8);
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--ui-gap-4);
+    color: var(--ui-color-texto-muted);
+    font-size: 16px;
+    border-radius: var(--ui-radius-sm);
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.password-toggle:hover {
+    color: var(--ui-color-primario);
+    background: rgba(30, 64, 175, 0.06);
+}
+
+.password-toggle:focus-visible {
+    outline: 2px solid var(--ui-color-primario);
+    outline-offset: 2px;
+}
+
+/* Opciones del formulario usando sistema de componentes */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--ui-gap-6); /* Reducido de 8 a 6 */
+    flex-wrap: wrap;
+    gap: var(--ui-gap-3); /* Reducido de 4 a 3 */
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--ui-color-texto);
+    font-size: var(--ui-font-size-sm);
+    gap: var(--ui-gap-4); /* Reducido de 6 a 4 */
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+    accent-color: var(--ui-color-primario);
+}
+
+.link {
+    color: var(--ui-color-primario);
+    text-decoration: none;
+    font-size: var(--ui-font-size-sm);
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.link:hover,
+.link:focus-visible {
+    color: var(--ui-color-primario-hover);
+    text-decoration: underline;
+}
+
+.link:focus-visible {
+    outline: 2px solid var(--ui-color-primario);
+    outline-offset: 2px;
+    border-radius: var(--ui-radius-sm);
+}
+
+/* Botón de login usando ui-button del sistema */
+.btn-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ui-gap-4); /* Reducido de 6 a 4 */
+    width: 100%;
+    padding: var(--ui-gap-6) var(--ui-gap-12); /* Reducido padding */
+    background: linear-gradient(135deg, var(--ui-color-primario), #1E40AF);
+    color: white;
+    border: 1px solid var(--ui-color-primario);
+    border-radius: var(--ui-radius-base);
+    font-size: var(--ui-font-size-sm);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    min-height: 34px; /* Reducido de 38px a 34px */
+    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-login::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-login:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--ui-color-primario-hover), #1E3A8A);
+    border-color: var(--ui-color-primario-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+}
+
+.btn-login:hover::before {
+    left: 100%;
+}
+
+.btn-login:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.3);
+}
+
+.btn-login:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-login.loading .btn-text {
+    display: none;
+}
+
+.btn-login.loading .btn-spinner {
+    display: inline-flex !important;
+}
+
+.btn-spinner {
+    /* Oculto por defecto; se muestra solo cuando el botón tiene .loading */
+    display: none;
+    width: 1em;
+    height: 1em;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Footer usando sistema de componentes */
+.login-footer {
+    text-align: center;
+    margin-top: var(--ui-gap-8);
+    padding-top: var(--ui-gap-8);
+    border-top: 1px solid var(--ui-color-borde);
+    color: var(--ui-color-texto-muted);
+    font-size: var(--ui-font-size-sm);
+}
+
+/* Recaptcha personalizado */
+.captcha-group {
+    margin: var(--ui-gap-6) 0; /* Reducido de 8 a 6 */
+    padding: var(--ui-gap-6); /* Reducido de 8 a 6 */
+    background: var(--ui-color-fondo-alt);
+    border-radius: var(--ui-radius-base);
+    border: 1px solid var(--ui-color-borde);
+}
+
+.captcha-question {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-gap-6); /* Reducido de 8 a 6 */
+    margin-bottom: var(--ui-gap-6);
+    font-size: var(--ui-font-size-sm);
+    font-weight: 500;
+    color: var(--ui-color-texto);
+}
+
+.captcha-question .form-label-icon {
+    color: var(--ui-color-primario);
+}
+
+/* Ajuste sutil de iconos dentro de inputs */
+.ui-form__field .ui-button__icon[data-icon] {
+    width: 1em;
+    height: 1em;
+}
+
+.captcha-input {
+    width: 60px !important;
+    text-align: center;
+    font-weight: 600;
+    font-size: var(--ui-font-size-base);
+}
+
+.captcha-equation {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--ui-color-primario);
+    background: white;
+    padding: var(--ui-gap-4) var(--ui-gap-8);
+    border-radius: var(--ui-radius-sm);
+    border: 1px solid var(--ui-color-borde);
+}
+
+/* Copyright compacto */
+.login-copyright {
+    text-align: center;
+    margin-top: var(--ui-gap-6);
+    color: var(--ui-color-texto-muted);
+    font-size: 10px;
+    line-height: 1.2;
+    opacity: 0.7;
+}
+
+.message--warning {
+    background: #fffbeb;
+    color: var(--ui-color-advertencia);
+    border-color: #fde68a;
+}
+
+.message--info {
+    background: #eff6ff;
+    color: var(--ui-color-info);
+    border-color: #93c5fd;
+}
+
+/* Feedback de campos usando ui-form__feedback del sistema */
+.form-feedback {
+    font-size: var(--ui-font-size-sm);
+    color: var(--ui-color-error);
+    min-height: 1.25rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-feedback:not(:empty) {
+    opacity: 1;
+}
+
+.form-feedback.show {
+    opacity: 1;
+}
+
+.form-feedback::before {
+    content: '';
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+}
+
+.form-feedback.error::before {
+    content: '✖';
+    color: var(--ui-color-error);
+    font-weight: 700;
+}
+
+.form-feedback.success::before {
+    content: '✔';
+    color: var(--ui-color-exito);
+    font-weight: 700;
+}
+
+.form-input.error {
+    border-color: var(--ui-color-error);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.form-input.success {
+    border-color: var(--ui-color-exito);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* Loading overlay usando ui-modal del sistema */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--ui-gap-16);
+}
+
+.loading-content {
+    background: var(--ui-color-fondo);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-lg);
+    padding: var(--ui-gap-32);
+    text-align: center;
+    color: var(--ui-color-texto);
+    min-width: 200px;
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--ui-color-borde);
+    border-top: 3px solid var(--ui-color-primario);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto var(--ui-gap-16) auto;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive design usando breakpoints del sistema */
+@media (max-width: 640px) {
+    .login-card {
+        padding: var(--ui-gap-20) var(--ui-gap-16);
+        margin: var(--ui-gap-12);
+        max-width: calc(100% - 2rem);
+    }
+    
+    .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--ui-gap-12);
+    }
+    
+    .login-title {
+        font-size: var(--ui-font-size-base);
+    }
+    
+    .login-logo {
+        width: 90px;
+        height: 90px;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --login-card-padding: var(--ui-gap-12);
+        --login-spacing: var(--ui-gap-4);
+        --login-field-spacing: var(--ui-gap-6);
+    }
+    
+    .login-card {
+        padding: var(--login-card-padding);
+        max-width: calc(100% - 1rem);
+    }
+    
+    .login-logo {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* Estados de validación usando sistema de componentes */
+.form-input:valid:not(:placeholder-shown) {
+    border-color: var(--ui-color-exito);
+}
+
+.form-input:invalid:not(:placeholder-shown) {
+    border-color: var(--ui-color-error);
+}
+
+/* Accesibilidad mejorada usando sistema */
+.form-input:focus-visible {
+    outline: 2px solid var(--ui-color-primario);
+    outline-offset: 2px;
+}
+
+.btn-login:focus-visible {
+    outline: 2px solid var(--ui-color-primario);
+    outline-offset: 2px;
+}
+
+/* Animaciones del sistema */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.login-card.error {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Mejoras adicionales del sistema de componentes */
+.login-card:hover {
+    box-shadow: var(--ui-shadow-lg);
+}
+
+/* Estados de carga específicos */
+.login-form.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.login-form.loading .form-input {
+    background: var(--ui-color-fondo-alt);
+}
+
+/* Mejoras visuales adicionales */
+.form-input:hover:not(:disabled):not(:focus) {
+    border-color: var(--ui-color-primario);
+}
+
+/* Personalización de checkbox usando colores del sistema */
+.checkbox-label input[type="checkbox"]:checked {
+    accent-color: var(--ui-color-primario);
+}
+
+/* Icono del password toggle sin efectos */

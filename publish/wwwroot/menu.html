@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Menú Principal - SWGROI</title>
+    <link rel="stylesheet" href="Styles/componentes/componentes.css">
+    <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/seguridad.js" defer></script>
+    <script src="Scripts/navegacion-optimizada.js" defer></script>
+    <script src="Scripts/ui.js" defer></script>
+</head>
+<body class="ui-layout ui-layout--no-topbar">
+
+    <!-- SIDEBAR UNIFICADO -->
+    <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
+        <div class="ui-sidebar__header">
+            <h2 class="ui-sidebar__title">SWGROI</h2>
+            <div class="ui-sidebar__logo">
+                <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Logo Central de Alarmas" class="ui-sidebar__logo-img">
+            </div>
+        </div>
+        <nav class="ui-sidebar__nav">
+            <div class="ui-sidebar__search">
+                <input type="search" class="ui-form__input ui-sidebar__search-input" placeholder="Buscar módulo…" aria-label="Buscar módulos" data-sidebar-search>
+            </div>
+            <ul class="ui-sidebar__menu">
+                <li class="ui-sidebar__item">
+                    <a href="menu.html" class="ui-sidebar__link ui-sidebar__link--active" aria-current="page"><span class="ui-button__icon" data-icon="menu"></span> Menú principal</a>
+                </li>
+                
+                <!-- Administración (visible solo para administradores) -->
+                <li class="ui-sidebar__item ui-sidebar__item--has-submenu" data-requires-role="administrador">
+                    <a href="#" class="ui-sidebar__link ui-sidebar__link--toggle" role="button" aria-expanded="false" aria-controls="submenu-admin">
+                        <span class="ui-button__icon" data-icon="save"></span> Administración ▼
+                    </a>
+                    <ul id="submenu-admin" class="ui-sidebar__submenu" role="menu">
+                        <li class="ui-sidebar__subitem"><a href="admin.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="user" aria-hidden="true"></span> Usuarios y roles</a></li>
+                        <li class="ui-sidebar__subitem"><a href="tickets.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="ticket" aria-hidden="true"></span> Generar y editar tickets</a></li>
+                        <li class="ui-sidebar__subitem"><a href="tecnicos.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="tools" aria-hidden="true"></span> Actualizar estado de tickets y técnicos</a></li>
+                        <li class="ui-sidebar__subitem"><a href="retroalimentacion.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="chat" aria-hidden="true"></span> Retroalimentación CCC</a></li>
+                        <li class="ui-sidebar__subitem"><a href="avisos.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="megaphone" aria-hidden="true"></span> Avisos y comunicados</a></li>
+                        <li class="ui-sidebar__subitem"><a href="documentos.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="document" aria-hidden="true"></span> Control de versiones de archivos</a></li>
+                        <li class="ui-sidebar__subitem"><a href="ventas_reporte.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="report" aria-hidden="true"></span> Reportes de cotizaciónes y ventas</a></li>
+                    </ul>
+                </li>
+
+                <!-- Tickets -->
+                <li class="ui-sidebar__item ui-sidebar__item--has-submenu">
+                    <a href="#" class="ui-sidebar__link ui-sidebar__link--toggle" role="button" aria-expanded="false" aria-controls="submenu-tickets">
+                        <span class="ui-button__icon" data-icon="report"></span> Tickets ▼
+                    </a>
+                    <ul id="submenu-tickets" class="ui-sidebar__submenu" role="menu">
+                        <li class="ui-sidebar__subitem"><a href="tickets.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="ticket" aria-hidden="true"></span> Generar y editar tickets</a></li>
+                        <li class="ui-sidebar__subitem"><a href="ventas.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="search" aria-hidden="true"></span> Generar y editar cotizaciónes</a></li>
+                    </ul>
+                </li>
+
+                <!-- Mesa de control -->
+                <li class="ui-sidebar__item ui-sidebar__item--has-submenu">
+                    <a href="#" class="ui-sidebar__link ui-sidebar__link--toggle" role="button" aria-expanded="false" aria-controls="submenu-tecnicos">
+                        <span class="ui-button__icon" data-icon="refresh"></span> Mesa de Control ▼
+                    </a>
+                    <ul id="submenu-tecnicos" class="ui-sidebar__submenu" role="menu">
+                        <li class="ui-sidebar__subitem"><a href="tecnicos.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="tools" aria-hidden="true"></span> Actualizar estado de tickets y técnicos</a></li>
+                        <li class="ui-sidebar__subitem"><a href="ventas.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="search" aria-hidden="true"></span> Generar y editar cotizaciónes</a></li>
+                    </ul>
+                </li>
+
+                <!-- CCC y Retroalimentación -->
+                <li class="ui-sidebar__item ui-sidebar__item--has-submenu">
+                    <a href="#" class="ui-sidebar__link ui-sidebar__link--toggle" role="button" aria-expanded="false" aria-controls="submenu-retro">
+                        <span class="ui-button__icon" data-icon="copy"></span> Retroalimentación CCC ▼
+                    </a>
+                    <ul id="submenu-retro" class="ui-sidebar__submenu" role="menu">
+                        <li class="ui-sidebar__subitem"><a href="retro_ccc_admin.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="copy" aria-hidden="true"></span> Generar enlaces de encuestas</a></li>
+                        <li class="ui-sidebar__subitem"><a href="retroalimentacion.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="edit" aria-hidden="true"></span> Formulario del cliente</a></li>
+                    </ul>
+                </li>
+
+                <!-- Otros módulos -->
+                <li class="ui-sidebar__item"><a href="veravisos.html" class="ui-sidebar__link"><span class="ui-button__icon" data-icon="megaphone" aria-hidden="true"></span> Avisos</a></li>
+                <li class="ui-sidebar__item"><a href="documentos.html" class="ui-sidebar__link"><span class="ui-button__icon" data-icon="export" aria-hidden="true"></span> Documentos</a></li>
+
+                <!-- Ventas -->
+                <li class="ui-sidebar__item ui-sidebar__item--has-submenu">
+                    <a href="#" class="ui-sidebar__link ui-sidebar__link--toggle" role="button" aria-expanded="false" aria-controls="submenu-ventas">
+                        <span class="ui-button__icon" data-icon="money" aria-hidden="true"></span> Ventas ▼
+                    </a>
+                    <ul id="submenu-ventas" class="ui-sidebar__submenu" role="menu">
+                        <li class="ui-sidebar__subitem"><a href="ventas.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="search" aria-hidden="true"></span> Generar y editar cotizaciones</a></li>
+                        <li class="ui-sidebar__subitem"><a href="ventas_reporte.html" class="ui-sidebar__sublink"><span class="ui-button__icon" data-icon="report" aria-hidden="true"></span> Reportes de cotizaciones y ventas</a></li>
+                    </ul>
+                </li>
+
+                <li class="ui-sidebar__item">
+                    <a href="logout" class="ui-sidebar__link ui-sidebar__link--logout" data-logout><span class="ui-button__icon" data-icon="logout" aria-hidden="true"></span> Cerrar sesión</a>
+                </li>
+            </ul>
+            
+            <!-- Enlaces legales -->
+            <div class="ui-sidebar__footer">
+                <a href="aviso-privacidad.html" class="ui-sidebar__legal-link">Aviso de Privacidad</a>
+                <a href="terminos-uso.html" class="ui-sidebar__legal-link">Términos de Uso</a>
+            </div>
+        </nav>
+        <button type="button" class="ui-sidebar__handle" data-sidebar-handle aria-label="Mostrar menú">
+            <span class="ui-sidebar__handle-icon" aria-hidden="true">☰</span>
+        </button>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="ui-layout__main">
+        <div class="ui-card ui-card--module">
+            
+            <!-- BREADCRUMBS -->
+            <nav class="ui-breadcrumbs" aria-label="Rastro de navegación">
+                <ol class="ui-breadcrumbs__list">
+                    <li class="ui-breadcrumbs__item">
+                        <a href="menu.html" class="ui-breadcrumbs__link">Inicio</a>
+                    </li>
+                    <li class="ui-breadcrumbs__item ui-breadcrumbs__item--active" aria-current="page">
+                        <span class="ui-breadcrumbs__separator">/</span>
+                        <span class="ui-breadcrumbs__current">Menú Principal</span>
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- TÍTULO PRINCIPAL CON PERFIL DE USUARIO -->
+            <div class="ui-page-header">
+                <div class="ui-page-header__main">
+                    <div class="ui-page-header__brand">
+                        <img src="Imagenes/CENTRALDEALARMAS.jpg" alt="Central de Alarmas" class="ui-page-header__logo">
+                        <h2 class="ui-card__title"><span class="ui-button__icon" data-icon="home" aria-hidden="true"></span> Menú Principal del Sistema - SWGROI</h2>
+                    </div>
+                </div>
+                <div class="ui-user-profile">
+                    <div class="ui-user-profile__avatar">
+                        <span class="ui-user-profile__icon"><span class="ui-button__icon" data-icon="user" aria-hidden="true"></span></span>
+                    </div>
+                    <div class="ui-user-profile__info">
+                        <span class="ui-user-profile__name" data-user-display>Cargando...</span>
+                        <span class="ui-user-profile__role">Administrador</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MENSAJE DE ESTADO GLOBAL (unificado) -->
+            <div class="ui-message-container">
+                <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
+                    <span class="ui-message__icon" aria-hidden="true"></span>
+                    <span class="ui-message__text"></span>
+                </div>
+            </div>
+
+            <!-- SECCIÓN DE BIENVENIDA -->
+            <section class="ui-menu-welcome" aria-label="Información de bienvenida">
+                <div class="ui-menu-welcome__content">
+                    <h3 id="saludo" class="ui-menu-welcome__greeting">
+                        Bienvenido al Sistema SWGROI, <span data-user-display>Cargando...</span>
+                    </h3>
+                    <p id="fecha-hora" class="ui-menu-welcome__datetime" data-datetime-display></p>
+                </div>
+            </section>
+
+            <!-- KPIs/MÉTRICAS DEL SISTEMA -->
+            <section class="ui-dashboard" aria-label="Indicadores del sistema">
+            <div class="ui-dashboard__primary">
+                <div class="ui-metrics" data-metrics-container>
+                    <div class="ui-metrics__item">
+                        <div class="ui-metrics__title"><span class="ui-button__icon" data-icon="ticket" aria-hidden="true"></span> Tickets Registrados</div>
+                        <div id="contadorTickets" class="ui-metrics__value" data-metric="tickets">0</div>
+                    </div>
+                    <div class="ui-metrics__item">
+                        <div class="ui-metrics__title"><span class="ui-button__icon" data-icon="megaphone" aria-hidden="true"></span> Avisos Publicados</div>
+                        <div id="contadorAvisos" class="ui-metrics__value" data-metric="avisos">0</div>
+                    </div>
+                    <div class="ui-metrics__item">
+                        <div class="ui-metrics__title"><span class="ui-button__icon" data-icon="money" aria-hidden="true"></span> Ventas y Cotizaciones</div>
+                        <div id="contadorCotizaciones" class="ui-metrics__value" data-metric="cotizaciones">0</div>
+                    </div>
+                    <div class="ui-metrics__updated" data-metrics-updated aria-hidden="true"></div>
+                </div>
+                
+                <div class="ui-widgets">
+                    <div class="ui-widget ui-widget--chart">
+                        <div class="ui-widget__header">
+                            <h4 class="ui-widget__title"><span class="ui-button__icon" data-icon="chart" aria-hidden="true"></span> Tendencia semanal</h4>
+                        </div>
+                        <div class="ui-widget__content">
+                            <canvas id="chartResumen" aria-label="Gráfica de tendencia semanal de últimos 7 días" role="img"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ui-dashboard__secondary">
+                <div class="ui-widget ui-widget--status">
+                    <div class="ui-widget__header">
+                        <h4 class="ui-widget__title"><span class="ui-button__icon" data-icon="bolt" aria-hidden="true"></span> Estado del sistema</h4>
+                    </div>
+                    <div class="ui-widget__content">
+                        <div class="ui-status-item">
+                            <span class="ui-status-indicator ui-status-indicator--success"></span>
+                            <span>Servidor operativo</span>
+                        </div>
+                        <div class="ui-status-item">
+                            <span class="ui-status-indicator ui-status-indicator--success"></span>
+                            <span>Base de datos conectada</span>
+                        </div>
+                        <div class="ui-status-item">
+                            <span class="ui-status-indicator ui-status-indicator--warning"></span>
+                            <span>2 avisos pendientes</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ui-widget ui-widget--quick-actions">
+                    <div class="ui-widget__header">
+                        <h4 class="ui-widget__title"><span class="ui-button__icon" data-icon="bolt" aria-hidden="true"></span> Acciones rápidas</h4>
+                    </div>
+                    <div class="ui-widget__content">
+                        <a href="tickets.html" class="ui-quick-action">
+                            <span class="ui-quick-action__icon" data-icon="plus" aria-hidden="true"></span>
+                            <span class="ui-quick-action__text">Crear ticket</span>
+                        </a>
+                        <a href="veravisos.html" class="ui-quick-action">
+                            <span class="ui-quick-action__icon" data-icon="copy"></span>
+                            <span class="ui-quick-action__text">Ver avisos</span>
+                        </a>
+                        <a href="documentos.html" class="ui-quick-action">
+                            <span class="ui-quick-action__icon" data-icon="export"></span>
+                            <span class="ui-quick-action__text">Subir documento</span>
+                        </a>
+                        <a href="ventas_reporte.html" class="ui-quick-action">
+                            <span class="ui-quick-action__icon" data-icon="report" aria-hidden="true" title="Ver reportes"></span>
+                            <span class="ui-quick-action__text">Ver reporte de ventas</span>
+                        </a>
+                        <a href="ventas.html" class="ui-quick-action">
+                            <span class="ui-quick-action__icon" data-icon="dollar" aria-hidden="true"></span>
+                            <span class="ui-quick-action__text">Abrir ventas</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="ui-widget ui-widget--recent">
+                    <div class="ui-widget__header">
+                        <h4 class="ui-widget__title"><span class="ui-button__icon" data-icon="clock" aria-hidden="true"></span> Actividad reciente</h4>
+                    </div>
+                    <div class="ui-widget__content">
+                        <div class="ui-activity-item">
+                            <span class="ui-activity-time">--:--</span>
+                            <span class="ui-activity-text">Cargando…</span>
+                        </div>
+                        <div class="ui-activity-item">
+                            <span class="ui-activity-time">--:--</span>
+                            <span class="ui-activity-text">Cargando…</span>
+                        </div>
+                        <div class="ui-activity-item">
+                            <span class="ui-activity-time">--:--</span>
+                            <span class="ui-activity-text">Cargando…</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </section>
+
+                <!-- TARJETAS DE MÓDULOS DEL SISTEMA -->
+            <section class="ui-menu-modules" aria-label="Módulos del sistema">
+                
+                <!-- Administración (visible solo para administradores) -->
+                <div class="ui-menu-module" data-requires-role="administrador">
+                    <div class="ui-menu-module__header" role="button" tabindex="0" aria-expanded="false" aria-controls="module-admin">
+                        <span class="ui-menu-module__icon"><span class="ui-button__icon" data-icon="shield" aria-hidden="true"></span></span>
+                        <h3 class="ui-menu-module__title">Gestión Administrativa</h3>
+                        <span class="ui-menu-module__toggle">▼</span>
+                    </div>
+                    <ul id="module-admin" class="ui-menu-module__list" role="menu">
+                        <li class="ui-menu-module__item" role="none">
+                        <a href="admin.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="save" aria-hidden="true"></span> Usuarios y roles</a>
+                        </li>
+                        <li class="ui-menu-module__item" role="none">
+                        <a href="tickets.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="report" aria-hidden="true"></span> Generar y editar tickets</a>
+                        </li>
+                        <li class="ui-menu-module__item" role="none">
+                        <a href="tecnicos.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="refresh" aria-hidden="true"></span> Actualizar estado de tickets y técnicos</a>
+                        </li>
+                        <li class="ui-menu-module__item" role="none">
+                        <a href="retroalimentacion.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="copy" aria-hidden="true"></span> Retroalimentación CCC</a>
+                        </li>
+                        <li class="ui-menu-module__item" role="none">
+                        <a href="avisos.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="copy" aria-hidden="true"></span> Avisos y comunicados</a>
+                        </li>
+                        <li class="ui-menu-module__item" role="none">
+                        <a href="documentos.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="export" aria-hidden="true"></span> Control de versiones archivos</a>
+                        </li>
+                        <li class="ui-menu-module__item" role="none">
+                        <a href="ventas_reporte.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="report" aria-hidden="true"></span> Reportes de cotizaciones y ventas</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Gestión de Tickets -->
+                <div class="ui-menu-module">
+                    <div class="ui-menu-module__header" role="button" tabindex="0" aria-expanded="false" aria-controls="module-tickets">
+                        <span class="ui-menu-module__icon"><span class="ui-button__icon" data-icon="ticket" aria-hidden="true"></span></span>
+                        <h3 class="ui-menu-module__title">Gestión de Tickets CCC</h3>
+                        <span class="ui-menu-module__toggle">▼</span>
+                    </div>
+                    <ul id="module-tickets" class="ui-menu-module__list" role="menu">
+                        <li class="ui-menu-module__item" role="none">
+                            <a href="tickets.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="search" aria-hidden="true"></span> Generar y editar tickets</a>
+                        </li>
+                        <li class="ui-menu-module__item" role="none">
+                            <a href="ventas.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="export" aria-hidden="true"></span> Generar y editar cotizaciónes</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Servicios Técnicos -->
+                <div class="ui-menu-module">
+                    <div class="ui-menu-module__header" role="button" tabindex="0" aria-expanded="false" aria-controls="module-tecnicos">
+                        <span class="ui-menu-module__icon"><span class="ui-button__icon" data-icon="tools"></span></span>
+                        <h3 class="ui-menu-module__title">Gestión de Mesa de Control</h3>
+                        <span class="ui-menu-module__toggle">▼</span>
+                    </div>
+                    <ul id="module-tecnicos" class="ui-menu-module__list" role="menu">
+                        <li class="ui-menu-module__item" role="none">
+                            <a href="tecnicos.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="refresh" aria-hidden="true"></span> Actualizar estado de tickets y técnicos</a>
+                        </li>
+                        <li class="ui-menu-module__item" role="none">
+                            <a href="ventas.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="export" aria-hidden="true"></span> Generar y editar cotizaciónes</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Retroalimentación -->
+                <div class="ui-menu-module">
+                    <div class="ui-menu-module__header" role="button" tabindex="0" aria-expanded="false" aria-controls="module-feedback">
+                        <span class="ui-menu-module__icon"><span class="ui-button__icon" data-icon="chat"></span></span>
+                        <h3 class="ui-menu-module__title">Retroalimentación CCC</h3>
+                        <span class="ui-menu-module__toggle">▼</span>
+                    </div>
+                    <ul id="module-feedback" class="ui-menu-module__list" role="menu">
+                        <li class="ui-menu-module__item" role="none">
+                            <a href="retro_ccc_admin.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="copy" aria-hidden="true"></span> Generar enlaces de encuestas</a>
+                        </li>
+                        <li class="ui-menu-module__item" role="none">
+                            <a href="retroalimentacion.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="edit" aria-hidden="true"></span> Formulario de cliente</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Avisos -->
+                <div class="ui-menu-module">
+                    <div class="ui-menu-module__header" role="button" tabindex="0" aria-expanded="false" aria-controls="module-avisos">
+                        <span class="ui-menu-module__icon"><span class="ui-button__icon" data-icon="megaphone"></span></span>
+                        <h3 class="ui-menu-module__title">Avisos y Comunicados</h3>
+                        <span class="ui-menu-module__toggle">▼</span>
+                    </div>
+                    <ul id="module-avisos" class="ui-menu-module__list" role="menu">
+                        <li class="ui-menu-module__item" role="none">
+                        <a href="veravisos.html" id="link-ver-avisos" data-test="link-ver-avisos" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="copy" aria-hidden="true"></span> Ver avisos y comunicados</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Documentos -->
+                <div class="ui-menu-module">
+                    <div class="ui-menu-module__header" role="button" tabindex="0" aria-expanded="false" aria-controls="module-documentos">
+                        <span class="ui-menu-module__icon"><span class="ui-button__icon" data-icon="document"></span></span>
+                        <h3 class="ui-menu-module__title">Documentos Internos</h3>
+                        <span class="ui-menu-module__toggle">▼</span>
+                    </div>
+                    <ul id="module-documentos" class="ui-menu-module__list" role="menu">
+                        <li class="ui-menu-module__item" role="none">
+                            <a href="documentos.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="export" aria-hidden="true"></span> Control de versiones de archivos</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Ventas -->
+                <div class="ui-menu-module">
+                    <div class="ui-menu-module__header" role="button" tabindex="0" aria-expanded="false" aria-controls="module-ventas">
+                        <span class="ui-menu-module__icon"><span class="ui-button__icon" data-icon="dollar"></span></span>
+                        <h3 class="ui-menu-module__title">Ventas y Cotizaciones</h3>
+                        <span class="ui-menu-module__toggle">▼</span>
+                    </div>
+                    <ul id="module-ventas" class="ui-menu-module__list" role="menu">
+                        <li class="ui-menu-module__item" role="none">
+                            <a href="ventas.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="search" aria-hidden="true"></span> Generar y editar cotizaciones</a>
+                        </li>
+                        <li class="ui-menu-module__item" role="none">
+                            <a href="ventas_reporte.html" class="ui-menu-module__link" role="menuitem"><span class="ui-menu-module__item-icon" data-icon="report" aria-hidden="true"></span> Reportes de cotizaciones y ventas</a>
+                        </li>
+                    </ul>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal confirmación de cierre de sesión -->
+    <div class="ui-modal-overlay" id="modalConfirmLogout" role="dialog" aria-modal="true" aria-labelledby="modalConfirmLogoutTitle" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalConfirmLogoutTitle" class="ui-modal__title">Confirmar cierre de sesión</h3>
+                <button class="ui-button ui-button--ghost ui-modal__close" data-modal-close aria-label="Cerrar"><span class="ui-button__icon">✕</span></button>
+            </div>
+            <div class="ui-modal__body">
+                <p>¿Está seguro que desea cerrar sesión? Se le redirigirá a la pantalla de inicio de sesión.</p>
+            </div>
+            <div class="ui-modal__actions">
+                <button class="ui-button ui-button--secondary" id="btnCancelLogout">Cancelar</button>
+                <button class="ui-button ui-button--danger" id="btnConfirmLogout">Cerrar sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="Scripts/menu.js" defer></script>
+</body>
+</html>

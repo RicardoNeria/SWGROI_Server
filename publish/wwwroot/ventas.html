@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Ventas - SWGROI</title>
+    <link rel="stylesheet" href="Styles/componentes/componentes.css">
+    <link rel="stylesheet" href="Styles/ventas.css">
+    <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/ui-utils.js" defer></script>
+    <script src="Scripts/seguridad.js" defer></script>
+    <script src="Scripts/ui.js" defer></script>
+    <script src="Scripts/ventas.js" defer></script>
+</head>
+<body class="ui-layout ui-layout--no-topbar">
+
+    <!-- SIDEBAR UNIFICADO -->
+    <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
+        <div class="ui-sidebar__header">
+            <h2 class="ui-sidebar__title">SWGROI</h2>
+            <div class="ui-sidebar__logo">
+                <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Logo Central de Alarmas" class="ui-sidebar__logo-img">
+            </div>
+        </div>
+        <nav class="ui-sidebar__nav">
+            <ul class="ui-sidebar__menu">
+                <li class="ui-sidebar__item">
+                    <a href="menu.html" class="ui-sidebar__link"><span class="ui-button__icon" data-icon="home" aria-hidden="true"></span> Menú principal</a>
+                </li>
+                <li class="ui-sidebar__item">
+                    <a href="#" class="ui-sidebar__link ui-sidebar__link--active" aria-current="page">
+                        <span class="ui-button__icon" data-icon="dollar" aria-hidden="true"></span> Ventas y Cotizaciones
+                    </a>
+                </li>
+                <li class="ui-sidebar__item">
+                    <a href="logout" class="ui-sidebar__link ui-sidebar__link--logout"><span class="ui-button__icon" data-icon="logout" aria-hidden="true"></span> Cerrar sesión</a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="ui-layout__main">
+        <div class="ui-card ui-card--module">
+            
+            <!-- BREADCRUMBS -->
+            <nav class="ui-breadcrumbs" aria-label="Rastro de navegación">
+                <ol class="ui-breadcrumbs__list">
+                    <li class="ui-breadcrumbs__item">
+                        <a href="menu.html" class="ui-breadcrumbs__link">Inicio</a>
+                    </li>
+                    <li class="ui-breadcrumbs__item ui-breadcrumbs__item--active" aria-current="page">
+                        <span class="ui-breadcrumbs__separator">/</span>
+                        <span class="ui-breadcrumbs__current">Gestión de Ventas</span>
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- TÍTULO PRINCIPAL -->
+            <h2 class="ui-card__title"><span class="ui-button__icon" data-icon="dollar" aria-hidden="true"></span> Gestión de Ventas</h2>
+
+            <!-- MÉTRICAS DEL MÓDULO -->
+            <section class="ui-metrics" aria-label="Indicadores principales" id="resumenTotales">
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Total Registros</div>
+                    <div id="resTotalReg" class="ui-metrics__value">0</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Monto Total</div>
+                    <div id="resMonto" class="ui-metrics__value">$0.00</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Total con IVA</div>
+                    <div id="resTotalIva" class="ui-metrics__value">$0.00</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Comisión Total</div>
+                    <div id="resTotalIvaCom" class="ui-metrics__value">$0.00</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Comisión s/IVA</div>
+                    <div id="resComSinIva" class="ui-metrics__value">$0.00</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">División</div>
+                    <input type="number" id="divisorCom" class="ui-form__input" value="1" min="1" style="width:60px">
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Por persona</div>
+                    <div id="resComPorPersona" class="ui-metrics__value">$0.00</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">% Canceladas</div>
+                    <div id="resPctCanceladas" class="ui-metrics__value">0%</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Monto Promedio</div>
+                    <div id="resAvgMonto" class="ui-metrics__value">$0.00</div>
+                </div>
+                <div class="ui-metrics__item">
+                    <div class="ui-metrics__title">Top Agentes</div>
+                    <div id="resTopAgentes" class="ui-metrics__value" style="font-size:0.85rem">-</div>
+                </div>
+            </section>
+
+            <!-- MÉTRICAS ADICIONALES -->
+            <div id="metricasEstados">
+                <div class="ui-metrics ui-metrics--estados">
+                    <!-- Estados dinámicos -->
+                </div>
+            </div>
+
+            <!-- FILTROS Y ACCIONES PRINCIPALES -->
+            <div class="ui-filters">
+                <form id="formFiltro" class="ui-filters__form" role="search" aria-label="Filtros de búsqueda">
+                    <div class="ui-filters__campo">
+                        <label for="filtroFolio" class="ui-form__label">Folio</label>
+                        <input type="text" id="filtroFolio" class="ui-filters__input" 
+                               placeholder="Buscar por folio..." aria-label="Buscar por folio">
+                    </div>
+                    
+                    <div class="ui-filters__campo">
+                        <label for="filtroEstado" class="ui-form__label">Estado</label>
+                        <select id="filtroEstado" class="ui-filters__select" aria-label="Filtrar por estado">
+                            <option value="">-- Todos los estados --</option>
+                            <option value="ENVIADO">Enviado</option>
+                            <option value="DECLINADA">Declinada</option>
+                            <option value="ALMACEN">Almacén</option>
+                            <option value="OPERACIONES">Operaciones</option>
+                            <option value="COBRANZA">Cobranza</option>
+                            <option value="FACTURACION">Facturación</option>
+                            <option value="FINALIZADO">Finalizado</option>
+                        </select>
+                    </div>
+
+                    <div class="ui-filters__campo">
+                        <label for="filtroOvsr3" class="ui-form__label">OVSR3</label>
+                        <input type="text" id="filtroOvsr3" class="ui-filters__input" 
+                               placeholder="OVSR3..." aria-label="Filtrar por OVSR3">
+                    </div>
+
+                    <div class="ui-filters__campo">
+                        <label for="filtroMin" class="ui-form__label">Monto Min.</label>
+                        <input type="number" id="filtroMin" class="ui-filters__input" 
+                               placeholder="Min. monto" aria-label="Monto mínimo" step="0.01">
+                    </div>
+
+                    <div class="ui-filters__campo">
+                        <label for="filtroMax" class="ui-form__label">Monto Max.</label>
+                        <input type="number" id="filtroMax" class="ui-filters__input" 
+                               placeholder="Max. monto" aria-label="Monto máximo" step="0.01">
+                    </div>
+
+                    <div class="ui-actions ui-filters__acciones">
+                        <button type="button" id="btnBuscar" class="ui-button ui-button--primary" 
+                                aria-controls="tablaVentas">
+                            <span class="ui-button__icon" data-icon="search"></span>Buscar
+                        </button>
+                        <button type="button" id="btnLimpiar" class="ui-button ui-button--secondary">
+                            <span class="ui-button__icon" data-icon="clear"></span>Limpiar
+                        </button>
+                    </div>
+                </form>
+
+                <div class="ui-actions">
+                    <button class="ui-button ui-button--primary" id="btnAbrirModalVenta" 
+                            aria-controls="modalVenta">
+                        <span class="ui-button__icon" data-icon="plus"></span>Nueva Venta
+                    </button>
+                    <button class="ui-button ui-button--ghost" id="btnCargar">
+                        <span class="ui-button__icon" data-icon="refresh"></span>Actualizar
+                    </button>
+                    <button class="ui-button ui-button--secondary" id="btnExportar">
+                        <span class="ui-button__icon" data-icon="download"></span>Exportar Excel
+                    </button>
+                    <button class="ui-button ui-button--secondary" id="btnExportarFull">
+                        <span class="ui-button__icon" data-icon="report"></span>Exportar Completo
+                    </button>
+                    <a id="btnReporteHtml" href="ventas/reporte?format=html" target="_blank" class="ui-button ui-button--ghost">
+                        <span class="ui-button__icon" data-icon="report"></span>Reporte Ventas
+                    </a>
+                </div>
+            </div>
+
+            <!-- MENSAJE DE ESTADO GLOBAL -->
+            <div class="ui-message-container">
+                <div id="leyenda" class="ui-message" style="display:none" aria-live="polite">
+                    <span class="ui-message__icon" aria-hidden="true"></span>
+                    <span class="ui-message__text"></span>
+                </div>
+            </div>
+
+            <!-- LOADER DE TABLA -->
+            <div id="tablaLoader" class="ui-loader" style="display:none">
+                <div class="ui-loader__content">
+                    <div class="ui-loader__spinner"></div>
+                    <span>Cargando ventas...</span>
+                </div>
+            </div>
+
+            <!-- TABLA DE VENTAS -->
+            <section class="ui-card ui-card--report" aria-label="Listado de ventas">
+                <div class="ui-tabla-wrap ui-desplazable">
+                    <table class="ui-tabla" id="tablaVentas" role="table">
+                        <thead class="ui-tabla__head">
+                            <tr role="row">
+                                <th scope="col" class="ui-tabla__col" data-sort="OVSR3">OVSR3</th>
+                                <th scope="col" class="ui-tabla__col" data-sort="Folio">Folio</th>
+                                <th scope="col" class="ui-tabla__col" data-sort="Monto">Monto Base</th>
+                                <th scope="col" class="ui-tabla__col">Total c/IVA</th>
+                                <th scope="col" class="ui-tabla__col">Total c/IVA+Com</th>
+                                <th scope="col" class="ui-tabla__col" data-sort="FechaAtencion">Fecha Atención</th>
+                                <th scope="col" class="ui-tabla__col" data-sort="Cuenta">Cuenta</th>
+                                <th scope="col" class="ui-tabla__col" data-sort="RazonSocial">Razón Social</th>
+                                <th scope="col" class="ui-tabla__col" data-sort="AgenteResponsable">Agente</th>
+                                <th scope="col" class="ui-tabla__col">Estado Ticket</th>
+                                <th scope="col" class="ui-tabla__col" data-sort="Estado">Estado OVSR3</th>
+                                <th scope="col" class="ui-tabla__col">Descripción</th>
+                                <th scope="col" class="ui-tabla__col">Comentarios</th>
+                                <th scope="col" class="ui-tabla__col" data-sort="StatusPago">Status Pago</th>
+                                <th scope="col" class="ui-tabla__col">Fecha Cancelación</th>
+                                <th scope="col" class="ui-tabla__col">Motivo Cancelación</th>
+                                <th scope="col" class="ui-tabla__col">Usuario Cancelación</th>
+                                <th scope="col" class="ui-tabla__col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="ui-tabla__body" id="tbody">
+                            <!-- Contenido dinámico generado por JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINACIÓN UNIFICADA -->
+                <div class="ui-paginacion" role="navigation" aria-label="Paginación de resultados">
+                    <span id="lblPaginacion" class="ui-paginacion__info">Mostrando 0-0 de 0 ventas</span>
+                    <div class="ui-paginacion__controles">
+                        <button id="btnPrev" class="ui-button ui-button--ghost ui-paginacion__btn" 
+                                type="button" aria-label="Página anterior" disabled>
+                           <span class="ui-button__icon" data-icon="prev" aria-hidden="true"></span>Anterior
+                        </button>
+                        <button id="btnNext" class="ui-button ui-button--ghost ui-paginacion__btn" 
+                                type="button" aria-label="Página siguiente" disabled>
+                           Siguiente<span class="ui-button__icon" data-icon="next" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL NUEVA VENTA -->
+    <div class="ui-modal-overlay" id="modalVenta" role="dialog" aria-modal="true" 
+         aria-labelledby="modalVentaTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalVentaTitulo" class="ui-modal__title">Nueva Venta</h3>
+                <button id="mv-close" class="ui-button ui-button--ghost ui-modal__close" 
+                        aria-label="Cerrar modal">
+                    <span class="ui-button__icon" data-icon="close" aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <div class="ui-modal__body">
+                <!-- MENSAJE DEL MODAL (sistema unificado) -->
+                <div class="ui-message-container" id="modalVentaMensaje"></div>
+
+                <form id="formVenta" class="ui-form" role="form">
+                    <!-- INFORMACIÓN DEL TICKET -->
+                    <div class="ui-form-group">
+                        <label for="folio" class="ui-form__label">Folio del Ticket:</label>
+                        <div class="ui-form__field">
+                            <input id="folio" name="folio" type="text" class="ui-form__input" 
+                                   placeholder="Ingrese el folio del ticket" required minlength="3" maxlength="50">
+                            <button type="button" id="btnConsultar" class="ui-button ui-button--primary ventas-btn-consultar">
+                                <span class="ui-button__icon" data-icon="search"></span>
+                                <span class="ui-button__text">Consultar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- GRID DE INFORMACIÓN -->
+                    <div class="ventas-form__grid">
+                        <div class="ui-form-group">
+                            <label for="monto" class="ui-form__label">Monto Base:</label>
+                            <div class="ui-form__field">
+                                <input id="monto" name="monto" type="number" class="ui-form__input" 
+                                       placeholder="0.00" required step="0.01" min="0.01" max="999999.99">
+                            </div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label for="estado" class="ui-form__label">Estado OVSR3:</label>
+                            <div class="ui-form__field">
+                                <select id="estado" name="estado" class="ui-form__input" required>
+                                    <option value="">-- Seleccionar estado --</option>
+                                    <option value="ENVIADO">Enviado</option>
+                                    <option value="DECLINADA">Declinada</option>
+                                    <option value="ALMACEN">Almacén</option>
+                                    <option value="OPERACIONES">Operaciones</option>
+                                    <option value="COBRANZA">Cobranza</option>
+                                    <option value="FACTURACION">Facturación</option>
+                                    <option value="FINALIZADO">Finalizado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label class="ui-form__label">OVSR3:</label>
+                            <div class="ui-form__field ventas-form__ovsr3">
+                                <!-- Control segmentado PRE-OV / POST-OV -->
+                                <div class="ui-segmented" role="group" aria-label="Tipo OVSR3">
+                                    <input type="radio" id="ovPrefPre" name="ovPref" value="PRE-OV" checked>
+                                    <label for="ovPrefPre">PRE-OV</label>
+                                    <input type="radio" id="ovPrefPost" name="ovPref" value="POST-OV">
+                                    <label for="ovPrefPost">POST-OV</label>
+                                </div>
+                                <input type="hidden" id="ovsr3Pref" value="PRE-OV">
+                                <input id="ovsr3Num" type="text" class="ui-form__input ventas-form__ovsr3-number" 
+                                       placeholder="Número" minlength="2" maxlength="20" pattern="[a-zA-Z0-9]+">
+                                <input type="hidden" id="ovsr3Hidden" name="ovsr3">
+                            </div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label for="cuenta" class="ui-form__label">Cuenta:</label>
+                            <div class="ui-form__field">
+                                <input id="cuenta" name="cuenta" type="text" class="ui-form__input" 
+                                       placeholder="Número de cuenta" maxlength="50" pattern="[0-9]*">
+                            </div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label for="razon" class="ui-form__label">Razón Social:</label>
+                            <div class="ui-form__field">
+                                <input id="razon" name="razon" type="text" class="ui-form__input" 
+                                       placeholder="Nombre del cliente" minlength="3" maxlength="200">
+                            </div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label for="domicilio" class="ui-form__label">Domicilio:</label>
+                            <div class="ui-form__field">
+                                <input id="domicilio" name="domicilio" type="text" class="ui-form__input" 
+                                       placeholder="Dirección del cliente" maxlength="300">
+                            </div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label for="fecha" class="ui-form__label">Fecha de Atención:</label>
+                            <div class="ui-form__field">
+                                <input id="fecha" name="fecha" type="date" class="ui-form__input" required>
+                            </div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label for="agente" class="ui-form__label">Agente:</label>
+                            <div class="ui-form__field">
+                                <input id="agente" name="agente" type="text" class="ui-form__input" 
+                                       placeholder="Agente responsable" readonly>
+                            </div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label for="totalIva" class="ui-form__label">Total con IVA:</label>
+                            <div class="ui-form__field">
+                                <input id="totalIva" name="totalIva" type="number" class="ui-form__input" 
+                                       placeholder="0.00" readonly step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label for="comision" class="ui-form__label">Comisión Total:</label>
+                            <div class="ui-form__field">
+                                <input id="comision" name="comision" type="number" class="ui-form__input" 
+                                       placeholder="0.00" readonly step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="ui-form-group">
+                            <label for="statusPagoSel" class="ui-form__label">Status de Pago:</label>
+                            <div class="ui-form__field">
+                                <select id="statusPagoSel" name="statusPago" class="ui-form__input" required>
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Pagado">Pagado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ui-form-group">
+                        <label for="descripcion" class="ui-form__label">Descripción:</label>
+                        <div class="ui-form__field">
+                            <textarea id="descripcion" name="descripcion" rows="3" 
+                                      class="ui-form__input" placeholder="Descripción del servicio"
+                                      readonly aria-describedby=""></textarea>
+                        </div>
+                    </div>
+
+                        <div class="ui-form-group">
+                        <label for="comentarios" class="ui-form__label">Comentarios:</label>
+                        <div class="ui-form__field">
+                            <textarea id="comentarios" name="comentarios" rows="3" 
+                                      class="ui-form__input" placeholder="Comentarios adicionales"
+                                      maxlength="2000" aria-describedby="comentariosCounter"></textarea>
+                        </div>
+                        <small id="comentariosCounter" class="ui-form__counter">0/2000</small>
+                    </div>
+                </form>
+            </div>
+
+            <div class="ui-modal__actions">
+                <button id="mv-cancel" class="ui-button ui-button--secondary">
+                    <span class="ui-button__icon" data-icon="cancel"></span>Cancelar
+                </button>
+                <button id="btnLimpiarForm" class="ui-button ui-button--ghost">
+                    <span class="ui-button__icon" data-icon="clear"></span>Limpiar
+                </button>
+                <button id="btnGuardar" class="ui-button ui-button--primary">
+                    <span class="ui-button__icon" data-icon="save"></span>Guardar Venta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN -->
+    <div class="ui-modal-overlay" id="modalConfirmacion" role="dialog" aria-modal="true" 
+         aria-labelledby="modalConfirmacionTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalConfirmacionTitulo" class="ui-modal__title">Confirmación</h3>
+                <button class="ui-button ui-button--ghost ui-modal__close" 
+                        aria-label="Cerrar modal" onclick="cerrarModalConfirmacion()">
+                    <span class="ui-button__icon" data-icon="close" aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <div class="ui-modal__body">
+                <p id="modalConfirmacionMensaje">¿Está seguro de realizar esta acción?</p>
+            </div>
+
+            <div class="ui-modal__actions">
+                <button class="ui-button ui-button--secondary" onclick="cerrarModalConfirmacion()">
+                    <span class="ui-button__icon" data-icon="cancel"></span>Cancelar
+                </button>
+                <button id="btnConfirmarAccion" class="ui-button ui-button--primary">
+                    <span class="ui-button__icon" data-icon="check"></span>Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CANCELACIÓN -->
+    <div class="ui-modal-overlay" id="modalCancelacion" role="dialog" aria-modal="true" 
+         aria-labelledby="modalCancelacionTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalCancelacionTitulo" class="ui-modal__title">Cancelar Venta</h3>
+                <button class="ui-button ui-button--ghost ui-modal__close" 
+                        aria-label="Cerrar modal" onclick="cerrarModalCancelacion()">
+                    <span class="ui-button__icon" data-icon="close" aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <div class="ui-modal__body">
+                <div class="ui-form-group">
+                    <label for="mcanOv" class="ui-form__label">OVSR3:</label>
+                    <div class="ui-form__field">
+                        <input id="mcanOv" type="text" class="ui-form__input" readonly>
+                    </div>
+                </div>
+                <div class="ui-form-group">
+                    <label for="mcanMot" class="ui-form__label">Motivo de cancelación:</label>
+                    <div class="ui-form__field">
+                        <textarea id="mcanMot" rows="3" class="ui-form__input" 
+                                  placeholder="Especifique el motivo de la cancelación" required></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-modal__actions">
+                <button class="ui-button ui-button--secondary" onclick="cerrarModalCancelacion()">
+                    <span class="ui-button__icon" data-icon="cancel"></span>Cancelar
+                </button>
+                <button id="mcan-confirm" class="ui-button ui-button--danger">
+                    <span class="ui-button__icon" data-icon="cancel"></span>Cancelar Venta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAB NUEVA VENTA (MÓVIL) -->
+    <button id="fabNuevaVenta" class="ui-fab" aria-label="Nueva Venta" title="Nueva Venta">
+        <span class="ui-fab__icon" data-icon="plus" aria-hidden="true"></span>
+    </button>
+
+    <!-- Variables adicionales requeridas por JavaScript (eliminadas para evitar IDs duplicados) -->
+
+    <!-- MODAL LEER MÁS (reutilizable) -->
+    <div class="ui-modal-overlay" id="modalLeerMas" role="dialog" aria-modal="true" 
+         aria-labelledby="modalLeerMasTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalLeerMasTitulo" class="ui-modal__title">Leer más</h3>
+                <button class="ui-button ui-button--ghost ui-modal__close" 
+                        aria-label="Cerrar modal" id="btnCerrarLeerMas">
+                    <span class="ui-button__icon" data-icon="close" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="ui-modal__body">
+                <div id="modalLeerMasContenido" class="ui-form__value ui-form__value--multiline" style="white-space:pre-wrap"></div>
+            </div>
+            <div class="ui-modal__actions">
+                <button class="ui-button ui-button--secondary" id="btnCerrarLeerMasFooter">
+                    <span class="ui-button__icon" data-icon="cancel"></span>Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DETALLES DE VENTA (patrón unificado con overlay) -->
+    <div class="ui-modal-overlay" id="modalDetallesVenta" role="dialog" aria-modal="true" aria-labelledby="modalDetallesTitulo" style="display:none">
+        <div class="ui-modal" role="document">
+            <div class="ui-modal__header">
+                <h3 id="modalDetallesTitulo" class="ui-modal__title">
+                    <span class="ui-button__icon" data-icon="view" aria-hidden="true"></span>
+                    Detalles de la Venta
+                </h3>
+                <button type="button" class="ui-button ui-button--ghost ui-modal__close" id="modalDetallesClose" aria-label="Cerrar modal">
+                    <span class="ui-button__icon" data-icon="close" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="ui-modal__body">
+                <div class="ui-grid ui-grid--2col">
+                    <!-- Información Principal -->
+                    <div class="ui-card">
+                        <h4 class="ui-card__subtitle">Información Principal</h4>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">OVSR3:</label>
+                            <div class="ui-form__value">
+                                <span id="detalleOvsr3" class="ui-form__value--text">-</span>
+                                <span id="detalleOvsr3Badge" class="ui-form__value--badge" style="margin-left:0.5rem"></span>
+                            </div>
+                        </div>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Folio:</label>
+                            <span id="detalleFolio" class="ui-form__value">-</span>
+                        </div>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Estado Ticket:</label>
+                            <div id="detalleEstado" class="ui-form__value">
+                                <span id="detalleEstadoTicketBadge"></span>
+                            </div>
+                        </div>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Status Pago:</label>
+                            <span id="detalleStatusPago" class="ui-form__value">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Información Comercial -->
+                    <div class="ui-card">
+                        <h4 class="ui-card__subtitle">Información Comercial</h4>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Cuenta:</label>
+                            <span id="detalleCuenta" class="ui-form__value">-</span>
+                        </div>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Razón Social:</label>
+                            <span id="detalleRazonSocial" class="ui-form__value">-</span>
+                        </div>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Agente:</label>
+                            <span id="detalleAgente" class="ui-form__value">-</span>
+                        </div>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Fecha Atención:</label>
+                            <span id="detalleFecha" class="ui-form__value">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Información Financiera -->
+                    <div class="ui-card">
+                        <h4 class="ui-card__subtitle">Información Financiera</h4>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Monto Base:</label>
+                            <span id="detalleMontoBase" class="ui-form__value">-</span>
+                        </div>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Total c/IVA:</label>
+                            <span id="detalleTotalIva" class="ui-form__value">-</span>
+                        </div>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Total c/IVA+Com:</label>
+                            <span id="detalleTotalComision" class="ui-form__value">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Descripción y Comentarios -->
+                    <div class="ui-card">
+                        <h4 class="ui-card__subtitle">Descripción y Comentarios</h4>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Descripción:</label>
+                            <div id="detalleDescripcion" class="ui-form__textarea-readonly">-</div>
+                        </div>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Comentarios:</label>
+                            <div id="detalleComentarios" class="ui-form__textarea-readonly">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información de Cancelación (si aplica) -->
+                <div id="detalleCancelacion" class="ui-card ui-card--warning" style="display: none;">
+                    <h4 class="ui-card__subtitle">Información de Cancelación</h4>
+                    <div class="ui-grid ui-grid--3col">
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Fecha Cancelación:</label>
+                            <span id="detalleFechaCancelacion" class="ui-form__value">-</span>
+                        </div>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Usuario Cancelación:</label>
+                            <span id="detalleUsuarioCancelacion" class="ui-form__value">-</span>
+                        </div>
+                        <div class="ui-form__group">
+                            <label class="ui-form__label">Motivo:</label>
+                            <div id="detalleMotivoCancelacion" class="ui-form__textarea-readonly">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui-modal__actions">
+                <button type="button" class="ui-button ui-button--secondary" id="modalDetallesCopiar">
+                    <span class="ui-button__icon" data-icon="copy" aria-hidden="true"></span>
+                    Copiar OVSR3
+                </button>
+                <button type="button" class="ui-button ui-button--ghost" id="modalDetallesCerrar">
+                    <span class="ui-button__icon" data-icon="close" aria-hidden="true"></span>
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    // Enlazar el botón de Reporte HTML para incluir filtros actuales (divisor y filtros)
+    (function(){
+        const btn = document.getElementById('btnReporteHtml');
+        if (!btn) return;
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const div = document.getElementById('divisorCom')?.value;
+            const estado = document.getElementById('filtroEstado')?.value;
+            const folio = document.getElementById('filtroFolio')?.value;
+            const ov = document.getElementById('filtroOvsr3')?.value;
+            try {
+                const url = new URL(btn.getAttribute('href'), location.origin);
+                if (div) url.searchParams.set('div', div);
+                if (estado) url.searchParams.set('estado', estado);
+                if (folio) url.searchParams.set('folio', folio);
+                if (ov) url.searchParams.set('ovsr3', ov);
+                window.open(url.toString(), '_blank');
+            } catch (err) {
+                const base = btn.getAttribute('href') || '/ventas/reporte?format=html';
+                const params = new URLSearchParams();
+                if (div) params.set('div', div);
+                if (estado) params.set('estado', estado);
+                if (folio) params.set('folio', folio);
+                if (ov) params.set('ovsr3', ov);
+                const sep = base.includes('?') ? '&' : '?';
+                window.open(base + (params.toString() ? sep + params.toString() : ''), '_blank');
+            }
+        });
+    })();
+</script>
+</html>

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCC - Retroalimentación</title>
+  <link rel="stylesheet" href="Styles/componentes/componentes.css" />
+  <link rel="stylesheet" href="Styles/retro_ccc_admin.css" />
+  <script src="Scripts/icon-loader.js" defer></script>
+  <script src="Scripts/ui.js" defer></script>
+  <script src="Scripts/retro_admin.js" defer></script>
+</head>
+<body class="ui-layout ui-layout--no-topbar">
+
+  <!-- SIDEBAR UNIFICADO (reutiliza la plantilla base) -->
+  <aside class="ui-sidebar" role="navigation" aria-label="Navegación principal">
+    <div class="ui-sidebar__header">
+      <h2 class="ui-sidebar__title">SWGROI</h2>
+      <div class="ui-sidebar__logo">
+        <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Logo" class="ui-sidebar__logo-img">
+      </div>
+    </div>
+    <nav class="ui-sidebar__nav">
+      <ul class="ui-sidebar__menu">
+        <li class="ui-sidebar__item"><a href="menu.html" class="ui-sidebar__link"><span class="ui-button__icon" data-icon="home"></span> Menú principal</a></li>
+        <li class="ui-sidebar__item"><a href="#" class="ui-sidebar__link ui-sidebar__link--active"><span class="ui-button__icon" data-icon="file"></span> Retroalimentación (CCC)</a></li>
+        <li class="ui-sidebar__item"><a href="logout" class="ui-sidebar__link ui-sidebar__link--logout"><span class="ui-button__icon" data-icon="logout"></span> Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="ui-layout__main retro-admin">
+    <div class="ui-card ui-card--module documentos-container" role="region" aria-label="Módulo Retroalimentación CCC">
+      <nav class="ui-breadcrumbs" aria-label="Rastro de navegación">
+        <ol class="ui-breadcrumbs__list">
+          <li class="ui-breadcrumbs__item"><a href="menu.html" class="ui-breadcrumbs__link">Inicio</a></li>
+          <li class="ui-breadcrumbs__item ui-breadcrumbs__item--active" aria-current="page"><span class="ui-breadcrumbs__separator">/</span><span class="ui-breadcrumbs__current">Retroalimentación</span></li>
+        </ol>
+      </nav>
+
+      <h2 class="ui-card__title"><span class="ui-button__icon" data-icon="file"></span> CCC - Módulo de Retroalimentación</h2>
+  <p class="small-muted">Genere enlaces de encuesta para clientes y consulte sus respuestas para análisis de satisfacción.</p>
+
+      <!-- MÉTRICAS (estructura canónica de componentes) -->
+      <section class="ui-metrics retro-metrics" aria-label="Indicadores principales">
+        <div class="ui-metrics__item">
+          <div class="ui-metrics__title">Eficiencia</div>
+          <div id="kpiEficiencia" class="ui-metrics__value">-</div>
+        </div>
+        <div class="ui-metrics__item">
+          <div class="ui-metrics__title">Encuestas Completadas</div>
+          <div id="kpiCompletadas" class="ui-metrics__value">0</div>
+        </div>
+        <div class="ui-metrics__item">
+          <div class="ui-metrics__title">Pendientes</div>
+          <div id="kpiPendientes2" class="ui-metrics__value">0</div>
+        </div>
+        <div class="ui-metrics__item ui-metrics__item--wide">
+          <div class="retro-metrics__row">
+            <div class="retro-metrics__col">
+              <div class="ui-metrics__title">Puntaje medio</div>
+              <div id="kpiPromedio" class="ui-metrics__value">-</div>
+              <div id="kpiSugerencia" class="small-muted" style="margin-top:6px">-</div>
+            </div>
+            <div class="retro-semaforo-col">
+              <div id="kpiSemaforo" class="retro-semaforo" title="Indicador"></div>
+              <div class="small-muted retro-legend__title">Estado</div>
+              <div id="kpiSamples" class="small-muted retro-legend__title">Muestras: -</div>
+              <div id="kpiLegend" class="retro-legend">
+                <span><span class="retro-legend__dot retro-legend__dot--bad"></span> Deficiente</span>
+                <span><span class="retro-legend__dot retro-legend__dot--mid"></span> Mejorable</span>
+                <span><span class="retro-legend__dot retro-legend__dot--good"></span> Excelente</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FORMULARIO PRINCIPAL -->
+      <div class="ui-filters retro-section">
+        <form id="formFiltro" class="ui-filters__form" role="search" aria-label="Filtros de búsqueda" onsubmit="return false;">
+          <input type="text" id="folioInput" class="ui-filters__input" placeholder="Folio del ticket - Ej: TCK-00123" aria-label="Folio del ticket" autocomplete="off">
+
+            <div class="ui-actions retro-actions">
+            <button type="button" id="btnGenerar" class="ui-button ui-button--primary"><span class="ui-button__icon" data-icon="copy"></span> Generar Enlace</button>
+            <button type="button" id="btnBuscar" class="ui-button ui-button--secondary"><span class="ui-button__icon" data-icon="search"></span> Buscar Respuestas</button>
+            <button type="button" id="btnRefrescarLocal" class="ui-button ui-button--ghost" title="Limpiar" onclick="limpiarUI()"><span class="ui-button__icon" data-icon="clear"></span> Limpiar</button>
+          </div>
+        </form>
+      </div>
+
+  <div id="leyenda" class="ui-message ui-message--info" aria-live="polite"></div>
+
+      <!-- RESULTADOS Y ACCIONES -->
+      <section class="retro-result">
+        <div id="resultBox" class="ui-card ui-card--report retro-card">
+          <div id="resultIntro"><span class="ui-button__icon" data-icon="info" aria-hidden="true"></span> Ingrese un folio de ticket y seleccione una acción.</div>
+          <div id="generatedArea">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+              <div>
+                <div class="small-muted">Enlace de encuesta</div>
+                <div class="result-code" id="generatedLink">-</div>
+              </div>
+                <div class="link-actions">
+                <button id="btnCopyLink" class="ui-button ui-button--primary" title="Copiar enlace"><span class="ui-button__icon" data-icon="copy"></span> Copiar</button>
+                <a id="btnOpenLink" class="ui-button ui-button--ghost" target="_blank" rel="noopener"><span class="ui-button__icon" data-icon="export"></span> Abrir</a>
+              </div>
+            </div>
+            <div class="small-muted" style="margin-top:8px">Estado: <span id="estadoEncuesta">-</span></div>
+          </div>
+
+          <div id="responseDetail" class="retro-section">
+            <h3 style="margin:0 0 8px 0">Detalle de la respuesta</h3>
+            <table class="ui-tabla" role="table" aria-label="Detalle de respuesta" id="responseTable">
+              <thead class="ui-tabla__head"><tr><th class="ui-tabla__col">Campo</th><th class="ui-tabla__col">Valor</th></tr></thead>
+              <tbody id="responseTBody" class="ui-tabla__body">
+                <!-- Rellenado dinámico por JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- HISTORIAL DE ENCUESTAS -->
+      <section class="retro-history retro-section">
+        <h3 class="ui-card__title retro-history-title"><span class="ui-button__icon" data-icon="document" aria-hidden="true"></span> Historial de encuestas</h3>
+        <div id="historyContainer" class="ui-card ui-card--report retro-card">
+          <div id="historyEmpty" class="history-empty">No hay historiales cargados. Use "Buscar Respuestas" para ver el historial asociado al folio.</div>
+          <div id="historyTableWrap">
+            <div class="ui-desplazable">
+              <table class="ui-tabla" id="historyTable" role="table">
+                <thead class="ui-tabla__head"><tr><th class="ui-tabla__col">Folio</th><th class="ui-tabla__col">Cliente</th><th class="ui-tabla__col">Estado Ticket</th><th class="ui-tabla__col">Fecha</th><th class="ui-tabla__col">Enlace</th></tr></thead>
+                <tbody id="historyTBody" class="ui-tabla__body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const folioInput = $('folioInput');
+    const btnGenerar = $('btnGenerar');
+    const btnBuscar = $('btnBuscar');
+    const btnCopyLink = $('btnCopyLink');
+    const btnOpenLink = $('btnOpenLink');
+    const generatedArea = $('generatedArea');
+    const generatedLink = $('generatedLink');
+    const estadoEncuesta = $('estadoEncuesta');
+    const resultIntro = $('resultIntro');
+    const leyenda = $('leyenda');
+    const responseDetail = $('responseDetail');
+
+    function showStatus(message, type = 'info') {
+      const iconMap = { success: '✔', error: '✖', warning: '⚠', info: 'ℹ️' };
+      const icon = iconMap[type] || iconMap.info;
+
+      let iconNode = leyenda.querySelector('.ui-message__icon');
+      let textNode = leyenda.querySelector('.ui-message__text');
+      if (!iconNode) { iconNode = document.createElement('span'); iconNode.className = 'ui-message__icon'; leyenda.insertAdjacentElement('afterbegin', iconNode); }
+      if (!textNode) { textNode = document.createElement('span'); textNode.className = 'ui-message__text'; leyenda.appendChild(textNode); }
+      iconNode.textContent = icon;
+      textNode.textContent = message;
+      leyenda.className = `ui-message ui-message--${type} ui-message--visible`;
+      leyenda.style.display = 'inline-flex';
+      setTimeout(() => { leyenda.classList.remove('ui-message--visible'); leyenda.style.display = 'none'; }, 6000);
+    }
+
+    function limpiarUI(){
+      generatedArea.style.display='none';
+      responseDetail.style.display='none';
+      $('historyTableWrap').style.display='none';
+      $('historyEmpty').style.display='block';
+      resultIntro.innerHTML = '<span class="ui-button__icon" data-icon="info" aria-hidden="true"></span> Ingrese un folio de ticket y seleccione una acción.';
+      folioInput.value='';
+      folioInput.focus();
+    }
+
+    function renderGenerated(link, contestada){
+      if(!link) { generatedArea.style.display='none'; return; }
+
+      // El backend puede devolver: a) sólo el token, b) la URL completa, c) la URL completa ya codificada.
+      // Evitamos envolver dos veces la URL (caso c) ya que provoca que el parámetro t contenga otra URL).
+      let full = link;
+      try {
+        // Si viene codificado, decodeURIComponent revelará la URL real
+        const decoded = decodeURIComponent(link);
+        if (decoded.includes('/retroalimentacion.html') || decoded.includes('t=')) {
+          full = decoded;
+        }
+      } catch (e) {
+        // ignore – link no está codificado
+      }
+
+      // Si después de todo no parece una URL, construimos la ruta local con el token
+      if (!/^https?:\/\//i.test(full) && !full.includes('/retroalimentacion.html')) {
+        full = `${location.origin}/retroalimentacion.html?t=${encodeURIComponent(link)}`;
+      }
+
+      generatedLink.textContent = full;
+      btnOpenLink.href = full;
+      estadoEncuesta.innerHTML = contestada ? '<span class="ui-button__icon" data-icon="confirm" aria-hidden="true"></span> Contestada' : '<span class="ui-button__icon" data-icon="edit" aria-hidden="true"></span> Pendiente';
+      generatedArea.style.display = 'block';
+    }
+
+    btnCopyLink.addEventListener('click', async () => {
+      const text = generatedLink.textContent || '';
+      if(!text) return showStatus('No hay enlace para copiar','error');
+      try{
+        await navigator.clipboard.writeText(text);
+        showStatus('✅ Enlace copiado al portapapeles','success');
+      }catch(e){
+        showStatus('❌ No se pudo copiar. Seleccione y copie manualmente.','error');
+      }
+    });
+
+    function fillResponseDetail(data){
+      const tbody = $('responseTBody'); tbody.innerHTML = '';
+      const rows = [];
+      rows.push(['Folio', data.folio || '-']);
+      rows.push(['Cliente', data.cliente || '-']);
+      rows.push(['Fecha Respuesta', data.fechaRespuesta || '-']);
+
+      // Extraer etiquetas de pregunta soportando múltiples formatos
+      const extractLabels = (d) => {
+        const labels = [];
+        if (!d) return labels;
+        // Posibles ubicaciones: d.preguntas, d.labels, d.questions, d.questionText
+        const candidates = [d.preguntas, d.labels, d.questions, d.questionText, d.questions_text];
+        for (const cand of candidates) {
+          if (!cand) continue;
+          if (Array.isArray(cand)) {
+            cand.forEach(item => {
+              if (!item) return;
+              if (typeof item === 'string') labels.push(item);
+              else if (typeof item === 'object') {
+                labels.push(item.texto || item.text || item.label || item.pregunta || item.question || '');
+              }
+            });
+            if (labels.length) return labels;
+          }
+        }
+        // último recurso: buscar keys r1_text etc
+        for (let i=1;i<=5;i++){
+          const k = 'r'+i+'_text';
+          if (d[k]) labels.push(d[k]);
+        }
+        return labels;
+      };
+
+      const labels = extractLabels(data);
+
+      // If labels empty but we have an enlace, try to fetch the form to obtain question texts
+      if ((!labels || labels.length===0) && (data.enlace || data.link)){
+        const token = extractTokenFromUrl(data.enlace || data.link);
+        if (token){
+          fetchFormByToken(token).then(formData=>{
+            if (formData && Array.isArray(formData.preguntas) && formData.preguntas.length){
+              const newLabels = formData.preguntas.map(p=>p.texto||p.text||p.label||p.pregunta||p.question).filter(Boolean);
+              // actualizar filas existentes en la tabla
+              const tbody2 = $('responseTBody');
+              const rows = tbody2.querySelectorAll('tr');
+              // rows include header ones (folio, cliente, fecha) then preguntas
+              for (let i=0;i<newLabels.length && (i+3) < rows.length; i++){
+                const tr = rows[i+3];
+                if (tr) {
+                  tr.children[0].textContent = newLabels[i];
+                }
+              }
+            }
+          }).catch(()=>{});
+        }
+      }
+
+      // Recolectar respuestas r1..r5 y usar label si existe
+      for (let i = 1; i <= 5; i++){
+        const key = 'r'+i;
+        const label = labels[i-1] || `Pregunta ${i}`;
+        const val = (data[key] !== undefined && data[key] !== null && data[key] !== '') ? data[key] : '-';
+        rows.push([label, val]);
+      }
+
+      rows.forEach(([campo, valor]) => {
+        const tr = document.createElement('tr'); tr.className='ui-tabla__row';
+        tr.innerHTML = `<td class="ui-tabla__cell">${campo}</td><td class="ui-tabla__cell">${valor}</td>`;
+        tbody.appendChild(tr);
+      });
+
+      responseDetail.style.display='block';
+    }
+
+    function renderHistory(list){
+      const tbody = $('historyTBody'); tbody.innerHTML='';
+      if(!list || !list.length){
+        $('historyTableWrap').style.display='none';
+        $('historyEmpty').style.display='block';
+        return;
+      }
+      // Build rows and collect question texts for tooltip
+      const usedQuestions = [];
+      list.forEach(rawItem => {
+        const item = normalizeItem(rawItem || {});
+        const tr = document.createElement('tr'); tr.className='ui-tabla__row';
+        const completed = isCompleted(item);
+        const estadoText = completed ? 'Completada' : 'Pendiente';
+        const fecha = item.fechaRespuesta || '-';
+        const enlaceCell = item.enlace ? `<a href="${normalizeUrl(item.enlace)}" target="_blank">Abrir</a>` : '-';
+
+        // obtener labels si estan
+        let labels = [];
+        if (Array.isArray(item.preguntas)) {
+          labels = item.preguntas.map(p=> typeof p === 'string' ? p : (p.texto || p.text || p.label || p.pregunta || p.question || '')).filter(Boolean);
+          labels.forEach(l=> usedQuestions.push(l));
+        } else {
+          // intentar inferir desde keys r1..r4
+          for (let i=1;i<=4;i++){ if(item['r'+i]) usedQuestions.push(`Pregunta ${i}`); }
+          // si no hay labels pero existe enlace, intentar recuperar el form para obtener textos
+          if (!labels.length && (item.enlace || item.link)){
+            const token = extractTokenFromUrl(item.enlace || item.link);
+            if (token) {
+              fetchFormByToken(token).then(formData=>{
+                if (formData && Array.isArray(formData.preguntas) && formData.preguntas.length){
+                  // actualizar tooltip
+                  const sem = $('kpiSemaforo'); if(sem){
+                    const newLabels = formData.preguntas.map(p=>p.texto||p.text||p.label||p.pregunta||p.question).filter(Boolean);
+                    sem.title = `Preguntas usadas: ${newLabels.join(' • ')}`;
+                  }
+                }
+              }).catch(()=>{});
+            }
+          }
+        }
+
+        tr.innerHTML = `
+          <td class="ui-tabla__cell">${item.folio||'-'}</td>
+          <td class="ui-tabla__cell">${item.cliente||'-'}</td>
+          <td class="ui-tabla__cell">${estadoText}</td>
+          <td class="ui-tabla__cell">${fecha}</td>
+          <td class="ui-tabla__cell link-cell">${enlaceCell}</td>
+        `;
+
+        tr.classList.add(completed ? 'history-completed' : 'history-pending');
+        tbody.appendChild(tr);
+      });
+
+      // set tooltip with used question texts
+      const sem = $('kpiSemaforo'); if(sem){
+        const unique = Array.from(new Set(usedQuestions)).slice(0,8);
+        sem.title = unique.length ? `Preguntas usadas: ${unique.join(' • ')}` : 'No se detectaron preguntas usadas';
+      }
+      $('historyEmpty').style.display='none';
+      $('historyTableWrap').style.display='block';
+    }
+
+    function isCompleted(item){
+      if(!item) return false;
+      if (item.contestada === true || String(item.contestada).toLowerCase() === 'true') return true;
+      if (item.fechaRespuesta) return true;
+      // si existen respuestas r1..r4 numéricas o etiquetas significativas
+      for (let i = 1; i <= 4; i++){
+        const v = item['r'+i];
+        if (v == null) continue;
+        const n = Number(v);
+        if (!isNaN(n) && n > 0) return true;
+        if (typeof v === 'string' && /muy malo|malo|regular|bueno|excelente/i.test(v)) return true;
+      }
+      return false;
+    }
+
+    function normalizeUrl(maybe){
+      if(!maybe) return '';
+      try{
+        const decoded = decodeURIComponent(maybe);
+        if (decoded.startsWith('http')) return decoded;
+      }catch(e){}
+      if (maybe.startsWith('http')) return maybe;
+      return `${location.origin}/retroalimentacion.html?t=${encodeURIComponent(maybe)}`;
+    }
+
+    function extractTokenFromUrl(url){
+      if(!url) return null;
+      try{
+        const u = new URL(url);
+        return u.searchParams.get('t') || null;
+      }catch(e){
+        // maybe it's already a token or encoded
+        try{
+          const dec = decodeURIComponent(url);
+          const m = dec.match(/[?&]t=([^&]+)/);
+          if(m) return decodeURIComponent(m[1]);
+        }catch(e2){}
+      }
+      return null;
+    }
+
+    async function fetchFormByToken(token){
+      if(!token) return null;
+      try{
+        const resp = await fetch(`/retroalimentacion?op=form&token=${encodeURIComponent(token)}`, { credentials:'include' });
+        if(!resp.ok) return null;
+        const data = await resp.json();
+        // esperamos que devuelva estructura con preguntas
+        return data;
+      }catch(e){
+        return null;
+      }
+    }
+
+    // Normaliza un objeto de respuesta para usar claves consistentes en la UI
+    function normalizeItem(raw){
+      if(!raw || typeof raw !== 'object') return raw || {};
+      const obj = Object.assign({}, raw);
+
+      // folio
+      obj.folio = obj.folio || obj.ticket || obj.folio_ticket || obj.folioTicket || obj.reference || obj.ref || obj.numero || obj.num || '';
+      // cliente
+      obj.cliente = obj.cliente || obj.nombre || obj.nombreCliente || obj.customer || obj.clienteNombre || obj.nombre_cliente || '';
+      // enlace
+      obj.enlace = obj.enlace || obj.link || obj.url || obj.href || obj.enlaceUrl || '';
+      // fechaRespuesta
+      obj.fechaRespuesta = obj.fechaRespuesta || obj.fecha || obj.fecha_respuesta || obj.respondedAt || obj.fechaRespuestaCliente || '';
+      // contestada flag
+      if (obj.contestada === undefined) {
+        if (obj.respondida === true || obj.respondida === '1' || obj.respondida === 'true') obj.contestada = true;
+        else if (obj.fechaRespuesta) obj.contestada = true;
+        else obj.contestada = false;
+      }
+
+      // map r1..r5 variants
+      for (let i=1;i<=5;i++){
+        const keys = [`r${i}`, `resp${i}`, `respuesta${i}`, `answer${i}`, `a${i}`];
+        for (const k of keys){ if (obj[k] !== undefined) { obj['r'+i] = obj[k]; break; } }
+      }
+
+      // preguntas (labels) possible keys
+      if (!obj.preguntas) obj.preguntas = obj.labels || obj.questions || obj.questions_text || obj.questionText || obj.preguntas_text || null;
+
+      // si faltan campos, intentar buscarlos recursivamente
+      if (!obj.folio) {
+        const found = deepFindValue(raw, ['folio','ticket','ref','reference','numero','num']);
+        if (found) obj.folio = String(found);
+      }
+      if (!obj.cliente) {
+        const found = deepFindValue(raw, ['cliente','nombre','name','customer']);
+        if (found) obj.cliente = String(found);
+      }
+      if (!obj.enlace) {
+        const found = deepFindValue(raw, ['enlace','link','url','href']);
+        if (found) obj.enlace = String(found);
+      }
+      if (!obj.fechaRespuesta) {
+        const found = deepFindValue(raw, ['fecha','date','respond','respuesta','respondida']);
+        if (found) obj.fechaRespuesta = String(found);
+      }
+
+      return obj;
+    }
+
+    // búsqueda recursiva de valores por patrones o por keys candidatas
+    function deepFindValue(o, keyPatterns, valueTest) {
+      if (!o || typeof o !== 'object') return null;
+      for (const k of Object.keys(o)) {
+        try {
+          const v = o[k];
+          if (keyPatterns && keyPatterns.some(p => k.toLowerCase().includes(p))) {
+            if (!valueTest || valueTest(v)) return v;
+          }
+          if (typeof v === 'object') {
+            const r = deepFindValue(v, keyPatterns, valueTest);
+            if (r) return r;
+          }
+        } catch (e) { /* ignore */ }
+      }
+      return null;
+    }
+
+    function computeMetricsFromHistory(list){
+      if(!list || !list.length){
+        $('kpiEficiencia').textContent = '-';
+        $('kpiCompletadas').textContent = '0';
+        $('kpiPendientes2').textContent = '0';
+        $('kpiPromedio').textContent = '-';
+        $('kpiSugerencia').textContent = '-';
+        // semáforo gris
+        const sem = $('kpiSemaforo'); if(sem) sem.style.background = '#d1d5db';
+        return;
+      }
+      const total = list.length;
+      const completed = list.filter(x=>x.contestada).length;
+      const pending = total - completed;
+  // Calcular eficiencia: preferir base sobre ítems que tienen enlace generado (se supone enviados al cliente)
+  const generatedCount = list.filter(x=> x.enlace || x.link).length;
+  const base = generatedCount > 0 ? generatedCount : total;
+  const eficiencia = base > 0 ? Math.round((completed/base)*100) + '%' : '-';
+      $('kpiEficiencia').textContent = eficiencia;
+      $('kpiCompletadas').textContent = String(completed);
+      $('kpiPendientes2').textContent = String(pending);
+
+      // Calcular puntaje medio sobre preguntas de escala (r1..r4). Soporta valores numéricos o etiquetas.
+      let sum = 0; let count = 0;
+      list.forEach(item => {
+        for (let i = 1; i <= 4; i++) {
+          const key = 'r' + i;
+          const val = item[key];
+          if (val == null) continue;
+          const num = Number(val);
+          if (!isNaN(num)) { sum += num; count++; }
+          else {
+            // intentar mapear etiquetas comunes a valores
+            const map = { 'Muy malo':1, 'Malo':2, 'Regular':3, 'Bueno':4, 'Excelente':5 };
+            if (map[val]) { sum += map[val]; count++; }
+          }
+        }
+      });
+
+      if (count === 0) {
+        $('kpiPromedio').textContent = '-';
+        $('kpiSugerencia').textContent = 'No hay respuestas cuantificables para calcular un promedio.';
+        const sem = $('kpiSemaforo'); if(sem) sem.style.background = '#fbbf24';
+        const samplesEl = $('kpiSamples'); if(samplesEl) samplesEl.textContent = 'Muestras: 0';
+        // tooltip with counts
+        const sem2 = $('kpiSemaforo'); if(sem2) sem2.title = `Total: ${total} • Generadas: ${generatedCount} • Completadas: ${completed} • Eficiencia: ${eficiencia}`;
+      } else {
+        const avg = sum / count;
+        const avgDisplay = (Math.round(avg * 10) / 10).toFixed(1);
+        $('kpiPromedio').textContent = `${avgDisplay} / 5`;
+
+        // Sugerencias básicas
+        let suger = 'Adecuado';
+        if (avg < 2.5) suger = 'Deficiente: revisar procesos y atención al cliente';
+        else if (avg < 3.5) suger = 'Mejorable: identificar puntos débiles';
+        else if (avg < 4.5) suger = 'Bueno: mantener prácticas positivas';
+        else suger = 'Excelente: mantener y documentar buenas prácticas';
+  $('kpiSugerencia').textContent = suger;
+  const samplesEl2 = $('kpiSamples'); if(samplesEl2) samplesEl2.textContent = `Muestras: ${count}`;
+  // tooltip with counts
+  const sem2 = $('kpiSemaforo'); if(sem2) sem2.title = `Total: ${total} • Generadas: ${generatedCount} • Completadas: ${completed} • Eficiencia: ${eficiencia}`;
+        // semáforo: rojo <2.5, amarillo 2.5-3.9, verde >=4.0
+        const sem = $('kpiSemaforo');
+        if(sem){
+          if (avg < 2.5) sem.style.background = '#ef4444';
+          else if (avg < 4.0) sem.style.background = '#f59e0b';
+          else sem.style.background = '#10b981';
+        }
+      }
+    }
+
+    btnGenerar.addEventListener('click', async () => {
+      const folio = folioInput.value.trim();
+      if (!folio) { showStatus('❌ Por favor ingrese un folio válido','error'); folioInput.focus(); return; }
+      btnGenerar.disabled = true; btnGenerar.textContent = '⏳ Generando...';
+      try{
+        const resultado = await window.RetroAdmin.generar(folio);
+        // resultado expected: { link, contestada, ... }
+        renderGenerated(resultado.link || resultado.enlace || '', resultado.contestada === true);
+        resultIntro.innerHTML = '<span class="ui-button__icon" data-icon="copy" aria-hidden="true"></span> Enlace generado. Use el botón para copiar o abrir.';
+        showStatus('✅ Enlace generado correctamente','success');
+  // optionally update history if returned; if not, normalize single result into history for metrics
+        const rawHist = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
+        const hist = rawHist.map(item => {
+          const n = normalizeItem(item);
+          if(!n.folio) n.folio = resultado.folio || resultado.ticket || folio || '';
+          if(!n.cliente) n.cliente = resultado.cliente || resultado.nombre || '';
+          return n;
+        });
+  renderHistory(hist);
+  computeMetricsFromHistory(hist);
+      }catch(err){
+        resultIntro.textContent = '❌ Error al generar enlace. Revise el mensaje.';
+        showStatus('❌ Error al generar enlace','error');
+        console.error(err);
+      }finally{ btnGenerar.disabled=false; btnGenerar.innerHTML='<span class="ui-button__icon" data-icon="copy"></span> Generar Enlace'; }
+    });
+
+    btnBuscar.addEventListener('click', async () => {
+      const folio = folioInput.value.trim();
+      if (!folio) { showStatus('❌ Por favor ingrese un folio válido','error'); folioInput.focus(); return; }
+      btnBuscar.disabled=true; btnBuscar.innerHTML='<span class="ui-button__icon" data-icon="search"></span> Buscando...';
+      try{
+        const resultado = await window.RetroAdmin.buscar(folio);
+        // Mostrar detalles si tiene fechaRespuesta
+        if(resultado.fechaRespuesta){
+          fillResponseDetail(resultado);
+          renderGenerated(resultado.enlace || resultado.link || '', true);
+          resultIntro.textContent = `✅ Respuestas encontradas: ${resultado.fechaRespuesta}`;
+          showStatus('✅ Respuestas encontradas','success');
+        } else {
+          // No respondida aun
+          renderGenerated(resultado.enlace || resultado.link || '', false);
+          responseDetail.style.display='none';
+          resultIntro.innerHTML = '<span class="ui-button__icon" data-icon="edit" aria-hidden="true"></span> Encuesta pendiente o sin respuesta registrada.';
+          showStatus('ℹ️ Encuesta pendiente','info');
+        }
+  // Normalizar historial: usar resultado.historial si existe, o el propio resultado como entrada única
+        const rawHist2 = resultado.historial && Array.isArray(resultado.historial) ? resultado.historial : [resultado].filter(x=>x && (x.folio || x.enlace || x.link || x.cliente));
+        const hist2 = rawHist2.map(item=>{
+          const n = normalizeItem(item);
+          if(!n.folio) n.folio = resultado.folio || resultado.ticket || folio || '';
+          if(!n.cliente) n.cliente = resultado.cliente || resultado.nombre || '';
+          return n;
+        });
+  renderHistory(hist2);
+  computeMetricsFromHistory(hist2);
+      }catch(err){
+        resultIntro.textContent = '❌ Error en la búsqueda';
+        showStatus('❌ Error en la búsqueda','error');
+        console.error(err);
+      }finally{ btnBuscar.disabled=false; btnBuscar.innerHTML='<span class="ui-button__icon" data-icon="search"></span> Buscar Respuestas'; }
+    });
+
+    folioInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ btnGenerar.click(); } });
+    folioInput.focus();
+  </script>
+</body>
+</html>

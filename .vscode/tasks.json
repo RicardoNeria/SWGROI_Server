@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build SWGROI_Server",
+			"type": "shell",
+			"command": "dotnet build \"c:\\Users\\andro\\Documents\\Visual Studio 2022\\RESPALDOS_WEB\\GITHUBweb\\SWGROI_Server_VPS\\SWGROI_Server.csproj\" -c Debug",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		}
+	]
+}

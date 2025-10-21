@@ -1,0 +1,331 @@
+/* =================================================================
+   TECNICOS.CSS - Estilos específicos del módulo de seguimiento técnico
+   Siguiendo metodología BEM y sistema de componentes unificado
+   ================================================================= */
+
+/* ================================
+   VARIABLES ESPECÍFICAS DEL MÓDULO
+   ================================ */
+/* Usar tokens globales de componentes.css; evitar redefinir variables base aquí */
+
+/* ================================
+   SECCIÓN DE ACTUALIZACIÓN
+   ================================ */
+.tecnicos-actualizacion { margin-bottom: var(--ui-gap-24); background: var(--ui-color-fondo); border: 1px solid var(--ui-color-borde); }
+
+.tecnicos-actualizacion__titulo { font-size: var(--ui-font-size-xl); font-weight: 600; color: var(--ui-color-primario); margin: var(--ui-gap-16) var(--ui-gap-16) 0; display: flex; align-items: center; gap: var(--ui-gap-8); }
+
+/* ================================
+   FORMULARIO DE SEGUIMIENTO
+   ================================ */
+.tecnicos-form { max-width: none; padding: var(--ui-gap-16); }
+
+.tecnicos-form__grid { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: var(--ui-gap-24); margin-bottom: var(--ui-gap-16); }
+
+.tecnicos-form__acciones { display: flex; gap: var(--ui-gap-12); justify-content: flex-start; flex-wrap: wrap; }
+
+/* El contador de caracteres fue eliminado del HTML para este módulo.
+   Mantener la definición original en los componentes globales. */
+
+/* Estilo específico para el folio */
+.tecnicos-folio {
+    /* Usar mismas reglas que .ui-form__display para homogeneidad */
+    padding: var(--ui-gap-12);
+    background: var(--ui-color-fondo);
+    border-radius: var(--ui-radius-base);
+    border: 1px solid var(--ui-color-borde);
+    color: var(--ui-color-texto);
+    /* Usar la tipografía del sistema/componentes para homogeneidad */
+    font-family: inherit;
+    font-weight: 600;
+    font-size: var(--ui-font-size-lg);
+    line-height: 1.2;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.tecnicos-folio:empty::before { content: 'Seleccione un ticket de la tabla'; color: var(--ui-color-texto-muted); font-style: italic; font-family: inherit; }
+
+.tecnicos-folio--selected {
+    /* Sin color de fondo adicional */
+    background: var(--ui-color-fondo);
+    /* Texto verde y negritas */
+    color: var(--ui-color-exito);
+    font-weight: 700;
+    /* Borde neutral y sin sombra */
+    border-color: var(--ui-color-borde);
+    box-shadow: none;
+}
+
+/* ================================
+   TABLA DE TICKETS
+   ================================ */
+.tecnicos-tabla__titulo { font-size: var(--ui-font-size-lg); font-weight: 600; color: var(--ui-color-primario); margin: var(--ui-gap-16) 0; display: flex; align-items: center; gap: var(--ui-gap-8); }
+
+/* Filas de tabla con interacción */
+.ui-tabla__row {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.ui-tabla__row:hover { background-color: var(--ui-color-fondo-alt); transform: translateY(-1px); box-shadow: var(--ui-shadow-sm); }
+
+/* Fila seleccionada: sin fondo; solo texto en verde y negritas */
+#tablaTickets .ui-tabla__row--selected {
+    background-color: transparent !important;
+    border-left: none;
+}
+
+#tablaTickets .ui-tabla__row--selected:hover {
+    background-color: transparent !important;
+}
+
+#tablaTickets .ui-tabla__row--selected .ui-tabla__cell {
+    color: var(--ui-color-exito);
+    font-weight: 700;
+}
+
+/* Estados de tickets: ahora usan .ui-badge -- mantener comentarios por compatibilidad histórica */
+
+/* Ocultar iconografía dentro de la columna "Estado" solo en la tabla de tickets
+   Esto evita afectar otras tablas o módulos que puedan usar la clase .tecnicos-estado */
+#tablaTickets .tecnicos-estado__icon {
+    display: none !important;
+}
+
+/* Si en algún caso queremos mostrar los iconos (por ejemplo modo debug),
+   se puede añadir la clase .show-icons a la tabla o al contenedor */
+#tablaTickets.show-icons .tecnicos-estado__icon {
+    display: inline-block !important;
+}
+
+/* ================================
+   MENSAJES Y NOTIFICACIONES
+   ================================ */
+/* Mensajes: utilizar estilos globales de componentes.css */
+
+/* ================================
+   ESTADOS DE CARGA Y FEEDBACK
+   ================================ */
+.tecnicos-cargando {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.tecnicos-cargando::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--tecnicos-color-primario);
+    border-radius: 50%;
+    animation: tecnicos-spin 1s linear infinite;
+}
+
+@keyframes tecnicos-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Feedback visual para formulario */
+.tecnicos-form .ui-form-group.has-error .ui-form__input,
+.tecnicos-form .ui-form-group.has-error .ui-form__textarea,
+.tecnicos-form .ui-form-group.has-error .ui-form__select {
+    border-color: var(--tecnicos-color-error);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.tecnicos-form .ui-form-group.has-success .ui-form__input,
+.tecnicos-form .ui-form-group.has-success .ui-form__textarea,
+.tecnicos-form .ui-form-group.has-success .ui-form__select {
+    border-color: var(--tecnicos-color-exito);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* ================================
+   RESPONSIVE - MOBILE FIRST
+   ================================ */
+@media (max-width: 768px) {
+    .tecnicos-form__grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .tecnicos-form__acciones {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .tecnicos-form__acciones .ui-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .ui-filters__form {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .ui-filters__input,
+    .ui-filters__select {
+        width: 100%;
+    }
+    
+    .ui-tabla-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .ui-tabla {
+        min-width: 600px;
+    }
+    
+    .ui-tabla__cell {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .tecnicos-actualizacion {
+        margin-bottom: 1rem;
+        padding: 1rem;
+    }
+    
+    .tecnicos-actualizacion__titulo {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .tecnicos-form__grid {
+        gap: 0.75rem;
+    }
+    
+    .ui-message {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .tecnicos-folio {
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        min-height: 2.5rem;
+    }
+}
+
+/* ================================
+   ACCESIBILIDAD
+   ================================ */
+.ui-button:focus-visible,
+.ui-form__input:focus-visible,
+.ui-form__textarea:focus-visible,
+.ui-form__select:focus-visible {
+    outline: 2px solid var(--tecnicos-color-primario);
+    outline-offset: 2px;
+}
+
+.ui-tabla__row:focus-visible {
+    outline: 2px solid var(--tecnicos-color-primario);
+    outline-offset: -2px;
+}
+
+/* Reducir movimiento para usuarios que lo prefieren */
+@media (prefers-reduced-motion: reduce) {
+    .ui-tabla__row,
+    .tecnicos-folio,
+    .ui-message,
+    .ui-form__input,
+    .ui-form__textarea,
+    .ui-form__select {
+        transition: none;
+    }
+    
+    @keyframes tecnicos-spin {
+        0% { transform: none; }
+        100% { transform: none; }
+    }
+}
+
+/* ================================
+   MODO OSCURO (opcional)
+   ================================ */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --tecnicos-bg-form: #1e293b;
+        --tecnicos-color-secundario: #94a3b8;
+    }
+    
+    /* Mantener el aspecto de tarjeta blanco de la plantilla even cuando el sistema
+       prefiere modo oscuro. Usamos el token global --ui-color-fondo para que
+       coincida con .ui-card y otros componentes. */
+    .tecnicos-actualizacion {
+        background: var(--ui-color-fondo);
+        border: 1px solid var(--ui-color-borde);
+        box-shadow: var(--ui-shadow-sm);
+    }
+    
+    .tecnicos-folio {
+        /* Forzar apariencia clara del folio (tarjeta blanca con texto oscuro)
+           para mantener uniformidad con la plantilla de componentes */
+        background: var(--ui-color-fondo);
+        border-color: var(--ui-color-borde);
+        color: var(--ui-color-texto);
+    }
+    
+    .tecnicos-folio--selected {
+        background: var(--ui-color-fondo);
+        color: var(--ui-color-exito);
+        font-weight: 700;
+        border-color: var(--ui-color-borde);
+        box-shadow: none;
+    }
+    
+    .ui-tabla__row:hover { background-color: #334155; }
+    
+    #tablaTickets .ui-tabla__row--selected { background-color: transparent !important; border-left: none; }
+    #tablaTickets .ui-tabla__row--selected .ui-tabla__cell { color: var(--ui-color-exito); font-weight: 700; }
+}
+
+/* ================================
+   IMPRESIÓN
+   ================================ */
+@media print {
+    .ui-sidebar,
+    .ui-breadcrumbs,
+    .tecnicos-form__acciones,
+    .ui-filters {
+        display: none !important;
+    }
+    
+    .ui-layout__main {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .tecnicos-actualizacion {
+        background: white !important;
+        border: 1px solid #ccc;
+    }
+    
+    .ui-tabla {
+        font-size: 12px;
+    }
+    
+    .ui-tabla__row:hover {
+        background: none !important;
+    }
+    
+    .tecnicos-estado {
+        border: 1px solid #ccc;
+        background: white !important;
+        color: black !important;
+    }
+}
