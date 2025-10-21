@@ -320,3 +320,58 @@ window.clearFieldError = window.SWGROI.UI.limpiarErrorCampo.bind(window.SWGROI.U
 document.addEventListener('DOMContentLoaded', function() {
     window.SWGROI.UI.inicializarMensajes();
 });
+
+// ==============================
+// Paginación unificada (helper)
+// ==============================
+(function(){
+    function render(container, cfg){
+        if (!container) return;
+        const total = Number(cfg.total||0);
+        const page  = Math.max(1, Number(cfg.page||1));
+        const size  = Math.max(1, Number(cfg.size||10));
+        const onChange = typeof cfg.onChange==='function' ? cfg.onChange : function(){};
+        const totalPages = Math.max(1, Math.ceil(total/size));
+
+        // Info label opcional
+        if (cfg.infoLabel) {
+            const inicio = total===0?0:((page-1)*size+1);
+            const fin = Math.min(page*size, total);
+            cfg.infoLabel.textContent = total===0? 'No hay resultados' : `Mostrando ${inicio}-${fin} de ${total}`;
+        }
+
+        // Render controles
+        container.innerHTML = '';
+        if (totalPages<=1) return;
+
+        const mkBtn = (text, p) => {
+            const b = document.createElement('button');
+            b.className = 'ui-button ui-button--ghost ui-button--sm';
+            b.setAttribute('data-page', String(p));
+            b.textContent = text;
+            if (p<1 || p>totalPages || p===page) b.disabled = (p===page);
+            return b;
+        };
+
+        const prev = mkBtn('Anterior', page-1); container.appendChild(prev);
+        for(let i=1;i<=totalPages;i++){
+            if (i===1 || i===totalPages || Math.abs(i-page)<=2){
+                const btn = mkBtn(String(i), i);
+                if (i===page){ btn.className='ui-button ui-button--primary ui-button--sm'; btn.setAttribute('aria-current','page'); }
+                container.appendChild(btn);
+            } else if (Math.abs(i-page)===3) {
+                const span = document.createElement('span'); span.className='ui-paginacion__ellipsis'; span.textContent='...'; container.appendChild(span);
+            }
+        }
+        const next = mkBtn('Siguiente', page+1); container.appendChild(next);
+
+        if (!container._bound){
+            container.addEventListener('click', (e)=>{
+                const b = e.target.closest('button[data-page]');
+                if(!b) return; const p = parseInt(b.getAttribute('data-page')); if (isNaN(p)) return; onChange(p);
+            });
+            container._bound = true;
+        }
+    }
+    window.SWGROI = window.SWGROI || {}; window.SWGROI.Pagination = { render };
+})();

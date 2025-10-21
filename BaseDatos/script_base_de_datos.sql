@@ -514,6 +514,76 @@ LEFT JOIN estadoscotizacion ec ON c.EstadoCotizacionID = ec.EstadoCotizacionID
 JOIN ventasdetalle vd          ON vd.OVSR3 = o.OVSR3
 LEFT JOIN tickets t            ON t.Id = c.TicketID;
 
+-- ========================
+-- DATOS INICIALES (DEMO): 10 USUARIOS, 10 AVISOS, 10 TICKETS
+-- Nota: idempotencia aproximada usando INSERT IGNORE en entidades con clave única
+--       y "INSERT ... WHERE NOT EXISTS" para avisos (no tiene UNIQUE).
+--       Ejecutar una sola vez en entornos productivos.
+-- ========================
+
+-- USUARIOS DEMO (incluye admin si no existe y 9 usuarios adicionales)
+INSERT IGNORE INTO usuarios (NombreCompleto, Usuario, Contrasena, Rol) VALUES
+('Administrador General', 'admin', 'admin123', 'Administrador');
+
+INSERT IGNORE INTO usuarios (NombreCompleto, Usuario, Contrasena, Rol) VALUES
+('Juan Pérez',      'jperez',  'pass1234', 'Operador'),
+('María López',     'mlopez',  'pass1234', 'Operador'),
+('Carlos García',   'cgarcia', 'pass1234', 'Tecnico'),
+('Ana Rodríguez',   'arod',    'pass1234', 'Tecnico'),
+('Luis Martínez',   'lmart',   'pass1234', 'Tecnico'),
+('Sofía Hernández', 'shern',   'pass1234', 'Mesa de control'),
+('Miguel Torres',   'mtorr',   'pass1234', 'Supervisor'),
+('Elena Gómez',     'egomez',  'pass1234', 'Tecnico'),
+('Diego Ruiz',      'druiz',   'pass1234', 'Operador');
+
+-- AVISOS DEMO (evitar duplicados por Asunto)
+INSERT INTO avisos (Asunto, Mensaje, Activo)
+SELECT 'Mantenimiento programado', 'Habrá ventana de mantenimiento el viernes de 22:00 a 23:00.', TRUE FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM avisos WHERE Asunto='Mantenimiento programado');
+INSERT INTO avisos (Asunto, Mensaje, Activo)
+SELECT 'Nueva versión del sistema', 'Se liberó una actualización con mejoras de rendimiento.', TRUE FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM avisos WHERE Asunto='Nueva versión del sistema');
+INSERT INTO avisos (Asunto, Mensaje, Activo)
+SELECT 'Capacitación interna', 'Se programó capacitación técnica el próximo miércoles.', TRUE FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM avisos WHERE Asunto='Capacitación interna');
+INSERT INTO avisos (Asunto, Mensaje, Activo)
+SELECT 'Política de contraseñas', 'Recuerde actualizar su contraseña cada 90 días.', TRUE FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM avisos WHERE Asunto='Política de contraseñas');
+INSERT INTO avisos (Asunto, Mensaje, Activo)
+SELECT 'Interrupción de red', 'Se reportan intermitencias en la red regional norte.', TRUE FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM avisos WHERE Asunto='Interrupción de red');
+INSERT INTO avisos (Asunto, Mensaje, Activo)
+SELECT 'Mejores prácticas', 'Consulte el documento de mejores prácticas actualizado.', TRUE FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM avisos WHERE Asunto='Mejores prácticas');
+INSERT INTO avisos (Asunto, Mensaje, Activo)
+SELECT 'Aviso de seguridad', 'Se detectaron intentos de acceso no autorizados.', TRUE FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM avisos WHERE Asunto='Aviso de seguridad');
+INSERT INTO avisos (Asunto, Mensaje, Activo)
+SELECT 'Novedades UI', 'Se actualizó la interfaz de Mesa de Control.', TRUE FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM avisos WHERE Asunto='Novedades UI');
+INSERT INTO avisos (Asunto, Mensaje, Activo)
+SELECT 'Recordatorio backups', 'Realice respaldo semanal de datos críticos.', TRUE FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM avisos WHERE Asunto='Recordatorio backups');
+INSERT INTO avisos (Asunto, Mensaje, Activo)
+SELECT 'Canal de soporte', 'Use el canal oficial para reportar incidencias.', TRUE FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM avisos WHERE Asunto='Canal de soporte');
+
+-- TICKETS DEMO (Folio único; usar INSERT IGNORE)
+-- Tipos de Asunto seleccionados <= 50 chars para cumplir el esquema
+INSERT IGNORE INTO tickets (Folio, Descripcion, TipoAsunto, Estado, Responsable, Comentario, FechaRegistro)
+VALUES
+('TKT-0001', 'Falla intermitente en sensor perimetral zona 3.', 'Mantenimiento correctivo', 'Abierto', 'jperez', 'Revisión inicial solicitada', NOW()),
+('TKT-0002', 'Programa preventivo trimestral en sucursal centro.', 'Mantenimiento preventivo', 'Programado/Asignado', 'mlopez', 'Agenda confirmada con el cliente', NOW()),
+('TKT-0003', 'Corte en alambre de cerca eléctrica sector norte.', 'Sistema de cerca eléctrica', 'En Proceso', 'cgarcia', 'Técnico en sitio realizando pruebas', NOW()),
+('TKT-0004', 'Cámara 4 sin señal en DVR principal.', 'Sistema de videovigilancia (CCTV)', 'Abierto', 'arod', 'Se requiere escalamiento para refacciones', NOW()),
+('TKT-0005', 'Eventos no reportan al servidor central.', 'Fallo en la comunicación del sistema', 'Abierto', 'lmart', 'Pendiente diagnóstico de red', NOW()),
+('TKT-0006', 'Alta de nuevos usuarios en panel de acceso.', 'Gestión de claves de acceso', 'Capturado', 'shern', 'Se envían lineamientos de seguridad', NOW()),
+('TKT-0007', 'Instalación de panel adicional en bodega.', 'Instalación de nuevo equipo', 'Almacén', 'mtorr', 'Material en almacén listo para envío', NOW()),
+('TKT-0008', 'Agregar módulo de expansión para zona 2.', 'Instalación de componentes específicos', 'Programado/Asignado', 'egomez', 'Visita técnica calendarizada', NOW()),
+('TKT-0009', 'Retiro de equipo antiguo en sucursal sur.', 'Desmonte de equipo existente', 'En Proceso', 'druiz', 'Desinstalación parcial completada', NOW()),
+('TKT-0010', 'Actualizar panel a versión más reciente.', 'Actualización o reemplazo de equipo', 'Cerrado', 'jperez', 'Trabajo finalizado y validado', NOW());
+
+
 -- Datos iniciales
 INSERT IGNORE INTO estadoscotizacion (Nombre) VALUES
 ('ENVIADO'),('DECLINADA'),('ALMACEN'),
