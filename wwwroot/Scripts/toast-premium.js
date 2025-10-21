@@ -166,4 +166,66 @@
       };
     }
   })();
+
+  // Shim global SWGROI.UI -> ToastPremium para unificación total
+  (function(){
+    try {
+      const root = window.SWGROI = window.SWGROI || {};
+      const ui = root.UI = root.UI || {};
+
+      // mostrarMensaje(texto, tipo, contenedor, autoHide)
+      if (typeof ui.mostrarMensaje !== 'function') {
+        ui.mostrarMensaje = function(texto, tipo = 'info', contenedor, autoHide){
+          const t = String(tipo || 'info');
+          let d = 0;
+          if (typeof autoHide === 'number') {
+            d = Math.max(0, autoHide);
+          } else {
+            d = (t === 'error') ? 6500 : (t === 'success') ? 2800 : 3800;
+          }
+          if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            return window.ToastPremium.show(String(texto||''), t, { duration: d });
+          }
+          // Último recurso: console
+          try { console.log('[UI]', t, texto); } catch(_){ }
+        };
+      }
+
+      // mostrarErroresFormulario(erroresMap, autoHideMs)
+      if (typeof ui.mostrarErroresFormulario !== 'function') {
+        ui.mostrarErroresFormulario = function(errores, autoHide){
+          try {
+            const msgs = [];
+            if (errores && typeof errores === 'object') {
+              for (const k in errores) { if (Object.prototype.hasOwnProperty.call(errores, k)) { msgs.push(errores[k]); } }
+            }
+            const text = msgs.join('\n');
+            if (text) {
+              const d = typeof autoHide === 'number' ? autoHide : 5200;
+              return window.ToastPremium && window.ToastPremium.show ? window.ToastPremium.show(text, 'error', { duration: d }) : void 0;
+            }
+          } catch(_e){}
+        };
+      }
+
+      // limpiarErroresFormulario(idFormulario)
+      if (typeof ui.limpiarErroresFormulario !== 'function') {
+        ui.limpiarErroresFormulario = function(){ /* no-op; los errores son toasts efímeros */ };
+      }
+
+      // mostrarErrorCampo/campo -> lo mapeamos a toast
+      if (typeof ui.mostrarErrorCampo !== 'function') {
+        ui.mostrarErrorCampo = function(campo, mensaje, autoHide){
+          const d = typeof autoHide === 'number' ? autoHide : 4200;
+          const pref = campo ? `[${campo}] ` : '';
+          if (window.ToastPremium && window.ToastPremium.show) return window.ToastPremium.show(pref + String(mensaje||''), 'error', { duration: d });
+        };
+      }
+      if (typeof ui.limpiarErrorCampo !== 'function') {
+        ui.limpiarErrorCampo = function(){ /* no-op */ };
+      }
+    } catch(_e) {
+      // Ignorar fallos del shim para no romper páginas
+    }
+  })();
 })(window);
