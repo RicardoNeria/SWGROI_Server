@@ -20,11 +20,16 @@
     qs: s => document.querySelector(s),
     qsa: s => Array.from(document.querySelectorAll(s)),
     toast(msg, type = 'info') {
-      // Preferir sistema global SWGROI.UI
+      // 1) Preferir Toast Premium unificado
+      if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+        try { window.ToastPremium.show(String(msg || ''), String(type || 'info'), { duration: 4000 }); return; } catch (_) {}
+      }
+      // 2) Fallback: sistema global SWGROI.UI
       if (window.SWGROI && window.SWGROI.UI && typeof window.SWGROI.UI.mostrarMensaje === 'function') {
         window.SWGROI.UI.mostrarMensaje(msg, type, 'leyenda', 4000);
         return;
       }
+      // 3) Fallback mínimo: contenedor local si existe
       const c = util.qs('#toastContainer'); if (!c) return; const t = document.createElement('div'); t.className = `ui-toast ui-toast--${type}`; t.textContent = msg; c.appendChild(t); setTimeout(() => t.classList.add('ui-toast--visible'), 20); setTimeout(() => { t.classList.remove('ui-toast--visible'); setTimeout(() => t.remove(), 300); }, 4000);
     },
     fmtBytes(b) { if (!b && b !== 0) return '0 B'; const k = 1024, sizes = ['B', 'KB', 'MB', 'GB']; const i = b > 0 ? Math.floor(Math.log(b) / Math.log(k)) : 0; return (b / Math.pow(k, i)).toFixed(i ? 1 : 0) + ' ' + sizes[i]; },

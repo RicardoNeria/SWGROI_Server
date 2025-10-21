@@ -6,12 +6,26 @@
   <title>CCC - Retroalimentación</title>
   <link rel="stylesheet" href="Styles/componentes/componentes.css" />
   <link rel="stylesheet" href="Styles/retro_ccc_admin.css" />
-  <link rel="stylesheet" href="Styles/retro-toast.css" />
   <script src="Scripts/icon-loader.js" defer></script>
   <script src="Scripts/ui.js" defer></script>
-  <script src="Scripts/retro-toast-manager.js" defer></script>
+  <script src="Scripts/toast-premium.js" defer></script>
   <script src="Scripts/retroalimentacionValidator.js" defer></script>
   <script src="Scripts/retro_admin.js" defer></script>
+  <script>
+    // Shim para compatibilidad: showRetroToast -> ToastPremium
+    (function(){
+      if (typeof window.showRetroToast !== 'function') {
+        window.showRetroToast = function(message, type = 'info', options = {}){
+          if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            const { title, duration = (type==='error'?6000:4000) } = options || {};
+            window.ToastPremium.show(String(message||''), String(type||'info'), { title, duration });
+            return;
+          }
+          console.log('[Toast]', type, message);
+        };
+      }
+    })();
+  </script>
 </head>
 <body class="ui-layout ui-layout--no-topbar">
 

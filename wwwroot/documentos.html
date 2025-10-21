@@ -6,11 +6,26 @@
   <title>Gestión Documental - SWGROI</title>
   <link rel="stylesheet" href="Styles/componentes/componentes.css">
   <link rel="stylesheet" href="Styles/documentos.css">
-  <link rel="stylesheet" href="Styles/docs-toast.css">
+  
   <script src="Scripts/icon-loader.js" defer></script>
   <script src="Scripts/ui.js" defer></script>
   <script src="Scripts/ui-utils.js" defer></script>
-  <script src="Scripts/docs-toast-manager.js" defer></script>
+  <script src="Scripts/toast-premium.js" defer></script>
+  <script>
+    // Compatibilidad: mapear showDocsToast -> ToastPremium
+    (function(){
+      if (typeof window.showDocsToast !== 'function') {
+        window.showDocsToast = function(message, type = 'info', options = {}){
+          if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+            const { title, duration = (type==='error'?6000:4000), closable } = options || {};
+            window.ToastPremium.show(String(message||''), String(type||'info'), { title, duration, closable });
+            return;
+          }
+          console.log('[Toast]', type, message);
+        };
+      }
+    })();
+  </script>
   <script src="Scripts/documentosValidator.js" defer></script>
   <script src="Scripts/documentos.js" defer></script>
 </head>

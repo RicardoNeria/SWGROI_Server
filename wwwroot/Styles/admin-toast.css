@@ -1,0 +1,16 @@
+/* Tema de toasts para Admin (extiende ToastPremium). Mantener pequeño y específico. */
+:root{
+  /* Ajustes sutiles para Admin */
+  --toast-admin-accent: #0ea5e9; /* azul acento admin */
+}
+
+/* Afinar espaciados o tipografía solo en Admin si es necesario */
+body.ui-layout--no-topbar .toast-premium__title{
+  font-weight: 650;
+}
+
+/* Color de borde izquierdo para tipos en Admin (opcional, delega a core si no aplica) */
+.toast-premium.toast--success{ border-left-color: #16a34a; }
+.toast-premium.toast--error{ border-left-color: #ef4444; }
+.toast-premium.toast--info{ border-left-color: var(--toast-admin-accent); }
+.toast-premium.toast--warning{ border-left-color: #f59e0b; }
