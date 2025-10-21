@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS tickets (
   Id INT NOT NULL AUTO_INCREMENT,
   Folio VARCHAR(20) NOT NULL,
   Descripcion VARCHAR(500) NOT NULL,
+  TipoAsunto VARCHAR(50) NOT NULL,
   Estado VARCHAR(50) NOT NULL,
   Responsable VARCHAR(100) NOT NULL,
   Tecnico VARCHAR(100),
@@ -270,9 +271,26 @@ LEFT JOIN usuarios u ON d.UsuarioID = u.IdUsuario
 LEFT JOIN documentos dm ON d.DocumentoMaestro = dm.DocumentoID
 ORDER BY d.FechaModificacion DESC;
 
+-- -----------------------
+-- TABLA DE AVISOS (MENSAJES / COMUNICADOS)
+-- -----------------------
+CREATE TABLE IF NOT EXISTS avisos (
+  Id INT NOT NULL AUTO_INCREMENT,
+  Fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  Asunto VARCHAR(255) NOT NULL,
+  Mensaje TEXT NOT NULL,
+  Activo BOOLEAN NOT NULL DEFAULT TRUE,
+  FechaCreacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FechaActualizacion DATETIME,
+  PRIMARY KEY (Id),
+  KEY ix_avisos_fecha (Fecha),
+  KEY ix_avisos_activo (Activo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Mensajes y comunicados del sistema';
+
 -- Procedimiento para búsqueda avanzada de documentos
 DELIMITER $$
-CREATE OR REPLACE PROCEDURE BuscarDocumentos(
+DROP PROCEDURE IF EXISTS BuscarDocumentos$$
+CREATE PROCEDURE BuscarDocumentos(
     IN p_texto_busqueda VARCHAR(300),
     IN p_categoria_id INT,
     IN p_estado VARCHAR(20),
@@ -337,7 +355,8 @@ BEGIN
 END$$
 
 -- Procedimiento para crear nueva versión de documento
-CREATE OR REPLACE PROCEDURE CrearVersionDocumento(
+DROP PROCEDURE IF EXISTS CrearVersionDocumento$$
+CREATE PROCEDURE CrearVersionDocumento(
     IN p_documento_maestro INT,
     IN p_nuevo_archivo VARCHAR(255),
     IN p_titulo VARCHAR(300),
@@ -384,7 +403,8 @@ BEGIN
 END$$
 
 -- Procedimiento para auditoría de acciones
-CREATE OR REPLACE PROCEDURE RegistrarAccionDocumento(
+DROP PROCEDURE IF EXISTS RegistrarAccionDocumento$$
+CREATE PROCEDURE RegistrarAccionDocumento(
     IN p_documento_id INT,
     IN p_usuario_id INT,
     IN p_accion VARCHAR(20),
@@ -575,17 +595,7 @@ LEFT JOIN respuestas_retroalimentacion rr ON r.RetroID = rr.RetroID
 LEFT JOIN usuarios u ON r.UsuarioID = u.IdUsuario
 ORDER BY r.FechaCreacion DESC;
 
--- Migración idempotente para instalaciones previas
-ALTER TABLE retroalimentacion 
-
--- Agregar columna EstadoOVSR3 en ventasdetalle si no existe (idempotente)
-ALTER TABLE ventasdetalle ADD COLUMN IF NOT EXISTS EstadoOVSR3 VARCHAR(100);
-  ADD COLUMN IF NOT EXISTS TicketID INT NULL AFTER UsuarioID,
-  ADD COLUMN IF NOT EXISTS FechaCreacion DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER TicketID,
-  ADD COLUMN IF NOT EXISTS Estado ENUM('Pendiente', 'Contestada', 'Expirada') DEFAULT 'Pendiente' AFTER FechaCreacion,
-  ADD UNIQUE KEY IF NOT EXISTS uq_retro_ticket (TicketID),
-  ADD KEY IF NOT EXISTS idx_retro_fecha (FechaCreacion),
-  ADD KEY IF NOT EXISTS idx_retro_estado (Estado);
+-- (Se elimina bloque de migración malformado; las columnas e índices ya están definidas en CREATE TABLE y en migraciones idempotentes posteriores)
 
 -- Agregar FK si no existe (TicketID)
 SET @has_fk_retro_t := (
@@ -599,7 +609,8 @@ PREPARE s2 FROM @sql_retro_t; EXECUTE s2; DEALLOCATE PREPARE s2;
 
 -- Procedimiento para actualizar métricas diarias (ejecutar con CRON)
 DELIMITER $$
-CREATE OR REPLACE PROCEDURE ActualizarMetricasCCC(IN fecha_calculo DATE)
+DROP PROCEDURE IF EXISTS ActualizarMetricasCCC$$
+CREATE PROCEDURE ActualizarMetricasCCC(IN fecha_calculo DATE)
 BEGIN
   DECLARE total_generadas INT DEFAULT 0;
   DECLARE total_contestadas INT DEFAULT 0;

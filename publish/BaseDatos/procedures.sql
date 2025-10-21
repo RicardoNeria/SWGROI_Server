@@ -1,3 +1,4 @@
+-- [DEPRECADO - usar BaseDatos/script_base_de_datos.sql]
 -- procedures.sql
 -- Ejecutar este archivo en un cliente que soporte DELIMITER (mysql CLI, Workbench)
 

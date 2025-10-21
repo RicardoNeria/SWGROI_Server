@@ -1,3 +1,4 @@
+-- [DEPRECADO - usar BaseDatos/script_base_de_datos.sql]
 -- schema_unificado.sql
 -- Script unificado idempotente para crear la estructura de la base de datos SWGROI
 -- Este archivo NO incluye procedimientos almacenados que requieren DELIMITER;
@@ -21,10 +22,14 @@ CREATE TABLE IF NOT EXISTS usuarios (
   UNIQUE KEY uq_usuarios_usuario (Usuario)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Asegurar columna TipoAsunto en instalaciones existentes
+ALTER TABLE tickets ADD COLUMN IF NOT EXISTS TipoAsunto VARCHAR(50) NOT NULL AFTER Descripcion;
+
 CREATE TABLE IF NOT EXISTS tickets (
   Id INT NOT NULL AUTO_INCREMENT,
   Folio VARCHAR(20) NOT NULL,
   Descripcion VARCHAR(500) NOT NULL,
+  TipoAsunto VARCHAR(50) NOT NULL,
   Estado VARCHAR(50) NOT NULL,
   Responsable VARCHAR(100) NOT NULL,
   Tecnico VARCHAR(100),

@@ -3,6 +3,13 @@
 (function(){
   'use strict';
 
+  function getCookie(name){
+    try{
+      const v = document.cookie.split('; ').find(c => c.startsWith(name+'='));
+      return v ? decodeURIComponent(v.split('=')[1]) : '';
+    }catch{ return ''; }
+  }
+
   const cfg = {
     base: '', // por si se requiere prefijo en despliegues futuros
     endpoints: {
@@ -18,7 +25,10 @@
   };
 
   async function http(url, options){
-    const res = await fetch(url, { credentials:'include', headers: { ...cfg.headers, ...(options?.headers||{}) }, ...options });
+    const csrf = getCookie('csrftoken');
+    const headers = { ...cfg.headers, ...(options?.headers||{}) };
+    if (csrf) headers['X-CSRF-Token'] = csrf;
+    const res = await fetch(url, { credentials:'include', headers, ...options });
     const ct = res.headers.get('content-type')||'';
     const data = ct.includes('application/json') ? await res.json() : await res.text();
     if(!res.ok){ const msg = (data && (data.error||data.mensaje||data.message)) || `Error ${res.status}`; throw new Error(msg); }
@@ -33,14 +43,14 @@
     },
 
     // POST registrar ticket (backend espera claves con mayúsculas)
-    async registrarTicket({ Folio, Descripcion, Estado, Responsable, Comentario }){
-      const payload = { Folio, Descripcion, Estado, Responsable, Comentario: Comentario||'' };
+    async registrarTicket({ Folio, Descripcion, Estado, Responsable, Comentario, TipoAsunto }){
+      const payload = { Folio, Descripcion, Estado, Responsable, Comentario: Comentario||'', TipoAsunto: TipoAsunto||'' };
       return http(cfg.base + cfg.endpoints.tickets, { method:'POST', body: JSON.stringify(payload) });
     },
 
     // POST actualizar (backend espera minúsculas)
-    async actualizarTicket({ folio, descripcion, estado, responsable }){
-      const payload = { folio, descripcion, estado, responsable };
+    async actualizarTicket({ folio, descripcion, estado, responsable, tipoAsunto }){
+      const payload = { folio, descripcion, estado, responsable, tipoAsunto };
       return http(cfg.base + cfg.endpoints.actualizar, { method:'POST', body: JSON.stringify(payload) });
     },
 

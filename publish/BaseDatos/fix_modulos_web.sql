@@ -1,3 +1,4 @@
+-- [DEPRECADO - usar BaseDatos/script_base_de_datos.sql]
 -- SCRIPT DE VERIFICACIÓN Y CORRECCIÓN PARA MÓDULOS DOCUMENTOS Y RETROALIMENTACIÓN
 -- Ejecutar este script en la base de datos web para asegurar compatibilidad
 
