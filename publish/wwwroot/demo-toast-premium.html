@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Toast Premium - Sistema de Retroalimentación</title>
+    <script src="Scripts/toast-premium.js" defer></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .demo-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .demo-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .demo-button {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        
+        .demo-button:hover {
+            transform: translateY(-4px) scale(1.05);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .demo-button:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+        
+        .demo-section {
+            margin-bottom: 30px;
+        }
+        
+        .demo-section h3 {
+            font-size: 1.2rem;
+            margin: 0 0 15px 0;
+            opacity: 0.9;
+        }
+        
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .features-list li {
+            padding: 8px 0;
+            opacity: 0.8;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .features-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🚀 Toast Premium</h1>
+            <p>Sistema de notificaciones con refinamiento visual, iconografía y profundidad</p>
+        </div>
+        
+        <div class="demo-section">
+            <h3>💎 Prueba los Nuevos Toasts</h3>
+            <div class="demo-grid">
+                <button class="demo-button" onclick="showSuccessToast()">
+                    ✓ Éxito Premium
+                </button>
+                <button class="demo-button" onclick="showErrorToast()">
+                    ✕ Error Refinado
+                </button>
+                <button class="demo-button" onclick="showInfoToast()">
+                    ℹ Info Elegante
+                </button>
+                <button class="demo-button" onclick="showWarningToast()">
+                    ⚠ Warning Sofisticado
+                </button>
+                <button class="demo-button" onclick="showLongMessageToast()">
+                    📝 Mensaje Largo
+                </button>
+                <button class="demo-button" onclick="showCustomToast()">
+                    🎨 Personalizado
+                </button>
+                <button class="demo-button" onclick="showMultipleToasts()">
+                    🎯 Múltiples Toasts
+                </button>
+                <button class="demo-button" onclick="showContrastDemo()">
+                    👁️ Demo Contraste
+                </button>
+                <button class="demo-button" onclick="clearAllToasts()">
+                    🧹 Limpiar Todo
+                </button>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>🎨 Mejoras Implementadas</h3>
+            <ul class="features-list">
+                <li><strong>Iconografía Premium:</strong> Iconos con gradientes y efectos de brillo</li>
+                <li><strong>Tipografía Refinada:</strong> Mejor espaciado, letter-spacing y peso de fuente</li>
+                <li><strong>Contraste Optimizado:</strong> Textos más legibles con colores intensos</li>
+                <li><strong>Sombras Profundas:</strong> Sistema de sombras multicapa para efecto flotante</li>
+                <li><strong>Animaciones Suaves:</strong> Transiciones con cubic-bezier premium</li>
+                <li><strong>Micro-interacciones:</strong> Efectos hover y click refinados</li>
+                <li><strong>Efectos de Profundidad:</strong> Backdrop-filter y gradientes sutiles</li>
+                <li><strong>Bordes Redondeados:</strong> Esquinas más suaves y modernas</li>
+                <li><strong>Colores Vibrantes:</strong> Paleta de colores más rica y contrastante</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Container para los toasts (se crea automáticamente) -->
+    
+    <script>
+        // Shim para demo: mapear showRetroToast -> ToastPremium
+        (function(){
+            if (typeof window.showRetroToast !== 'function') {
+                window.showRetroToast = function(message, type = 'info', options = {}){
+                    if (window.ToastPremium && typeof window.ToastPremium.show === 'function') {
+                        const { title, duration = 5000 } = options || {};
+                        window.ToastPremium.show(String(message||''), String(type||'info'), { title, duration });
+                        return;
+                    }
+                    console.log('[Toast]', type, message);
+                };
+            }
+        })();
+    </script>
+    <script>
+        // Funciones de demostración
+        function showSuccessToast() {
+            showRetroToast('¡Operación completada exitosamente! Los datos se han guardado correctamente.', 'success', {
+                title: 'Guardado Exitoso',
+                duration: 6000,
+                closable: true
+            });
+        }
+        
+        function showErrorToast() {
+            showRetroToast('Error al procesar la solicitud. Por favor, verifique los datos e intente nuevamente.', 'error', {
+                title: 'Error de Validación',
+                duration: 8000,
+                closable: true
+            });
+        }
+        
+        function showInfoToast() {
+            showRetroToast('Esta información es importante y ahora tiene mucho mejor contraste para una lectura clara y cómoda.', 'info', {
+                title: 'Información Mejorada',
+                duration: 7000,
+                closable: true
+            });
+        }
+        
+        function showWarningToast() {
+            showRetroToast('Su sesión expirará en 5 minutos. Guarde su trabajo para evitar pérdida de datos.', 'warning', {
+                title: 'Advertencia de Sesión',
+                duration: 7000,
+                closable: true
+            });
+        }
+        
+        function showLongMessageToast() {
+            showRetroToast('Este es un mensaje más extenso que demuestra cómo el sistema de toast maneja contenido largo manteniendo la legibilidad y el diseño responsivo. El texto se ajusta automáticamente preservando la jerarquía visual.', 'info', {
+                title: 'Mensaje Extenso de Demostración',
+                duration: 10000,
+                closable: true
+            });
+        }
+        
+        function showCustomToast() {
+            showRetroToast('Toast personalizado con configuración específica para casos de uso especiales.', 'success', {
+                title: 'Configuración Personalizada',
+                duration: 0, // Sin auto-close
+                closable: true
+            });
+        }
+        
+        function showMultipleToasts() {
+            const messages = [
+                { text: 'Primer toast de la secuencia', type: 'info' },
+                { text: 'Segundo toast con información adicional', type: 'success' },
+                { text: 'Tercer toast completando la demostración', type: 'warning' }
+            ];
+            
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    showRetroToast(msg.text, msg.type, {
+                        title: `Toast ${index + 1}`,
+                        duration: 4000,
+                        closable: true
+                    });
+                }, index * 800);
+            });
+        }
+        
+        function showContrastDemo() {
+            showRetroToast('¡Contraste mejorado! Ahora todos los textos tienen mejor legibilidad con colores más intensos y definidos.', 'info', {
+                title: '📖 Legibilidad Optimizada',
+                duration: 8000,
+                closable: true
+            });
+        }
+        
+        function clearAllToasts() {
+            if (window.RetroToastManager && window.RetroToastManager.clearAll) {
+                window.RetroToastManager.clearAll();
+                showRetroToast('Todos los toasts han sido eliminados', 'info', {
+                    title: 'Limpieza Completa',
+                    duration: 3000,
+                    closable: false
+                });
+            }
+        }
+        
+        // Mostrar toast de bienvenida
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                showRetroToast('¡Bienvenido al sistema de Toast Premium! Explore las nuevas características visuales.', 'success', {
+                    title: '🎉 Toast Premium Activado',
+                    duration: 6000,
+                    closable: true
+                });
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

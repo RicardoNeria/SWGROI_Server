@@ -1,0 +1,901 @@
+/* ================================================
+   VENTAS.CSS - MÓDULO DE GESTIÓN DE VENTAS
+   Sistema de Componentes SWGROI - BEM Estricto
+   ================================================ */
+
+/* ================================
+   VARIABLES CSS (BASE)
+   ================================ */
+:root {
+    /* Colores primarios */
+    --ui-color-primario: #1e40af;
+    --ui-color-primario-hover: #1d4ed8;
+    --ui-color-secundario: #64748b;
+    --ui-color-texto: #1f2937;
+    --ui-color-texto-muted: #6b7280;
+    
+    /* Colores de estado */
+    --ui-color-exito: #059669;
+    --ui-color-error: #dc2626;
+    --ui-color-advertencia: #d97706;
+    --ui-color-info: #0284c7;
+    
+    /* Fondos */
+    --ui-color-fondo: #ffffff;
+    --ui-color-fondo-alt: #f8fafc;
+    --ui-color-borde: #e2e8f0;
+    
+    /* Espaciado */
+    --ui-gap-4: 0.25rem;
+    --ui-gap-8: 0.5rem;
+    --ui-gap-12: 0.75rem;
+    --ui-gap-16: 1rem;
+    --ui-gap-24: 1.5rem;
+    --ui-gap-32: 2rem;
+    
+    /* Tipografía */
+    --ui-font-size-sm: 0.875rem;
+    --ui-font-size-base: 1rem;
+    --ui-font-size-lg: 1.125rem;
+    --ui-font-size-xl: 1.25rem;
+    
+    /* Radios */
+    --ui-radius-sm: 0.25rem;
+    --ui-radius-base: 0.375rem;
+    --ui-radius-lg: 0.5rem;
+    
+    /* Sombras */
+    --ui-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --ui-shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --ui-shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================
+   LAYOUT Y DISPOSICIÓN
+   ================================ */
+.ui-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: 
+        "sidebar header"
+        "sidebar main";
+    min-height: 100vh;
+}
+
+.ui-layout--no-topbar {
+    grid-template-areas: 
+        "sidebar main"
+        "sidebar main";
+}
+
+.ui-layout__main {
+    grid-area: main;
+    padding: var(--ui-gap-24);
+    overflow-y: auto;
+    background: var(--ui-color-fondo-alt);
+}
+
+/* ================================
+   SIDEBAR
+   ================================ */
+.ui-sidebar {
+    grid-area: sidebar;
+    width: 300px;
+    height: 100vh;
+    background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
+    color: white;
+    padding: var(--ui-gap-24);
+    overflow-y: auto;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.ui-sidebar__header {
+    margin-bottom: var(--ui-gap-32);
+    text-align: center;
+}
+
+.ui-sidebar__title {
+    margin: 0 0 var(--ui-gap-16) 0;
+    font-size: var(--ui-font-size-xl);
+    font-weight: 700;
+    color: white;
+}
+
+.ui-sidebar__logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--ui-gap-16);
+}
+
+.ui-sidebar__logo-img {
+    max-width: 100px;
+    height: auto;
+}
+
+.ui-sidebar__nav {
+    flex: 1;
+}
+
+.ui-sidebar__menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-gap-8);
+}
+
+.ui-sidebar__item {
+    margin: 0;
+}
+
+.ui-sidebar__link {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-gap-12);
+    padding: var(--ui-gap-12) var(--ui-gap-16);
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    border-radius: var(--ui-radius-base);
+    transition: background-color 0.2s ease;
+}
+
+.ui-sidebar__link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.ui-sidebar__link--active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: 500;
+}
+
+/* ================================
+   BREADCRUMBS
+   ================================ */
+.ui-breadcrumbs {
+    margin-bottom: var(--ui-gap-16);
+}
+
+.ui-breadcrumbs__list {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-gap-8);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--ui-font-size-sm);
+}
+
+.ui-breadcrumbs__item {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-gap-8);
+}
+
+.ui-breadcrumbs__link {
+    color: var(--ui-color-primario);
+    text-decoration: none;
+}
+
+.ui-breadcrumbs__link:hover {
+    text-decoration: underline;
+}
+
+.ui-breadcrumbs__separator {
+    color: var(--ui-color-texto-muted);
+}
+
+.ui-breadcrumbs__current {
+    color: var(--ui-color-texto);
+    font-weight: 500;
+}
+
+/* ================================
+   CARDS
+   ================================ */
+.ui-card {
+    background: var(--ui-color-fondo);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-base);
+    overflow: hidden;
+}
+
+.ui-card--module {
+    padding: var(--ui-gap-24);
+}
+
+.ui-card--report {
+    margin-top: var(--ui-gap-24);
+    padding: 0;
+}
+
+.ui-card__title {
+    margin: 0 0 var(--ui-gap-24) 0;
+    font-size: var(--ui-font-size-xl);
+    font-weight: 600;
+    color: var(--ui-color-texto);
+}
+
+/* ================================
+   MÉTRICAS/KPIs
+   ================================ */
+.ui-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--ui-gap-16);
+    margin-bottom: var(--ui-gap-24);
+    padding: var(--ui-gap-16);
+    background: var(--ui-color-fondo);
+    border-radius: var(--ui-radius-lg);
+    border: 1px solid var(--ui-color-borde);
+}
+
+.ui-metrics__item {
+    text-align: center;
+    padding: var(--ui-gap-12);
+}
+
+.ui-metrics__title {
+    font-size: var(--ui-font-size-sm);
+    color: var(--ui-color-texto-muted);
+    margin-bottom: var(--ui-gap-8);
+    font-weight: 500;
+}
+
+.ui-metrics__value {
+    font-size: var(--ui-font-size-lg);
+    font-weight: 700;
+    color: var(--ui-color-primario);
+}
+
+/* ================================
+   FILTROS
+   ================================ */
+.ui-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--ui-gap-16);
+    margin-bottom: var(--ui-gap-24);
+    flex-wrap: wrap;
+}
+
+.ui-filters__form {
+    display: flex;
+    gap: var(--ui-gap-12);
+    align-items: center;
+    flex: 1;
+    min-width: 300px;
+    flex-wrap: wrap;
+}
+
+.ui-filters__input,
+.ui-filters__select {
+    padding: var(--ui-gap-12);
+    border: 1px solid var(--ui-color-borde);
+    border-radius: var(--ui-radius-base);
+    font-size: var(--ui-font-size-base);
+    background: var(--ui-color-fondo);
+    font-family: inherit;
+    box-sizing: border-box;
+    min-width: 140px;
+}
+
+.ui-filters__input:focus-visible,
+.ui-filters__select:focus-visible {
+    outline: none;
+    border-color: var(--ui-color-primario);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+.ui-actions {
+    display: flex;
+    gap: var(--ui-gap-12);
+    align-items: center;
+}
+
+/* ================================
+   BOTONES
+   ================================ */
+.ui-button:not(.ui-action) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-gap-8);
+    padding: var(--ui-gap-12) var(--ui-gap-16);
+    border: 1px solid transparent;
+    border-radius: var(--ui-radius-base);
+    font-size: var(--ui-font-size-base);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+    color: var(--ui-color-texto);
+    font-family: inherit;
+}
+
+.ui-button:focus-visible {
+    outline: 2px solid var(--ui-color-primario);
+    outline-offset: 2px;
+}
+
+.ui-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Variantes de botones */
+.ui-button.ui-button--primary {
+    background: var(--ui-color-primario);
+    color: white;
+    border-color: var(--ui-color-primario);
+}
+
+.ui-button.ui-button--primary:hover:not(:disabled) {
+    background: var(--ui-color-primario-hover);
+    border-color: var(--ui-color-primario-hover);
+}
+
+.ui-button.ui-button--secondary {
+    background: var(--ui-color-secundario);
+    color: white;
+    border-color: var(--ui-color-secundario);
+}
+
+.ui-button.ui-button--secondary:hover:not(:disabled) {
+    background: #475569;
+}
+
+.ui-button.ui-button--ghost {
+    background: transparent;
+    color: var(--ui-color-primario);
+    border-color: var(--ui-color-primario);
+}
+
+.ui-button.ui-button--ghost:hover:not(:disabled) {
+    background: var(--ui-color-primario);
+    color: white;
+}
+
+.ui-button.ui-button--danger {
+    background: var(--ui-color-error);
+    color: white;
+    border-color: var(--ui-color-error);
+}
+
+.ui-button.ui-button--danger:hover:not(:disabled) {
+    background: #b91c1c;
+}
+
+/* Tamaños de botones */
+.ui-button--sm {
+    padding: var(--ui-gap-8) var(--ui-gap-12);
+    font-size: var(--ui-font-size-sm);
+}
+
+.ui-button--lg {
+    padding: var(--ui-gap-16) var(--ui-gap-24);
+    font-size: var(--ui-font-size-lg);
+}
+
+.ui-button--block {
+    width: 100%;
+    justify-content: center;
+}
+
+.ui-button__icon {
+    font-size: 1em;
+    line-height: 1;
+}
+
+/* ================================
+   TABLAS
+   ================================ */
+.ui-tabla-wrap {
+    background: var(--ui-color-fondo);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-base);
+    overflow: hidden;
+}
+
+.ui-desplazable {
+    overflow-x: auto;
+}
+
+.ui-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ui-font-size-sm);
+}
+
+.ui-tabla__head {
+    background: var(--ui-color-fondo-alt);
+}
+
+.ui-tabla__col {
+    padding: var(--ui-gap-12);
+    text-align: left;
+    font-weight: 600;
+    color: var(--ui-color-texto);
+    border-bottom: 2px solid var(--ui-color-borde);
+    cursor: pointer;
+    user-select: none;
+}
+
+.ui-tabla__col:hover {
+    background: #f1f5f9;
+}
+
+.ui-tabla__col[data-sort]:after {
+    content: ' ⇅';
+    opacity: 0.3;
+    margin-left: var(--ui-gap-4);
+}
+
+.ui-tabla__body .ui-tabla__row {
+    transition: background-color 0.2s ease;
+}
+
+.ui-tabla__body .ui-tabla__row:hover {
+    background: var(--ui-color-fondo-alt);
+}
+
+.ui-tabla__body .ui-tabla__row:nth-child(even) {
+    background: rgba(248, 250, 252, 0.5);
+}
+
+.ui-tabla__cell {
+    padding: var(--ui-gap-12);
+    border-bottom: 1px solid var(--ui-color-borde);
+    color: var(--ui-color-texto);
+    vertical-align: middle;
+}
+
+.ui-tabla__cell--acciones { white-space: nowrap; min-width: 120px; }
+/* Unificar espaciado como Documentos: solo margen izquierdo en adyacentes */
+.ui-tabla__cell--acciones .ui-action { margin-right: 0; }
+#tablaVentas .ui-tabla__cell--acciones .ui-action + .ui-action { margin-left: var(--ui-gap-6); }
+/* Celdas que deben mostrar todo el texto y permitir 'Leer más' */
+.ui-tabla__cell--descripcion,
+.ui-tabla__cell--comentarios,
+.ui-tabla__cell--motivo-cancel {
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* Indicador visual de que la celda es clicable para ver más */
+.js-leer-mas { cursor: pointer; }
+.js-leer-mas:hover { text-decoration: underline; }
+@media (max-width: 768px) {
+    /* Keep icon-size explicit on small screens; avoid collapsing font-size to 0 */
+    #tablaVentas .ui-tabla__cell--acciones .ui-action { margin-right: 0; padding: var(--ui-gap-4); min-width: 32px; height: 32px; }
+    #tablaVentas .ui-tabla__cell--acciones .ui-action .ui-button__icon { font-size: 16px; margin: 0; }
+}
+
+/* (Deprecated) Estilos .badge locales en Ventas han sido reemplazados por .ui-badge globales */
+
+/* ================================
+   MODALES
+   ================================ */
+.ui-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--ui-gap-16);
+}
+
+.ui-modal {
+    background: var(--ui-color-fondo);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-lg);
+    max-width: min(95%, 800px);
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.ui-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--ui-gap-24);
+    border-bottom: 1px solid var(--ui-color-borde);
+}
+
+.ui-modal__title {
+    margin: 0;
+    font-size: var(--ui-font-size-lg);
+    font-weight: 600;
+    color: var(--ui-color-texto);
+}
+
+.ui-modal__close {
+    padding: var(--ui-gap-8);
+    margin: -8px;
+}
+
+.ui-modal__body {
+    padding: var(--ui-gap-24);
+    flex: 1;
+}
+
+.ui-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--ui-gap-12);
+    padding: var(--ui-gap-24);
+    border-top: 1px solid var(--ui-color-borde);
+    background: var(--ui-color-fondo-alt);
+}
+
+/* ================================
+   FORMULARIOS
+   ================================ */
+.ui-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-gap-16);
+}
+
+.ui-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-gap-8);
+}
+
+.ui-form__label {
+    font-weight: 500;
+    color: var(--ui-color-texto);
+    font-size: var(--ui-font-size-base);
+}
+
+.ui-form__field {
+    position: relative;
+    display: flex;
+    gap: var(--ui-gap-8);
+    align-items: center;
+}
+
+.ui-form__input,
+.ui-form__textarea,
+.ui-form__select {
+    width: 100%;
+    padding: var(--ui-gap-12);
+    border: 1px solid var(--ui-color-borde);
+    border-radius: var(--ui-radius-base);
+    font-size: var(--ui-font-size-base);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: var(--ui-color-fondo);
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.ui-form__input:focus-visible,
+.ui-form__textarea:focus-visible,
+.ui-form__select:focus-visible {
+    outline: none;
+    border-color: var(--ui-color-primario);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+.ui-form__input:read-only {
+    background: var(--ui-color-fondo-alt);
+    color: var(--ui-color-texto-muted);
+}
+
+/* ================================
+   COMPONENTES ESPECÍFICOS DE VENTAS
+   ================================ */
+
+/* Grid del formulario de ventas */
+.ventas-form__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--ui-gap-16);
+    margin-top: var(--ui-gap-16);
+}
+
+/* Campo OVSR3 compuesto */
+.ventas-form__ovsr3 {
+    display: flex;
+    gap: var(--ui-gap-8);
+}
+
+.ventas-form__ovsr3-prefix {
+    width: 80px;
+    flex-shrink: 0;
+    font-size: 0.7rem; /* Más pequeño para PRE-OV y POST-OV */
+}
+
+.ventas-form__ovsr3-number {
+    flex: 1;
+}
+
+/* ================================
+   PAGINACIÓN
+   ================================ */
+.ui-paginacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--ui-gap-16);
+    background: var(--ui-color-fondo);
+    border-top: 1px solid var(--ui-color-borde);
+}
+
+.ui-paginacion__info {
+    color: var(--ui-color-texto-muted);
+    font-size: var(--ui-font-size-sm);
+}
+
+.ui-paginacion__controles {
+    display: flex;
+    gap: var(--ui-gap-8);
+}
+
+/* En ventas no se redefine la paleta de mensajes; se hereda de componentes.css */
+
+/* ================================
+   BOTÓN CONSULTAR MEJORADO
+   ================================ */
+.ventas-btn-consultar {
+    min-width: 120px;
+    padding: var(--ui-gap-8) var(--ui-gap-16);
+    font-weight: 600;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-gap-8);
+}
+
+.ventas-btn-consultar .ui-button__text {
+    font-size: var(--ui-font-size-sm);
+}
+
+/* ================================
+   MODAL DE VENTAS MEJORADO
+   ================================ */
+#modalVenta .ui-modal {
+    font-size: var(--ui-font-size-sm);
+    color: #000000;
+    max-width: 800px;
+}
+
+#modalVenta .ui-modal__title {
+    font-size: var(--ui-font-size-lg);
+    color: #000000;
+}
+
+#modalVenta .ui-form__label {
+    font-size: var(--ui-font-size-sm);
+    color: #000000;
+    font-weight: 500;
+}
+
+#modalVenta .ui-form__input {
+    font-size: var(--ui-font-size-sm);
+    color: #000000;
+}
+
+#modalVenta .ui-form__input::placeholder {
+    color: #6b7280;
+}
+
+#modalVenta .ui-form__input[readonly] {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #6b7280;
+}
+
+#modalVenta .ui-button {
+    font-size: var(--ui-font-size-sm);
+}
+
+/* ================================
+   VALIDACIONES CON BUEN CONTRASTE
+   ================================ */
+/* En el modal de ventas, no usar contornos rojo/verde en inputs */
+#modalVenta .ui-form__input--error,
+#modalVenta .ui-form__input--success {
+    border-color: var(--ui-color-borde) !important;
+    background-color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+/* Mensajes de validación específicos para ventas */
+/* Estilos de respaldo para contenedor legacy dentro del modal (texto oscuro para mejor contraste) */
+#modalVenta .ui-message-container--error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 2px solid #fca5a5;
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.15);
+}
+
+#modalVenta .ui-message-container--success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 2px solid #a7f3d0;
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba(5, 150, 105, 0.15);
+}
+
+#modalVenta .ui-message-container--warning {
+    background: #fffbeb;
+    color: #92400e;
+    border: 2px solid #fde68a;
+    font-weight: 600;
+}
+
+/* Estados del formulario: neutralizar en el modal */
+#modalVenta .ui-form__input:valid:not(:placeholder-shown),
+#modalVenta .ui-form__input:invalid:not(:placeholder-shown) {
+    border-color: var(--ui-color-borde) !important;
+    box-shadow: none !important;
+}
+
+/* Ocultar cualquier contador de caracteres que pudiera aparecer en el modal */
+/* Mostrar contador de caracteres en el modal (comentarios 0/2000) */
+#modalVenta .ui-form__counter { display: inline-block; }
+
+/* Control segmentado PRE-OV / POST-OV */
+.ui-segmented {
+    display: inline-flex;
+    border: 1px solid var(--ui-color-borde);
+    border-radius: var(--ui-radius-base);
+    overflow: hidden;
+    background: var(--ui-color-fondo);
+}
+.ui-segmented input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+.ui-segmented label {
+    padding: var(--ui-gap-8) var(--ui-gap-12);
+    cursor: pointer;
+    user-select: none;
+    color: var(--ui-color-texto);
+}
+.ui-segmented input[type="radio"]:checked + label {
+    background: var(--ui-color-primario);
+    color: #fff;
+}
+.ui-segmented label + input[type="radio"] + label {
+    border-left: 1px solid var(--ui-color-borde);
+}
+
+/* Vista previa compacta de OVSR3 si se agrega en el futuro */
+.ventas-form__ovsr3-preview { color: var(--ui-color-texto-muted); font-size: 0.85rem; margin-left: var(--ui-gap-8); }
+
+/* ================================
+   LOADER
+   ================================ */
+.ui-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ui-gap-32);
+    background: var(--ui-color-fondo);
+    border-radius: var(--ui-radius-lg);
+    margin-bottom: var(--ui-gap-24);
+}
+
+.ui-loader__content {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-gap-12);
+    color: var(--ui-color-texto-muted);
+}
+
+.ui-loader__spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--ui-color-borde);
+    border-top: 2px solid var(--ui-color-primario);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ================================
+   FAB (Floating Action Button)
+   ================================ */
+.ui-fab {
+    position: fixed;
+    bottom: var(--ui-gap-24);
+    right: var(--ui-gap-24);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--ui-color-primario);
+    color: white;
+    border: none;
+    box-shadow: var(--ui-shadow-lg);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: all 0.2s ease;
+}
+
+.ui-fab:hover {
+    background: var(--ui-color-primario-hover);
+    transform: scale(1.1);
+}
+
+.ui-fab__icon {
+    font-size: 1.5em;
+}
+
+/* ================================
+   RESPONSIVE
+   ================================ */
+@media (max-width: 768px) {
+    .ui-layout {
+        grid-template-columns: 1fr;
+        grid-template-areas: "main";
+    }
+    
+    .ui-sidebar {
+        display: none;
+    }
+    
+    .ui-layout__main {
+        padding: var(--ui-gap-16);
+    }
+    
+    .ui-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .ui-filters__form {
+        flex-direction: column;
+        min-width: auto;
+    }
+    
+    .ventas-form__grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .ui-modal {
+        max-width: 95%;
+        margin: var(--ui-gap-16);
+    }
+    
+    .ui-fab {
+        display: flex;
+    }
+    
+    .ui-tabla {
+        font-size: 0.75rem;
+    }
+    
+    .ui-tabla__col,
+    .ui-tabla__cell {
+        padding: var(--ui-gap-8);
+    }
+}

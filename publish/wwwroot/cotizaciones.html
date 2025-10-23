@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Cotizaciones · Administración</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="Styles/componentes/componentes.css">
+
+    <script src="Scripts/icon-loader.js" defer></script>
+    <script src="Scripts/seguridad.js" defer></script>
+    <script src="Scripts/ui-utils.js" defer></script>
+    <style>
+        .chip {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: .8rem;
+            font-weight: 700
+        }
+
+        .chip--ENVIADO {
+            background: #e0f2fe;
+            color: #0369a1
+        }
+
+        .chip--DECLINADO {
+            background: #fee2e2;
+            color: #991b1b
+        }
+
+        .chip--ALMACEN {
+            background: #e5e7eb;
+            color: #111827
+        }
+
+        .chip--OPERACIONES {
+            background: #e0f2fe;
+            color: #0369a1
+        }
+
+        .chip--COBRANZA {
+            background: #fef9c3;
+            color: #92400e
+        }
+
+        .chip--FACTURACION {
+            background: #ede9fe;
+            color: #6d28d9
+        }
+
+        .chip--FINALIZADO {
+            background: #dcfce7;
+            color: #166534
+        }
+
+        .coment {
+            max-width: 320px;
+            white-space: pre-wrap
+        }
+
+        .w-160 {
+            min-width: 160px
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <aside class="sidebar-dark" id="sidebar">
+        <h1 class="logo">SWGROI</h1>
+        <nav>
+            <a href="menu.html">Menú principal</a>
+            <a href="ventas.html">Ventas</a>
+            <a class="active" href="cotizaciones.html">Cotizaciones (Adm.)</a>
+            <a href="logout">Cerrar sesión</a>
+        </nav>
+    </aside>
+
+    <header class="topbar">
+        <button id="btnToggleSidebar" class="icon-btn">☰</button>
+        <h2 class="topbar-title">Cotizaciones · Administración</h2>
+    </header>
+
+    <main class="main-content ui-main">
+    <div class="admin-container ui-card ui-cotizaciones">
+            <h2 class="titulo-dashboard hide-on-mobile">Cotizaciones · Administración</h2>
+            <div class="ui-message-container">
+                <span class="ui-message-icon"></span>
+                <span class="ui-message-text"></span>
+            </div>
+
+            <section class="tabla-seguimiento">
+                <div class="barra-filtros ui-filters">
+                    <div class="field-with-feedback ui-filters__campo">
+                        <input class="form-control" type="date" id="fDesde" />
+                        <span class="field-icon icon icon--sm" aria-hidden="true"></span>
+                    </div>
+                    <div id="fDesdeFeedback" class="field-feedback" aria-live="polite"></div>
+                    <div class="field-with-feedback ui-filters__campo">
+                        <input class="form-control" type="date" id="fHasta" />
+                        <span class="field-icon icon icon--sm" aria-hidden="true"></span>
+                    </div>
+                    <div id="fHastaFeedback" class="field-feedback" aria-live="polite"></div>
+                    <select id="fEstado" class="ui-filters__select">
+                        <option value="">Todos</option>
+                        <option>ENVIADO</option>
+                        <option>DECLINADO</option>
+                        <option>ALMACEN</option>
+                        <option>OPERACIONES</option>
+                        <option>COBRANZA</option>
+                        <option>FACTURACION</option>
+                        <option>FINALIZADO</option>
+                    </select>
+                    <div class="field-with-feedback ui-filters__campo">
+                        <input class="form-control" type="text" id="fTexto" placeholder="Buscar por folio, cuenta, OVSR3..." />
+                        <span class="field-icon icon icon--sm" aria-hidden="true"></span>
+                    </div>
+                    <div id="fTextoFeedback" class="field-feedback" aria-live="polite"></div>
+                    <button id="btnFiltrar" class="ui-button ui-button--primary ui-filters__accion" type="button"><span class="ui-button__icon" data-icon="search" aria-hidden="true"></span> Filtrar</button>
+                    <button id="btnLimpiar" class="ui-button ui-button--secondary ui-filters__accion" type="button"><span class="ui-button__icon" data-icon="clear" aria-hidden="true"></span> Limpiar</button>
+                    <button id="btnRecargar" class="ui-button ui-button--ghost ui-filters__accion" type="button"><span class="ui-button__icon" data-icon="refresh" aria-hidden="true"></span> Actualizar</button>
+                </div>
+
+                <div class="table-wrap ui-desplazable ui-tabla-wrap">
+                    <table class="tabla-crud ui-tabla ui-tabla" id="tablaCots">
+                        <thead class="ui-tabla__head">
+                            <tr>
+                                <th>ID</th>
+                                <th>Folio</th>
+                                <th>OVSR3</th>
+                                <th class="w-160">Estado Ticket</th>
+                                <th>Monto</th>
+                                <th>Fecha Envío</th>
+                                <th>Cuenta</th>
+                                <th>Razón Social</th>
+                                <th>Agente</th>
+                                <th>Comentarios</th>
+                                <th class="w-160">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="ui-tabla__body">
+                            <!-- filas dinámicas -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Usa exactamente esta ruta -->
+    <script src="Scripts/cotizaciones.js"></script>
+    <script src="Scripts/ui.js"></script>
+</body>
+</html>

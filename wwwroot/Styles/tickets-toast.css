@@ -1,0 +1,16 @@
+/**
+ * TICKETS-TOAST.CSS — Ajustes ligeros para notificaciones en el módulo de Tickets
+ * Nota: El motor visual premium lo provee Scripts/toast-premium.js.
+ * Este archivo solo personaliza posición/comportamiento en esta vista.
+ */
+
+/* Mantener toasts en la esquina superior derecha como el resto de módulos */
+body.tickets-page #toast-container-premium{
+  top: 1.25rem;
+  bottom: auto;
+}
+
+/* Pequeño ajuste responsivo para móviles */
+@media (max-width: 480px){
+  body.tickets-page #toast-container-premium{ left: .75rem; right: .75rem; top: .75rem; bottom: auto; }
+}

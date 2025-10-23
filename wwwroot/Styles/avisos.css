@@ -1,0 +1,306 @@
+/* ================================================
+   AVISOS.CSS - Estilos específicos para Gestión de Avisos
+   Metodología BEM + Componentes SWGROI
+   ================================================ */
+
+/* ================================
+   ESTILOS ESPECÍFICOS DEL MÓDULO
+   ================================ */
+
+/* Avisos Page Wrapper */
+.avisos-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Formulario de avisos específico */
+.ui-card--form {
+    margin-bottom: var(--ui-gap-24);
+}
+
+.ui-card--form .ui-card__title {
+    color: var(--ui-color-primario);
+    margin-bottom: var(--ui-gap-16);
+}
+
+/* Contador de caracteres específico */
+.ui-form__counter {
+    font-size: var(--ui-font-size-sm);
+    color: var(--ui-color-texto-muted);
+    margin-top: var(--ui-gap-4);
+    display: block;
+    text-align: right;
+}
+
+/* Valores de solo lectura en modales */
+.ui-form__value {
+    padding: var(--ui-gap-8);
+    background-color: var(--ui-color-fondo-alt);
+    border-radius: var(--ui-radius-sm);
+    font-weight: 500;
+}
+
+.ui-form__value--multiline {
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow-y: auto;
+    line-height: 1.5;
+}
+
+/* Controles de tabla específicos */
+.ui-table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--ui-gap-16);
+    padding: var(--ui-gap-12);
+    background-color: var(--ui-color-fondo-alt);
+    border-radius: var(--ui-radius-sm);
+    border: 1px solid var(--ui-color-borde);
+}
+
+.ui-table-controls__left,
+.ui-table-controls__right {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-gap-8);
+}
+
+.ui-table-controls__label {
+    font-size: var(--ui-font-size-sm);
+    font-weight: 500;
+    color: var(--ui-color-texto);
+}
+
+.ui-table-controls__select {
+    padding: var(--ui-gap-4) var(--ui-gap-8);
+    border: 1px solid var(--ui-color-borde);
+    border-radius: var(--ui-radius-sm);
+    font-size: var(--ui-font-size-sm);
+    background-color: var(--ui-color-fondo);
+    color: var(--ui-color-texto);
+    min-width: 80px;
+}
+
+.ui-table-controls__select:focus {
+    outline: 2px solid var(--ui-color-primario);
+    outline-offset: 1px;
+}
+
+/* Tabla específica para avisos */
+.ui-tabla__cell--acciones { white-space: nowrap; width: 120px; }
+
+/* Usar estilos unificados de acciones (definidos en componentes.css)
+   Aquí sólo dejamos el ancla de la celda específica del módulo */
+.ui-tabla__cell--acciones .ui-action { display: inline-flex; }
+
+.ui-tabla__cell--mensaje {
+    /* Mostrar todo el texto del mensaje: permitir envolver y romper palabras si es necesario.
+       Esto evita el truncamiento con '...' y permite que la celda crezca en altura. */
+    max-width: none;
+    overflow: visible;
+    text-overflow: unset;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* Indica que la celda es clicable para ver contenido completo en un modal */
+.ui-tabla__cell--mensaje.js-leer-mas {
+    cursor: pointer;
+}
+
+/* Visual cue on hover: underline like ventas */
+.ui-tabla__cell--mensaje.js-leer-mas:hover,
+.js-leer-mas:hover {
+    text-decoration: underline;
+}
+
+/* Asegurar el modal multiline para avisos (reutiliza componentes básicos) */
+#modalLeerMasAviso .ui-form__value--multiline {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.ui-tabla__cell--fecha {
+    white-space: nowrap;
+    min-width: 100px;
+}
+
+/* KPIs específicos para avisos */
+.ui-metrics__item {
+    text-align: center;
+}
+
+.ui-metrics__value {
+    letter-spacing: 0.5px;
+}
+
+/* Filtros específicos */
+.ui-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--ui-gap-16);
+    margin-bottom: var(--ui-gap-24);
+}
+
+.ui-filters__form {
+    display: flex;
+    gap: var(--ui-gap-12);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.ui-filters__input {
+    min-width: 160px;
+}
+
+.ui-filters__input[type="date"] {
+    min-width: 140px;
+}
+
+/* Acciones específicas */
+.ui-actions {
+    display: flex;
+    gap: var(--ui-gap-8);
+    align-items: center;
+}
+
+/* Paginación específica */
+.ui-paginacion__pages {
+    display: flex;
+    gap: var(--ui-gap-4);
+    align-items: center;
+    margin: 0 var(--ui-gap-12);
+}
+
+.ui-paginacion__pages .ui-button {
+    min-width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ui-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .ui-filters__form {
+        justify-content: flex-start;
+    }
+    
+    .ui-actions {
+        justify-content: stretch;
+    }
+    
+    .ui-actions .ui-button {
+        flex: 1;
+    }
+    
+    .ui-table-controls {
+        flex-direction: column;
+        gap: var(--ui-gap-12);
+    }
+    
+    .ui-table-controls__left,
+    .ui-table-controls__right {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .ui-tabla__cell--acciones { min-width: 120px; }
+    .ui-tabla__cell--acciones .ui-action { 
+        margin-right: var(--ui-gap-4);
+        padding: var(--ui-gap-6);
+        min-width: 32px;
+        height: 32px;
+    }
+    .ui-tabla__cell--acciones .ui-action .ui-button__icon { 
+        font-size: 1em;
+    }
+    
+    .ui-tabla__cell--mensaje {
+        /* En pantallas pequeñas permitimos igualmente el wrapping para ver todo el mensaje */
+        max-width: none;
+        white-space: normal;
+        overflow: visible;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+    
+    .ui-paginacion {
+        flex-direction: column;
+        gap: var(--ui-gap-8);
+    }
+    
+    .ui-paginacion__controles {
+        flex-direction: column;
+        gap: var(--ui-gap-8);
+    }
+}
+
+@media (max-width: 480px) {
+    .ui-filters__form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .ui-filters__input {
+        min-width: unset;
+        width: 100%;
+    }
+    
+    .ui-form__actions {
+        flex-direction: column;
+        gap: var(--ui-gap-8);
+    }
+    
+    .ui-form__actions .ui-button {
+        width: 100%;
+    }
+}
+
+/* Mejoras de accesibilidad específicas */
+.ui-form__feedback[aria-live="polite"] {
+    min-height: 1.2em;
+}
+
+/* Indicadores de prioridad para avisos (si se implementa) */
+.avisos-page .ui-badge--urgente {
+    background-color: var(--ui-color-error);
+    color: white;
+}
+
+.avisos-page .ui-badge--importante {
+    background-color: var(--ui-color-advertencia);
+    color: white;
+}
+
+.avisos-page .ui-badge--normal {
+    background-color: var(--ui-color-info);
+    color: white;
+}
+
+/* Animaciones sutiles */
+.ui-tabla__row {
+    transition: background-color 0.2s ease;
+}
+
+.ui-tabla__row:hover {
+    background-color: var(--ui-color-fondo-alt);
+}
+
+/* Texto de ayuda específico */
+.ui-form__help {
+    font-size: var(--ui-font-size-sm);
+    color: var(--ui-color-texto-muted);
+    margin-top: var(--ui-gap-4);
+    display: block;
+}
