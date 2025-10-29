@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Retroalimentación CCC - SWGROI</title>
     <!-- Usar estilos unificados de componentes y mantener reglas específicas del módulo -->
     <link rel="stylesheet" href="Styles/componentes/componentes.css">
@@ -19,74 +19,454 @@
         :root{
             --bg: #f8fafc;
             --card: #ffffff;
-            --muted: #6b7280;
+            --muted: #64748b;
+            --text-primary: #1e293b;
             --accent-1: #1e40af; /* azul oscuro */
             --accent-2: #3b82f6; /* azul claro */
             --success: #10b981;
             --danger: #ef4444;
-            --radius: 10px;
-            --max-width: 920px;
-            --gap: 1rem;
-            --shadow: 0 6px 20px rgba(15,23,42,0.06);
+            --warning: #f59e0b;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --max-width: 800px;
+            --gap: 1.25rem;
+            --shadow: 0 4px 16px rgba(15,23,42,0.08);
+            --shadow-lg: 0 8px 24px rgba(15,23,42,0.12);
         }
 
-        /* Base layout */
-        body.ui-layout--survey{ background: linear-gradient(180deg, #fbfdff 0%, var(--bg) 60%); font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#0f172a; margin:0; }
-        .ui-layout__main{ padding:2rem; min-height:100vh; box-sizing:border-box; }
-        .ui-card--module{ max-width:var(--max-width); margin:0 auto; background:transparent; box-shadow:none; }
+        /* Reset y base layout */
+        * { box-sizing: border-box; }
+        body.ui-layout--survey{ 
+            background: linear-gradient(180deg, #fbfdff 0%, var(--bg) 60%); 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+        .ui-layout__main{ 
+            padding: 1.5rem 1rem; 
+            min-height: 100vh;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+        .ui-card--module{ 
+            max-width: var(--max-width); 
+            margin: 0 auto; 
+            background: transparent; 
+            box-shadow: none;
+            width: 100%;
+        }
 
         /* Card form central */
-        .ui-card--form{ background:var(--card); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow); border:1px solid rgba(15,23,42,0.04); }
-        .retro-card-header{ display:flex; align-items:center; justify-content:space-between; gap:var(--gap); }
-        .retro-logo{ width:48px; height:auto; border-radius:8px; object-fit:contain; }
-        .ui-card__title{ font-size:1.125rem; margin:0; font-weight:600; display:flex; align-items:center; gap:0.5rem; }
-        .ui-card__subtitle{ margin:0; color:var(--muted); font-size:0.95rem; }
+        .ui-card--form{ 
+            background: var(--card); 
+            border-radius: var(--radius); 
+            padding: 1.75rem 1.5rem; 
+            box-shadow: var(--shadow); 
+            border: 1px solid rgba(15,23,42,0.06);
+            margin-top: 1rem;
+        }
+        .retro-card-header{ 
+            display: flex; 
+            align-items: flex-start; 
+            justify-content: space-between; 
+            gap: var(--gap);
+            margin-bottom: 1.25rem;
+        }
+        .retro-logo{ 
+            width: 56px; 
+            height: 56px; 
+            border-radius: var(--radius-sm); 
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+        .ui-card__title{ 
+            font-size: 1.25rem; 
+            margin: 0 0 0.5rem 0; 
+            font-weight: 700; 
+            display: flex; 
+            align-items: center; 
+            gap: 0.5rem;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+        .ui-card__subtitle{ 
+            margin: 0; 
+            color: var(--danger); 
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        .ui-card__meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+        .ui-badge {
+            padding: 0.4rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.2);
+        }
+        .ui-card__meta-text {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
 
-        /* Progress */
-        .retro-progress-row{ margin-top:0.75rem; display:flex; flex-direction:column; gap:0.5rem; }
-        .retro-progress__meta{ display:flex; justify-content:space-between; font-size:0.875rem; color:var(--muted); }
-        .retro-progress{ width:100%; height:12px; background:linear-gradient(180deg, rgba(15,23,42,0.03), rgba(15,23,42,0.02)); border-radius:999px; overflow:hidden; }
-        .retro-progress__bar{ height:100%; background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); width:0%; transition:width .45s cubic-bezier(.2,.9,.25,1); box-shadow:0 4px 10px rgba(59,130,246,0.18) inset; }
+        /* Progress bar mejorada */
+        .retro-progress-row{ 
+            margin: 1rem 0; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 0.75rem;
+        }
+        .retro-progress__meta{ 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 0.925rem; 
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        .retro-progress{ 
+            width: 100%; 
+            height: 14px; 
+            background: linear-gradient(180deg, rgba(15,23,42,0.04), rgba(15,23,42,0.03)); 
+            border-radius: 999px; 
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .retro-progress__bar{ 
+            height: 100%; 
+            background: linear-gradient(90deg, var(--success), #34d399); 
+            width: 0%; 
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+            position: relative;
+        }
+        .retro-progress__bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
 
-        /* Mensajes */
-        .ui-message{ padding:0.65rem 0.75rem; border-radius:8px; background:rgba(14,165,233,0.04); color:var(--muted); display:flex; align-items:center; gap:0.6rem; }
-        .ui-message--error{ background:rgba(239,68,68,0.06); color:var(--danger); }
-        .ui-message--info{ background:rgba(59,130,246,0.06); color:var(--accent-1); }
+        /* Mensajes mejorados */
+        .ui-message{ 
+            padding: 0.875rem 1rem; 
+            border-radius: var(--radius-sm); 
+            background: rgba(59,130,246,0.08); 
+            color: var(--accent-1); 
+            display: flex; 
+            align-items: center; 
+            gap: 0.75rem;
+            border-left: 4px solid var(--accent-2);
+            font-size: 0.925rem;
+            line-height: 1.5;
+        }
+        .ui-message--error{ 
+            background: rgba(239,68,68,0.08); 
+            color: var(--danger);
+            border-left-color: var(--danger);
+        }
+        .ui-message--info{ 
+            background: rgba(59,130,246,0.08); 
+            color: var(--accent-1);
+            border-left-color: var(--accent-2);
+        }
+        .retro-card-spacing {
+            margin-top: 1rem;
+        }
 
-        /* Preguntas */
-        .retro-preguntas{ margin-top:0.75rem; display:flex; flex-direction:column; gap:0.75rem; }
-        .retro-pregunta{ border-radius:8px; padding:0.85rem; background:linear-gradient(180deg, rgba(15,23,42,0.01), rgba(15,23,42,0.005)); border:1px solid rgba(15,23,42,0.03); }
-        .retro-pregunta__titulo{ margin:0 0 0.45rem 0; font-weight:600; font-size:0.98rem; }
-        .retro-pregunta__descripcion{ margin:0; color:var(--muted); font-size:0.9rem; }
+        /* Preguntas mejoradas */
+        .retro-preguntas{ 
+            margin-top: 1rem; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1.25rem;
+        }
+        .retro-pregunta{ 
+            border-radius: var(--radius-sm); 
+            padding: 1.25rem; 
+            background: linear-gradient(180deg, rgba(248,250,252,0.8), rgba(241,245,249,0.5)); 
+            border: 2px solid rgba(15,23,42,0.06);
+            transition: all 0.2s ease;
+        }
+        .retro-pregunta:hover {
+            border-color: rgba(59,130,246,0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+        .retro-pregunta__titulo{ 
+            margin: 0 0 0.75rem 0; 
+            font-weight: 700; 
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+        .retro-pregunta__descripcion{ 
+            margin: 0 0 0.75rem 0; 
+            color: var(--muted); 
+            font-size: 0.925rem;
+            line-height: 1.5;
+        }
 
-        /* Estilos para opciones (radio/escala) — conservadores para no romper JS */
-        .retro-opciones{ margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap; }
-        .retro-opcion{ padding:0.45rem 0.65rem; border-radius:999px; border:1px solid rgba(15,23,42,0.06); background:#fff; cursor:pointer; transition:all .18s ease; font-size:0.92rem; }
-        .retro-opcion:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(2,6,23,0.06); }
-        .retro-opcion[aria-checked="true"], .retro-opcion.selected{ background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); color:white; border-color:transparent; }
+        /* Opciones mejoradas */
+        .retro-opciones{ 
+            margin-top: 0.75rem; 
+            display: flex; 
+            gap: 0.75rem; 
+            flex-wrap: wrap;
+        }
+        .retro-opcion{ 
+            padding: 0.65rem 1.25rem; 
+            border-radius: 999px; 
+            border: 2px solid rgba(15,23,42,0.1); 
+            background: white; 
+            cursor: pointer; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 120px;
+            text-align: center;
+            user-select: none;
+        }
+        .retro-opcion:hover{ 
+            transform: translateY(-3px); 
+            box-shadow: 0 6px 20px rgba(59,130,246,0.15);
+            border-color: var(--accent-2);
+            background: rgba(59,130,246,0.02);
+        }
+        .retro-opcion[aria-checked="true"], 
+        .retro-opcion.selected{ 
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); 
+            color: white; 
+            border-color: transparent;
+            box-shadow: 0 4px 16px rgba(59,130,246,0.3);
+            transform: scale(1.05);
+        }
+        .retro-opcion:active {
+            transform: scale(0.98);
+        }
+
+        /* Botones mejorados */
+        .ui-button{ 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 0.5rem; 
+            padding: 0.75rem 1.5rem; 
+            border-radius: var(--radius-sm); 
+            border: 2px solid transparent; 
+            cursor: pointer; 
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            text-decoration: none;
+            line-height: 1;
+        }
+        .ui-button--primary{ 
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); 
+            color: white; 
+            box-shadow: 0 4px 16px rgba(59,130,246,0.25);
+        }
+        .ui-button--primary:hover {
+            box-shadow: 0 6px 24px rgba(59,130,246,0.35);
+            transform: translateY(-2px);
+        }
+        .ui-button--ghost{ 
+            background: transparent; 
+            border: 2px solid rgba(15,23,42,0.12); 
+            color: var(--text-primary);
+        }
+        .ui-button--ghost:hover {
+            background: rgba(15,23,42,0.04);
+            border-color: rgba(15,23,42,0.2);
+        }
+        .ui-button:focus{ 
+            outline: 3px solid rgba(59,130,246,0.25); 
+            outline-offset: 2px;
+        }
+        .ui-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
 
         /* Acciones */
-        .retro-acciones{ display:flex; gap:0.6rem; justify-content:flex-end; margin-top:1rem; }
-        .ui-button{ display:inline-flex; align-items:center; gap:0.5rem; padding:0.55rem 0.85rem; border-radius:8px; border:1px solid transparent; cursor:pointer; font-weight:600; }
-        .ui-button--primary{ background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); color:#fff; box-shadow:0 8px 24px rgba(59,130,246,0.14); }
-        .ui-button--ghost{ background:transparent; border:1px solid rgba(15,23,42,0.06); color:var(--muted); }
-        .ui-button:focus{ outline:3px solid rgba(59,130,246,0.12); }
+        .retro-acciones{ 
+            display: flex; 
+            gap: 1rem; 
+            justify-content: flex-end; 
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
 
         /* Secciones de estado */
-        .retro-exito, .retro-error, .retro-cargando{ padding:0.9rem; border-radius:8px; }
-        .retro-exito__titulo{ margin:0 0 0.25rem 0; color:var(--success); }
-        .retro-error__titulo{ margin:0 0 0.25rem 0; color:var(--danger); }
+        .retro-exito, .retro-error, .retro-cargando{ 
+            padding: 1.5rem; 
+            border-radius: var(--radius);
+            background: white;
+        }
+        .retro-exito{ 
+            border: 2px solid var(--success); 
+            background: linear-gradient(135deg, rgba(16,185,129,0.05), rgba(16,185,129,0.02));
+        }
+        .retro-error{ 
+            border: 2px solid var(--danger);
+            background: linear-gradient(135deg, rgba(239,68,68,0.05), rgba(239,68,68,0.02));
+        }
+        .retro-exito__titulo{ 
+            margin: 0 0 0.5rem 0; 
+            color: var(--success);
+            font-weight: 700;
+            font-size: 1.15rem;
+        }
+        .retro-error__titulo{ 
+            margin: 0 0 0.5rem 0; 
+            color: var(--danger);
+            font-weight: 700;
+            font-size: 1.15rem;
+        }
+        .retro-exito__mensaje,
+        .retro-error__mensaje {
+            line-height: 1.6;
+            margin: 0;
+        }
 
-        /* Spinner simple CSS */
-        .retro-cargando__spinner{ width:28px; height:28px; border-radius:50%; border:3px solid rgba(15,23,42,0.06); border-top-color:var(--accent-2); animation:spin .9s linear infinite; }
-        @keyframes spin{ to{ transform:rotate(360deg); } }
+        /* Spinner mejorado */
+        .retro-cargando__spinner{ 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 50%; 
+            border: 4px solid rgba(59,130,246,0.15); 
+            border-top-color: var(--accent-2); 
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin{ 
+            to{ transform: rotate(360deg); } 
+        }
 
-        /* Responsive */
-        @media (max-width:768px){
-            .ui-layout__main{ padding:1rem; }
-            .retro-card-header{ flex-direction:column; align-items:flex-start; }
-            .retro-acciones{ justify-content:stretch; flex-direction:column-reverse; }
-            .ui-button{ width:100%; justify-content:center; }
+        /* Header responsive */
+        .header-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Responsive mejorado */
+        @media (max-width: 768px){
+            body.ui-layout--survey {
+                font-size: 14px;
+            }
+            .ui-layout__main{ 
+                padding: 1rem 0.75rem; 
+            }
+            .ui-card--form {
+                padding: 1.25rem 1rem;
+                border-radius: var(--radius-sm);
+            }
+            .retro-card-header{ 
+                flex-direction: column; 
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .ui-card__meta {
+                align-items: flex-start;
+                width: 100%;
+            }
+            .retro-logo {
+                width: 48px;
+                height: 48px;
+            }
+            .ui-card__title {
+                font-size: 1.1rem;
+            }
+            .retro-acciones{ 
+                justify-content: stretch; 
+                flex-direction: column;
+            }
+            .ui-button{ 
+                width: 100%; 
+                justify-content: center;
+                padding: 0.85rem 1.25rem;
+            }
+            .retro-opciones {
+                flex-direction: column;
+            }
+            .retro-opcion {
+                width: 100%;
+                min-width: auto;
+            }
+            .header-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .ui-button--ghost {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .ui-layout__main {
+                padding: 0.75rem 0.5rem;
+            }
+            .ui-card--form {
+                padding: 1rem 0.875rem;
+            }
+            .retro-pregunta {
+                padding: 1rem;
+            }
+            .ui-card__title {
+                font-size: 1rem;
+            }
+        }
+
+        /* Mejoras de accesibilidad */
+        .retro-opcion:focus-visible {
+            outline: 3px solid rgba(59,130,246,0.4);
+            outline-offset: 2px;
+        }
+
+        /* Ocultar elementos visualmente pero mantener accesibilidad */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
         }
     </style>
 </head>
@@ -97,16 +477,22 @@
         <div class="ui-card ui-card--module" role="main">
 
             <!-- Encabezado simple con logo y cerrar formulario -->
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem;">
-                <div style="display:flex; align-items:center; gap:0.5rem;">
+            <div class="header-wrapper">
+                <div class="header-content">
                     <img src="Imagenes/CENTRALDEALARMAS1.png" alt="Central de Alarmas" class="retro-logo">
                     <div>
-                        <h2 class="ui-card__title"><span class="ui-button__icon" data-icon="edit" aria-hidden="true"></span> Encuesta de Satisfacción</h2>
-                        <!-- Se evita duplicar el id "infoCliente"; la leyenda principal está en el card inferior -->
+                        <h2 class="ui-card__title">
+                            <span class="ui-button__icon" data-icon="edit" aria-hidden="true"></span> 
+                            Encuesta de Satisfacción
+                        </h2>
+                        <p class="ui-card__subtitle">Favor de contestar la siguiente encuesta para completar el proceso de su factura</p>
                     </div>
                 </div>
                 <div>
-                    <button type="button" id="btnCerrarFormulario" class="ui-button ui-button--ghost">Cerrar formulario</button>
+                    <button type="button" id="btnCerrarFormulario" class="ui-button ui-button--ghost" aria-label="Cerrar formulario">
+                        <span class="ui-button__icon" data-icon="x" aria-hidden="true"></span>
+                        Cerrar
+                    </button>
                 </div>
             </div>
 
@@ -122,18 +508,22 @@
             <section aria-label="Encuesta de satisfacción">
                 <div class="ui-card ui-card--form">
                     <div class="ui-card__header retro-card-header">
-                        <div>
-                            <p id="infoCliente" class="ui-card__subtitle ui-card__subtitle--error">Favor de contestar la siguiente encuesta para completar el proceso de su factura</p>
+                        <div style="flex: 1;">
+                            <h3 class="visually-hidden">Información del cliente</h3>
                         </div>
                         <div class="ui-card__meta">
-                            <div class="ui-badge ui-badge--administrador" aria-hidden="true">Cliente: <span id="badgeCliente">—</span></div>
-                            <div class="ui-card__meta-text">Folio: <strong id="badgeFolio">—</strong></div>
+                            <div class="ui-badge ui-badge--administrador" aria-label="Nombre del cliente">
+                                <span id="badgeCliente">Cargando...</span>
+                            </div>
+                            <div class="ui-card__meta-text" aria-label="Número de folio">
+                                Folio: <strong id="badgeFolio">—</strong>
+                            </div>
                         </div>
                     </div>
 
                     <div class="retro-progress-row">
                         <div class="retro-progress__meta" aria-hidden="true">
-                            <span id="progressCount" class="retro-progress__count">0/0</span>
+                            <span id="progressCount" class="retro-progress__count">0 de 0 contestadas</span>
                             <span id="progressPct" class="retro-progress__pct">0%</span>
                         </div>
                         <div id="progressContainer" class="retro-progress" role="progressbar" aria-label="Progreso de respuestas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -143,12 +533,14 @@
 
                     <!-- Leyenda roja obligatoria -->
                     <div id="leyendaObligatoria" class="ui-message ui-message--error retro-card-spacing" role="status" aria-live="polite">
-                        <strong><span class="ui-button__icon" data-icon="edit" aria-hidden="true"></span> Favor de contestar la siguiente encuesta para completar el proceso de su factura</strong>
+                        <span class="ui-button__icon" data-icon="alert-triangle" aria-hidden="true"></span>
+                        <strong>Todas las preguntas son obligatorias para completar el proceso de facturación</strong>
                     </div>
 
                     <!-- Nota secundaria (visible mientras la encuesta NO esté contestada) -->
-                    <div id="retroNota" class="retro-obligatorio" role="note" aria-live="polite">
-                        Sus respuestas son anónimas y nos ayudan a mejorar.
+                    <div id="retroNota" class="ui-message ui-message--info retro-card-spacing" role="note" aria-live="polite">
+                        <span class="ui-button__icon" data-icon="info" aria-hidden="true"></span>
+                        Sus respuestas son anónimas y nos ayudan a mejorar nuestro servicio.
                     </div>
 
                     <!-- Leyenda que se muestra cuando la encuesta ya fue contestada -->
@@ -158,25 +550,27 @@
 
                     <!-- FORMULARIO CLIENTE (Por token) -->
                     <form id="formRespuestas" class="ui-form retro-form" aria-labelledby="formTitle" novalidate>
-                        <h3 id="formTitle" class="ui-form__label" style="display:none">Preguntas de la encuesta</h3>
+                        <h3 id="formTitle" class="visually-hidden">Preguntas de la encuesta</h3>
                         <fieldset id="preguntasContainer" class="retro-preguntas" aria-live="polite">
                             <!-- Preguntas se cargan dinámicamente por retroalimentacion.js -->
                         </fieldset>
 
-                        <div class="retro-acciones" style="margin-top:1rem;">
-                            <button type="submit" id="btnEnviar" class="ui-button ui-button--primary">
-                                <span class="ui-button__icon" data-icon="send"></span>Enviar respuestas
+                        <div class="retro-acciones">
+                            <button type="button" id="btnCancelar" class="ui-button ui-button--ghost" title="Refrescar campos" aria-label="Limpiar y refrescar todos los campos">
+                                <span class="ui-button__icon" data-icon="refresh" aria-hidden="true"></span>
+                                Refrescar
                             </button>
-                            <button type="button" id="btnCancelar" class="ui-button ui-button--ghost" title="Refrescar campos">
-                                <span class="ui-button__icon" data-icon="refresh"></span>Refrescar campos
+                            <button type="submit" id="btnEnviar" class="ui-button ui-button--primary" aria-label="Enviar respuestas de la encuesta">
+                                <span class="ui-button__icon" data-icon="send" aria-hidden="true"></span>
+                                Enviar respuestas
                             </button>
                         </div>
                     </form>
 
                     <!-- MENSAJE DE ÉXITO -->
-                    <div id="seccionExito" class="ui-card retro-exito retro-card-spacing" style="display:none;">
+                    <div id="seccionExito" class="ui-card retro-exito retro-card-spacing" style="display:none;" role="alert">
                         <div style="display:flex; gap:1rem; align-items:center;">
-                            <div class="retro-exito__icono"><span class="ui-button__icon" data-icon="check" style="font-size: 1.5em; color: #10b981;"></span></div>
+                            <div class="retro-exito__icono"><span class="ui-button__icon" data-icon="check-circle" style="font-size: 2em; color: #10b981;" aria-hidden="true"></span></div>
                             <div>
                                 <h3 class="retro-exito__titulo">¡Gracias por su retroalimentación!</h3>
                                 <p class="retro-exito__mensaje">Sus respuestas han sido registradas exitosamente. Su opinión nos ayuda a mejorar nuestro servicio.</p>
@@ -185,15 +579,16 @@
                     </div>
 
                     <!-- MENSAJE DE ERROR -->
-                    <div id="seccionError" class="ui-card retro-error retro-card-spacing" style="display:none;">
+                    <div id="seccionError" class="ui-card retro-error retro-card-spacing" style="display:none;" role="alert">
                         <div style="display:flex; gap:1rem; align-items:flex-start;">
-                            <div class="retro-error__icono"><span class="ui-button__icon" data-icon="x" style="font-size: 1.5em; color: #ef4444;"></span></div>
-                            <div>
+                            <div class="retro-error__icono"><span class="ui-button__icon" data-icon="alert-circle" style="font-size: 2em; color: #ef4444;" aria-hidden="true"></span></div>
+                            <div style="flex: 1;">
                                 <h3 class="retro-error__titulo">Error al cargar formulario</h3>
                                 <p id="mensajeError" class="retro-error__mensaje">No se pudo cargar el formulario de retroalimentación.</p>
-                                <div style="margin-top:0.6rem;">
-                                    <button onclick="window.location.reload()" class="ui-button ui-button--secondary">
-                                        <span class="ui-button__icon" data-icon="refresh"></span>Intentar de nuevo
+                                <div style="margin-top:0.75rem;">
+                                    <button type="button" onclick="window.location.reload()" class="ui-button ui-button--primary">
+                                        <span class="ui-button__icon" data-icon="refresh" aria-hidden="true"></span>
+                                        Intentar de nuevo
                                     </button>
                                 </div>
                             </div>
@@ -201,10 +596,10 @@
                     </div>
 
                     <!-- CARGANDO -->
-                    <div id="seccionCargando" class="ui-card retro-cargando retro-card-spacing" style="display:block;">
+                    <div id="seccionCargando" class="ui-card retro-cargando retro-card-spacing" style="display:block;" role="status" aria-live="polite">
                         <div style="display:flex; gap:1rem; align-items:center;">
                             <div class="retro-cargando__spinner" aria-hidden="true"></div>
-                            <p class="retro-cargando__texto">Cargando formulario...</p>
+                            <p class="retro-cargando__texto">Cargando formulario de encuesta...</p>
                         </div>
                     </div>
 
