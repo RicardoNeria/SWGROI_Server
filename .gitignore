@@ -1,13 +1,99 @@
+# Build outputsbin/
+
+bin/obj/
+
+obj/node_modules/
+
+publish/```
+
 bin/
-obj/
+
+# Visual Studioobj/
+
+.vs/node_modules/
+
+*.suo*.zip
+
+*.user*.rar
+
+*.userosscache*.7z
+
+*.sln.docstates
+
+*.userprefs```
+
 node_modules/
-```
-bin/
-obj/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Node modules
 node_modules/
+
+# Logs
+logs/
+*.log
+
+# Archivos comprimidos
 *.zip
 *.rar
 *.7z
+*.tar
+*.gz
 
-```
-node_modules/
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Executable files en raíz (deben estar en bin/)
+/*.exe
+/*.dll
+/*.pdb
+
+# Config temporal
+*.tmp
+*.bak
+*.cache
+
+# Package files
+*.nupkg
+*.snupkg
+packages/
