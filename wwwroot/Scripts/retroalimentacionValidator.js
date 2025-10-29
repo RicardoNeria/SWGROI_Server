@@ -16,7 +16,7 @@
         REQUIRED_QUESTIONS: [1, 2, 3, 4],
         
         // Longitudes de texto
-        MIN_COMMENT_LENGTH: 0,  // Los comentarios son opcionales
+    MIN_COMMENT_LENGTH: 1,  // Los comentarios ahora son obligatorios (al menos 1 carácter)
         MAX_COMMENT_LENGTH: 1000,
         
         // Patrones de validación
@@ -33,7 +33,8 @@
             INVALID_SCALE: 'Debe seleccionar una opción válida (1-5)',
             COMMENT_TOO_LONG: 'El comentario no puede exceder {max} caracteres',
             FORBIDDEN_CONTENT: 'El comentario contiene contenido no permitido',
-            FORM_INCOMPLETE: 'Por favor complete todas las preguntas obligatorias antes de enviar'
+            FORM_INCOMPLETE: 'Es necesario contestar las 5 preguntas antes de enviar',
+            COMMENT_REQUIRED: 'Esta pregunta es obligatoria'
         }
     };
 
@@ -114,15 +115,18 @@
             const textarea = form.querySelector(`textarea[name="r${questionNum}"]`);
             
             if (!textarea) {
-                // Si no existe el textarea, no es error (es opcional)
-                return true;
+                // Si no existe el textarea, consideramos inválido porque las 5 preguntas son obligatorias
+                return false;
             }
 
             const value = textarea.value.trim();
             
-            // Los comentarios son opcionales, pero si existen deben cumplir reglas
-            if (value.length === 0) {
-                return true; // Válido si está vacío
+            // Los comentarios ahora son obligatorios (pregunta 5)
+            if (value.length < VALIDATION_RULES.MIN_COMMENT_LENGTH) {
+                const error = VALIDATION_RULES.MESSAGES.COMMENT_REQUIRED || VALIDATION_RULES.MESSAGES.REQUIRED;
+                this.addError(`r${questionNum}`, error);
+                this.showFieldError(questionNum, error);
+                return false;
             }
 
             // Validar longitud máxima
@@ -209,6 +213,8 @@
                     title: `Pregunta ${questionNum}`,
                     duration: 4000
                 });
+            } else if (typeof window.showRetroToast === 'function') {
+                window.showRetroToast(`Pregunta ${questionNum}: ${message}`, 'error', { duration: 4000 });
             }
 
             // También marcar visualmente el campo si es posible
@@ -228,7 +234,23 @@
                     title: 'Formulario incompleto',
                     duration: 5000
                 });
+            } else if (typeof window.showRetroToast === 'function') {
+                window.showRetroToast(message, 'error', { duration: 5000 });
             }
+
+            // Intentar enfocar la primera pregunta con error
+            try {
+                const firstErrorKey = this.errors.keys().next();
+                if (firstErrorKey && !firstErrorKey.done) {
+                    const fieldName = firstErrorKey.value;
+                    const form = document.getElementById('formRespuestas') || document;
+                    const field = form.querySelector(`input[name="${fieldName}"]:not(:checked), textarea[name="${fieldName}"]`);
+                    if (field) {
+                        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        field.focus({ preventScroll: true });
+                    }
+                }
+            } catch (e) { /* ignore focus errors */ }
         }
 
         showValidationError(message) {
@@ -237,6 +259,8 @@
                     title: 'Error de validación',
                     duration: 4000
                 });
+            } else if (typeof window.showRetroToast === 'function') {
+                window.showRetroToast(message, 'error', { duration: 4000 });
             }
         }
 
